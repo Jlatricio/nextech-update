@@ -1,126 +1,31 @@
-# 📂 Organização de Pastas do Nextech
-
-Este documento define a estrutura de pastas do projeto Nextech para garantir consistência e facilitar a colaboração entre a equipe da Newtech. Deve ser seguido com todo rigor
-
-## 🏗️ Estrutura de Diretórios
-
-```
 📂 src/
- ├── 📂 app/              # Módulos, componentes e serviços principais
- │   ├── 📂 core/         # Serviços globais e configurações
- │   │   ├── interceptors/  # Interceptadores de requisição HTTP
- │   │   ├── guards/        # Guards para controle de acesso
- │   │   ├── services/      # Serviços compartilhados
- │   │   ├── core.module.ts # Módulo principal do Core
- │   │   ├── index.ts       # Exportações globais
+ ├── 📂 app/                
+ │   ├── 📂 core/          # Serviços globais e configurações
+ │   │   ├── interceptors/ # Interceptadores HTTP
+ │   │   ├── guards/       # Guards de autenticação e autorização
+ │   │   ├── services/     # Serviços globais (ex: autenticação)
+ │   │   ├── index.ts      # Exportações globais
  │   │   └── ...
- │   ├── 📂 shared/       # Componentes e diretivas reutilizáveis
- │   │   ├── components/  # Componentes comuns (botões, modais, etc.)
- │   │   ├── directives/  # Diretivas reutilizáveis
- │   │   ├── pipes/       # Pipes compartilhados
- │   │   ├── shared.module.ts  # Módulo do Shared
+ │   ├── 📂 shared/        # Componentes reutilizáveis, pipes e diretivas
+ │   │   ├── components/   # Ex: botões, modais (agora standalone)
+ │   │   ├── directives/   
+ │   │   ├── pipes/       
+ │   │   ├── index.ts      # Exportações de componentes standalone
  │   │   └── ...
- │   ├── 📂 features/     # Funcionalidades e páginas principais
- │   │   ├── 📂 auth/     # Autenticação (login, registro, etc.)
- │   │        ├── 📂 components/     # componentes especificos
- │   │   ├── 📂 dashboard/  # Página principal após login
- │   │   |    ├── 📂 components/   # Configurações do usuário
- │   │   |    ├── 📂 ... e outras informações especificas
+ │   ├── 📂 features/      # Funcionalidades principais
+ │   │   ├── 📂 auth/      # Autenticação
+ │   │   │    ├── login.component.ts (Standalone)
+ │   │   │    ├── services/
+ │   │   ├── 📂 dashboard/  # Painel principal
  │   │   ├── 📂 settings/   # Configurações do usuário
- │   │   |    ├── 📂 components/   # Components especificos
- │   │   |    ├── 📂 ... e outras informações especificas
  │   │   └── ...
- │   ├── app.module.ts    # Módulo principal do Angular
- │   ├── app.component.ts # Componente raiz do Angular
- │   └── app.routes.ts    # Definição de rotas
- ├── 📂 assets/            # Imagens, ícones, fontes e outros recursos
- ├── 📂 environments/      # Configurações de ambiente (dev, prod)
- ├── main.ts              # Arquivo de bootstrap do Angular
- ├── index.html           # Arquivo HTML principal
- ├── styles.scss          # Estilos globais
- ├── angular.json         # Configuração do Angular CLI
- ├── package.json         # Dependências do projeto
- └── tsconfig.json        # Configuração do TypeScript
-```
-
-## 📌 Descrição das Pastas
-
-- **app/**: Contém toda a lógica da aplicação.
-- **core/**: Serviços globais e configurações essenciais.
-- **shared/**: Componentes reutilizáveis, pipes e diretivas compartilhadas.
-- **features/**: Módulos específicos para cada funcionalidade da aplicação.
-- **assets/**: Contém imagens, fontes e outros arquivos estáticos.
-- **environments/**: Arquivos de configuração para diferentes ambientes (dev, prod, etc.).
-
-## 🚀 Boas Práticas
-
-- **Modularização**: Cada funcionalidade deve estar dentro de um módulo específico em `features/`.
-- **Uso do Core e Shared**:
-  - Serviços globais devem estar em `core/`.
-  - Componentes reutilizáveis devem estar em `shared/`.
-- **Seção de Rotas**: Defina todas as rotas no `app.routes.ts` e use `lazy loading` quando possível.
-
----
-Essa organização mantém o código limpo, modular e fácil de escalar. Qualquer dúvida, entre em contato com a o team leader! 🚀
- 
-
-
-# 📜 Regras de Commit e Pull Request
-
-Este documento define as diretrizes para commits e pull requests (PRs) no projeto para manter um histórico limpo e facilitar a revisão de código. Deve ser seguido com todo rigor
-
-## ✅ Regras para Commits
-
-1. **Escreva mensagens de commit descritivas e no presente**.
-   - ✅ Exemplo correto: `feat: adiciona página de login`
-   - ❌ Exemplo errado: `adicionada página de login`
-
-2. **Use o padrão [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)**:
-   - `feat:` → Nova funcionalidade
-   - `fix:` → Correção de bug
-   - `docs:` → Alteração na documentação
-   - `style:` → Alteração de formatação (espaços, ponto e vírgula, etc.)
-   - `refactor:` → Refatoração sem mudança de comportamento
-   - `test:` → Adição ou alteração de testes
-   - `chore:` → Outras mudanças (ex.: atualização de dependências)
-
-3. **Commits pequenos e atômicos**
-   - Evite commits grandes que misturam múltiplas mudanças.
-   - Se necessário, divida em múltiplos commits menores.
-
-4. **Não comite código temporário ou desnecessário**
-   - Arquivos de log, `console.log`, código comentado ou não utilizado devem ser removidos antes do commit.
-
-5. **Sempre rode os testes antes de um commit**(somente apos a primeira mvp)
-   - Use `npm test` ou `ng test` para garantir que o código não quebrou nada.
-
----
-
-## 🔄 Regras para Pull Requests
-
-1. **Crie um branch específico para cada feature ou correção**
-   - Nomeie o branch de forma descritiva, por exemplo:
-     - `feature/login-page`
-     - `fix/auth-token`
-
-2. **Sempre abra um PR para a branch principal do projeto**
-   - Geralmente, será `main` ou `develop`, conforme definido pelo time.
-
-3. **Descreva claramente o que foi feito no PR**
-   - Explique as mudanças feitas e o motivo.
-   - Se resolver um problema, mencione a issue relacionada (`Resolves #123`).
-
-4. **Peça revisão antes de fazer merge**
-   - Pelo menos um membro da equipe deve aprovar antes do merge.
-   - Responda a sugestões ou dúvidas antes de finalizar.
-
-5. **Evite PRs muito grandes**
-   - Se um PR estiver muito extenso, considere dividir em partes menores.
-
-6. **Após aprovação, faça o merge e delete o branch**
-   - Isso mantém o repositório organizado.
-
----
-
-Seguindo essas diretrizes, garantimos um fluxo de trabalho mais organizado, facilitando a colaboração entre a equipe. 🚀
-
+ │   ├── app.component.ts  # Agora standalone
+ │   ├── app.routes.ts     # Rotas centralizadas
+ ├── 📂 assets/            # Imagens, fontes, etc.
+ ├── 📂 environments/      # Configurações de ambiente
+ ├── main.ts               # Inicialização do app com bootstrapApplication
+ ├── index.html           
+ ├── styles.scss          
+ ├── angular.json         
+ ├── package.json        
+ └── tsconfig.json        
