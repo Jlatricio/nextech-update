@@ -1,0 +1,14 @@
+<div class="choice">
+    <span (click)="setActive('artigo')" [class.active]="activeChoice === 'artigo'">Artigo</span>
+    <span>/</span>
+    <span (click)="setActive('categoria')" [class.active]="activeChoice === 'categoria'">Categoria</span>
+  </div>
+  
+  <div *ngIf="activeChoice === 'artigo'">
+
+  </div>
+  
+  <div *ngIf="activeChoice === 'categoria'">
+
+  </div>
+  

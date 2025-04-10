@@ -1,0 +1,92 @@
+{
+  "cliente": [
+    {
+      "id": "b17d",
+      "nome": "divaldo_miguel",
+      "tipo": "pessoa-juridica",
+      "email": "Divaldo_miguel@hotmail.com",
+      "telefone": 948734357,
+      "endereco": "Divaldo"
+    },
+    {
+      "id": "043d",
+      "nome": "Admin Divaldo",
+      "tipo": "pessoa-juridica",
+      "email": "divaldo@hotmail.com",
+      "telefone": 948723289,
+      "endereco": "Bairro popular"
+    },
+    {
+      "id": "cfcc",
+      "nome": "Admin Divaldo",
+      "tipo": "pessoa-juridica",
+      "email": "divaldo@hotmail.com",
+      "telefone": 948723289,
+      "endereco": "Bairro popular"
+    },
+    {
+      "id": "7b5c",
+      "nome": "",
+      "tipo": "",
+      "email": "",
+      "telefone": "",
+      "endereco": ""
+    },
+    {
+      "id": "a17f",
+      "nome": "",
+      "tipo": "",
+      "email": "",
+      "telefone": "",
+      "endereco": ""
+    },
+    {
+      "id": "7dc7",
+      "nome": "",
+      "tipo": "",
+      "email": "",
+      "telefone": "",
+      "endereco": ""
+    },
+    {
+      "id": "45c8",
+      "nome": "",
+      "tipo": "",
+      "email": "",
+      "telefone": "",
+      "endereco": ""
+    },
+    {
+      "id": "15c2",
+      "nome": "",
+      "tipo": "",
+      "email": "",
+      "telefone": "",
+      "endereco": ""
+    },
+    {
+      "id": "5d9f",
+      "nome": "",
+      "tipo": "",
+      "email": "",
+      "telefone": "",
+      "endereco": ""
+    },
+    {
+      "id": "3924",
+      "nome": "",
+      "tipo": "",
+      "email": "",
+      "telefone": "",
+      "endereco": ""
+    },
+    {
+      "id": "0a36",
+      "nome": "Admin Divaldo",
+      "tipo": "pessoa-fisica",
+      "email": "divaldo@hotmail.com",
+      "telefone": 948723289,
+      "endereco": "Bairro popular"
+    }
+  ]
+}
