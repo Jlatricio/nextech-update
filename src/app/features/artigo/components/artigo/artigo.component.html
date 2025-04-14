@@ -1,0 +1,126 @@
+
+
+<!-- btn artigo botão -->
+<div class="container-fluid">
+<div>
+  <h3>Artigos</h3>
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <i class="bi bi-plus-lg me-2"></i>Novo Artigo
+  </button>
+</div>
+</div>
+<!-- btn artigo botão -->
+
+<!-- tabela de artigos -->
+<main class="table" id="customers_table">
+<section class="table__header">
+  <div class="input-group">
+    <input type="search" placeholder="Procurar artigo" />
+  </div>
+  <div class="pesquisa-categoria"><select name="" id="">
+    <option readonly value="">Pesquisar por Categoria</option>
+  </select></div>
+</section>
+<section class="table__body">
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Imposto</th>
+        <th>Preço Unitário</th>
+        <th>Acção</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let artigo of artigo$ | async">
+        <td>{{ artigo.id }}</td>
+        <td>{{ artigo.nome }}</td>
+        <td>{{ artigo.categoria }}</td>
+        <td>{{ artigo.imposto }}</td>
+        <td>{{ artigo.precoUnitario | currency: 'Kz' }}</td>
+        <td>
+          <button type="button" class="btn btn-danger" (click)="deleteArtigo(artigo.id)">
+            <i class="bi bi-trash"></i>
+          </button>
+          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="populateForm(artigo)">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+          </tr>
+    </tbody>
+  </table>
+</section>
+</main>
+<!-- tabela de artigo -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+
+      <h1 class="modal-title fs-5">Criar artigo</h1>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="mb-3">
+        <input class="form-control" type="file" />
+        <small class="form-text text-muted">Ficheiro menos de 1MB</small>
+      </div>
+
+      <form [formGroup]="form">
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome do artigo</label>
+          <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="categoria" class="form-label">Categoria</label>
+          <input type="text" id="categoria" name="categoria" class="form-control" formControlName="categoria" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="imposto" class="form-label">Imposto</label>
+          <select name="imposto" id="imposto" class="form-select" formControlName="imposto" required>
+            <option value="iva">Imposto sobre o Valor Acrescentado (IVA) – 14%</option>
+            <option value="ii_geral">Imposto Industrial – 25% (taxa geral)</option>
+            <option value="ii_agricola">Imposto Industrial – 10% (atividades agrícolas, aquícolas, apícolas, avícolas, piscatórias, silvícolas e pecuárias)</option>
+            <option value="ii_especial">Imposto Industrial – 35% (bancos, seguros, telecomunicações e empresas petrolíferas)</option>
+            <option value="irt_grupo_a">Imposto sobre o Rendimento do Trabalho (IRT) – Taxas progressivas conforme tabela</option>
+            <option value="irt_grupo_b">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo B, matéria coletável não sujeita a retenção na fonte)</option>
+            <option value="irt_grupo_c">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo C, matéria coletável não sujeita a retenção na fonte)</option>
+            <option value="iac">Imposto sobre a Aplicação de Capitais (IAC) – 10%</option>
+            <option value="ip">Imposto Predial (IP) – 0,5% a 1% (varia conforme o valor do imóvel)</option>
+            <option value="sisa">Sisa – 2% (transmissão onerosa de bens imóveis)</option>
+            <option value="iec">Imposto Especial de Consumo (IEC) – Taxas variáveis conforme o produto</option>
+            <option value="imposto_veiculos">Imposto sobre Veículos Motorizados (IVM) – Taxas variáveis conforme o tipo e cilindrada do veículo</option>
+            <option value="imposto_sucessoes">Imposto sobre Sucessões e Doações – Taxas variáveis conforme o valor e grau de parentesco</option>
+            <option value="imposto_petrolifero">Imposto sobre as Atividades Petrolíferas – Taxas específicas conforme a legislação aplicável</option>
+            <option value="imposto_mineiro">Imposto sobre as Atividades Mineiras – Taxas específicas conforme a legislação aplicável</option>
+            <option value="direitos_aduaneiros">Direitos Aduaneiros – Taxas variáveis conforme o tipo de mercadoria</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="precoUnitario" class="form-label">Preço Unitário</label>
+          <input
+            type="text"
+            id="precoUnitario"
+            formControlName="precoUnitario"
+            class="form-control"
+            mask="separator.2"
+            thousandSeparator="."
+            decimalMarker=","
+            prefix="Kz "
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <button type="submit" class="btn btn-success" (click)="onSubmit()">Salvar</button>
+        </div>
+      </form>
+    </div>
+

@@ -88,5 +88,21 @@
       "telefone": 948723289,
       "endereco": "Bairro popular"
     }
+  ],
+  "artigo": [
+    {
+      "id": "4c40",
+      "nome": "Iphone 16 Pro Max",
+      "categoria": "Telefone",
+      "imposto": "iva",
+      "precoUnitario": 1860000
+    },
+    {
+      "id": "5c3f",
+      "nome": "Iphone 16 Pro Max",
+      "categoria": "Telefone",
+      "imposto": "iva",
+      "precoUnitario": 1860000
+    }
   ]
 }
