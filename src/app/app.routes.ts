@@ -9,6 +9,7 @@ import { ConfiguracaoComponent } from './features/configuracao/configuracao.comp
 import { InicioComponent } from './features/inicio/inicio.component';
 import { ClienteComponent } from './features/clientes/components/cliente/cliente.component';
 import { ArtigoComponent } from './features/artigo/components/artigo/artigo.component';
+import { DespesaComponent } from './features/despesas/components/despesa/despesa.component';
 
 export const routes: Routes = [
   { path: 'inicio', component: InicioComponent },
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'fornecedor', component: FornecedoresComponent },
   { path: 'relatorio', component: RelatoriosComponent },
   { path: 'usuario', component: UsuariosComponent },
+  {path: 'despesa', component: DespesaComponent},
   { path: 'configuracao', component: ConfiguracaoComponent },
   { path: '**', redirectTo: 'inicio' },
 ];

@@ -1,0 +1,210 @@
+$cor-primaria: #2c3e50;
+$cor-borda: #ffffff;
+$cor-fundo-th: #ffffff;
+
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.container-fluid {
+  background-color: #ffffff;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.btn-primary {
+  background-color: #161327;;
+  border:none;
+
+  &:hover {
+    background-color:#161327;;
+    border: none;
+  }
+}
+
+h3 {
+  color: #212529;
+  font-weight: 600;
+}
+
+// tabela do cliente
+
+
+
+@media print {
+.table, .table__body {
+  overflow: visible;
+  height: auto !important;
+  width: auto !important;
+}
+}
+
+
+main.table {
+    width: 80vw;
+    height: 57vh;
+    background-color: rgba(255, 255, 255, 0.333);
+       overflow: hidden;
+}
+
+.table__header {
+    width: 100%;
+    height: 10%;
+    background-color: rgba(255, 255, 255, 0.333);
+    padding: .8rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table_header .input-group {
+    width: 35%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.333);
+    padding: 0 .8rem;
+     display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.table__header .input-group input {
+    width: 90%;
+    padding: 0 .5rem 0 .3rem;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.table__body {
+    width: 95%;
+    max-height: calc(89% - 1.6rem);
+    background-color: #fffb;
+
+    margin: .8rem auto;
+    border-radius: .6rem;
+
+    overflow: auto;
+    overflow: overlay;
+}
+
+
+.table__body::-webkit-scrollbar{
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+.table__body::-webkit-scrollbar-thumb{
+    border-radius: .5rem;
+    background-color: #0004;
+    visibility: hidden;
+}
+
+.table__body:hover::-webkit-scrollbar-thumb{
+    visibility: visible;
+}
+
+
+table {
+    width: 100%;
+}
+
+
+
+table, th, td {
+    border-collapse: collapse;
+    padding: 1rem;
+    text-align: left;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: #9090901d;
+ font-size: 14px;
+    text-transform: capitalize;
+}
+
+tbody td{
+  font-size: 12px;
+  text-transform: capitalize;
+  color: #1e1e1e;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #fcfcfc;
+}
+
+.pesquisa-categoria select {
+
+    padding: 0.5rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+.pesquisa-categoria select:focus {
+    outline: none;
+    border-color: $cor-primaria;
+}
+.pesquisa-categoria select:hover {
+    border-color: $cor-primaria;
+}
+.pesquisa-categoria select option {
+    padding: 0.5rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+
+tbody tr button {
+   width: 50px;
+   margin-right: 1rem;
+   height: 40px;
+}
+
+
+
+
+
+
+@media (max-width: 1000px) {
+    td:not(:first-of-type) {
+        min-width: 12.1rem;
+    }
+}
+
+
+
+
+
+
+
+// modal
+  .modal-body {
+    &::-webkit-scrollbar {
+        width: 6px; // Define a largura da barra de rolagem
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1; // Cor do fundo da barra de rolagem
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #011c3c; // Cor azul Bootstrap
+        border-radius: 10px;
+
+        &:hover {
+            cursor: progress;
+            background: #2c3e50; // Cor quando o usuário passa o mouse
+        }
+    }
+  }

@@ -10,7 +10,7 @@ import { Router, RouterModule} from '@angular/router';
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  
+
   constructor(private router: Router) {}
 
   menus: { route: string; name: string; icon: string; activeIcon: string }[] = [
@@ -25,6 +25,18 @@ export class SidebarComponent {
       name: 'Artigo',
       icon: 'bi bi-grid-3x3-gap-fill',
       activeIcon: 'bi bi-grid-3x3-gap-fill',
+    },
+    {
+      route: '/despesa',
+      name: 'Despesas',
+      icon: 'bi bi-wallet2',
+      activeIcon: 'bi bi-wallet2',
+    },
+    {
+      route: '/movimentacao',
+      name: 'Movimentação',
+      icon: 'bi bi-arrow-left-right',
+      activeIcon: 'bi bi-arrow-left-right',
     },
     {
       route: '/cliente',

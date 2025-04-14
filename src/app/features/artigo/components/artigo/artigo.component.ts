@@ -19,13 +19,13 @@ export class ArtigoComponent implements OnInit {
   artigo$: Observable<Artigo[]>;
   form: FormGroup;
   populateForm(artigo: any): void {
-    this.form.patchValue({
-      nome: artigo.nome,
-      categoria: artigo.categoria,
-      imposto: artigo.imposto,
-      precoUnitario: artigo.precoUnitario
-    });
-  }
+  this.form.patchValue({
+    nome: artigo.nome,
+    categoria: artigo.categoria,
+    imposto: artigo.imposto,
+    precoUnitario: artigo.precoUnitario
+  });
+}
 
   constructor(private formBuilder: FormBuilder, private artigoService: ArtigoService) {
     this.artigo$ = this.artigoService.listaArtigos();

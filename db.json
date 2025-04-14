@@ -98,11 +98,33 @@
       "precoUnitario": 1860000
     },
     {
-      "id": "5c3f",
+      "id": "f203",
       "nome": "Iphone 16 Pro Max",
       "categoria": "Telefone",
       "imposto": "iva",
       "precoUnitario": 1860000
+    }
+  ],
+  "despesa": [
+    {
+      "id": "9a5d",
+      "nome": "teste2",
+      "fornecedor": "unitel",
+      "motivo": "Compradeproduto",
+      "criadopor": "Admin",
+      "data": "2025-04-14T18:33:36.642Z",
+      "rtnc": "sim",
+      "valor": 341111
+    },
+    {
+      "id": "2c6a",
+      "nome": "teste2",
+      "fornecedor": "unitel",
+      "motivo": "Compradeproduto",
+      "criadopor": "Admin",
+      "data": "2025-04-14T18:34:26.859Z",
+      "rtnc": "sim",
+      "valor": 341111
     }
   ]
 }

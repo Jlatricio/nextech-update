@@ -1,0 +1,135 @@
+
+
+<!-- btn artigo botão -->
+<div class="container-fluid">
+  <div>
+    <h3>Despesa</h3>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      <i class="bi bi-plus-lg me-2"></i>Nova despesa
+    </button>
+  </div>
+  </div>
+  <!-- btn artigo botão -->
+
+  <!-- tabela de artigos -->
+  <main class="table" id="customers_table">
+  <section class="table__header">
+    <div class="input-group">
+      <input type="search" placeholder="Procurar despesa" />
+    </div>
+    <div class="pesquisa-categoria"><select name="" id="">
+      <option readonly value="">Fornecedor</option>
+    </select></div>
+  </section>
+  <section class="table__body">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>Entidade</th>
+          <th>criado por</th>
+          <th>Data</th>
+          <th>Valor</th>
+          <th>Documento</th>
+          <th>Acção</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let despesa of despesa$ | async">
+        <td>{{ despesa.id }}</td>
+        <td>{{ despesa.fornecedor }}</td>
+        <td>{{ despesa.criadopor }}</td>
+        <td>{{ despesa.data | date:'short' }}</td>    <td>{{ despesa.valor }}</td>
+        <td>{{despesa.documento}}</td>
+
+
+          <td>
+            <button type="button" class="btn btn-danger" (click)="deleteArtigo(despesa.id)">
+              <i class="bi bi-trash"></i>
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="populateForm(despesa)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            </tr>
+      </tbody>
+    </table>
+  </section>
+  </main>
+  <!-- tabela de artigo -->
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h1 class="modal-title fs-5">Criar despesa</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <input class="form-control" type="file" />
+          <small class="form-text text-muted">Ficheiro menos de 1MB</small>
+        </div>
+
+        <form [formGroup]="form">
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
+          </div>
+
+
+
+          <div class="mb-3">
+            <label for="fornecedor" class="form-label">Fornecedor</label>
+            <select name="fornecedor" id="fornecedor" class="form-select" formControlName="fornecedor" required>
+              <option value="iva">Selecione o fornecedor</option>
+              <option value="unitel">Unitel</option>
+            </select>
+          </div>
+
+
+          <div class="mb-3">
+            <label for="motivo" class="form-label">Motivo</label>
+            <select name="motivo" id="motivo" class="form-select" formControlName="motivo" required>
+              <option value="Compradeproduto">Compra de Produto</option>
+              <option value="CompradeServicos">Compra de Serviços</option>
+              <option value="Outros">Outros</option>
+
+            </select>
+          </div>
+
+   
+
+          <div class="mb-3">
+            <label for="rtnc" class="form-label">Retenção na fonte</label>
+            <select name="rtnc" id="rtnc" class="form-select" formControlName="rtnc" required>
+              <option value="sim">Sim</option>
+              <option value="nao">Não</option>
+            </select>
+          </div>
+
+
+
+          <div class="mb-3">
+            <label for="valor" class="form-label">Valor</label>
+            <input
+              type="text"
+              id="valor"
+              formControlName="valor"
+              class="form-control"
+              mask="separator.2"
+              thousandSeparator="."
+              decimalMarker=","
+              prefix="Kz "
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <button type="submit" class="btn btn-success" (click)="onSubmit()">Salvar</button>
+          </div>
+        </form>
+      </div>
+
