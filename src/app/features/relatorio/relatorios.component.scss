@@ -1,0 +1,82 @@
+.dashboard-section {
+  background: #fff;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h3 {
+      font-size: 20px;
+      color: #274460;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      label {
+        font-size: 14px;
+        color: #555;
+      }
+
+      select {
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        background: #f9f9f9;
+      }
+    }
+
+    .btn-print {
+      background-color: #1d3557;
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      &:hover {
+        background-color: #16324a;
+      }
+    }
+  }
+
+  .cards-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+
+    .card.small {
+      flex: 1;
+      min-width: 180px;
+      background: #f8f9fa;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      text-align: center;
+
+      h4 {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 6px;
+      }
+
+      .valor {
+        font-size: 16px;
+        font-weight: bold;
+        color: #1d3557;
+      }
+    }
+  }
+
+  .grafico-container {
+    margin-top: 20px;
+    canvas {
+      max-width: 100%;
+    }
+  }
+}

@@ -9,7 +9,7 @@ $cor-fundo-th: #ffffff;
 }
 
 .container-fluid {
-  background-color: #ffffff;
+  background-color: #fffffffe;
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 1.5rem;
@@ -17,17 +17,20 @@ $cor-fundo-th: #ffffff;
 }
 
 .btn-primary {
-  background-color: #161327;;
+  background-color: #1d3557;
   border:none;
+  font-size: 14px;
+  padding: 1rem;
 
   &:hover {
-    background-color:#161327;;
+    background-color: #16324a;
     border: none;
   }
 }
 
 h3 {
-  color: #212529;
+  font-size: 1rem;
+  color: #3b3b3b;
   font-weight: 600;
 }
 
@@ -265,3 +268,6 @@ tbody tr button {
     }
   }
   }
+
+
+  

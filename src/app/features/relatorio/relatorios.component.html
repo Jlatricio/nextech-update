@@ -1,0 +1,71 @@
+<!-- Evolução das Vendas -->
+<div class="dashboard-section">
+  <div class="section-header">
+    <h3>Evolução das Vendas</h3>
+    <button class="btn-print">Imprimir Extrato Mensal</button>
+  </div>
+
+  <div class="cards-row">
+    <div class="card small">
+      <h4>Facturado</h4>
+      <span class="valor">KZ 0,00</span>
+    </div>
+    <div class="card small">
+      <h4>Recibos</h4>
+      <span class="valor">KZ 0,00</span>
+    </div>
+    <div class="card small">
+      <h4>Total de Proformas</h4>
+      <span class="valor">KZ 0,00</span>
+    </div>
+  </div>
+
+  <div class="grafico-container">
+    <canvas baseChart
+      [data]="{ labels: vendasLabels, datasets: vendasData }"
+      [options]="graficoOptions"
+      [type]="'line'">
+    </canvas>
+  </div>
+</div>
+
+<!-- Evolução das Despesas -->
+<div class="dashboard-section">
+  <div class="section-header">
+    <h3>Evolução das Despesas</h3>
+    <div class="actions">
+      <label for="mes">Mês</label>
+      <select id="mes" [(ngModel)]="mesSelecionado">
+        <option *ngFor="let mes of meses" [value]="mes">{{ mes }}</option>
+      </select>
+      <button class="btn-print">Imprimir</button>
+    </div>
+  </div>
+
+  <div class="cards-row">
+    <div class="card small">
+      <h4>Despesas Totais</h4>
+      <span class="valor">KZ 0,00</span>
+    </div>
+    <div class="card small">
+      <h4>Total de Fornecedores</h4>
+      <span class="valor">0</span>
+    </div>
+    <div class="card small">
+      <h4>Total de Clientes</h4>
+      <span class="valor">0</span>
+    </div>
+    <div class="card small">
+      <h4>Novos Clientes (5 dias)</h4>
+      <span class="valor">0</span>
+    </div>
+  </div>
+
+  <div class="grafico-container">
+    <canvas baseChart
+      [data]="{ labels: despesasLabels, datasets: despesasData }"
+      [options]="graficoOptions"
+      [type]="'bar'">
+    </canvas>
+  </div>
+</div>

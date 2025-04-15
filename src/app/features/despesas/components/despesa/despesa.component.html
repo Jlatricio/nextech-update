@@ -43,13 +43,14 @@
         <td>{{despesa.documento}}</td>
 
 
-          <td>
-            <button type="button" class="btn btn-danger" (click)="deleteArtigo(despesa.id)">
-              <i class="bi bi-trash"></i>
-            </button>
-            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="populateForm(despesa)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
+        <td>
+          <button type="button" class="" (click)="deleteArtigo(despesa.id)">
+            <i class="bi bi-trash"></i> Deletar
+          </button>
+          <button type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="populateForm(despesa)">
+            <i class="bi bi-pencil-square"></i> Editar
+          </button>
+        </td>
             </tr>
       </tbody>
     </table>
@@ -100,7 +101,7 @@
             </select>
           </div>
 
-   
+
 
           <div class="mb-3">
             <label for="rtnc" class="form-label">Retenção na fonte</label>
