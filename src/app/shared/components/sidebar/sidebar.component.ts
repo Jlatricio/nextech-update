@@ -32,12 +32,7 @@ export class SidebarComponent {
       icon: 'bi bi-wallet2',
       activeIcon: 'bi bi-wallet2',
     },
-    {
-      route: '/movimentacao',
-      name: 'Movimentação',
-      icon: 'bi bi-arrow-left-right',
-      activeIcon: 'bi bi-arrow-left-right',
-    },
+   
     {
       route: '/cliente',
       name: 'Cliente',
