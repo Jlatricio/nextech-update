@@ -115,14 +115,12 @@ export class ArtigoComponent implements OnInit {
 
 
   filtro = {
-    ano: '',
+    Categorias: '',
     mes: '',
     tipo: ''
   };
 
-  anos = [2025, 2024, 2023];
-  meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  tipos = ['Receita', 'Despesa', 'Reembolso'];
+  Categorias = ['Serviço','Produto'];
 
   filtrar() {
     console.log('Filtro aplicado:', this.filtro);

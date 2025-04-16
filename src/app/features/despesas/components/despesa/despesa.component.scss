@@ -9,28 +9,34 @@ $cor-fundo-th: #ffffff;
 }
 
 .container-fluid {
-  background-color: #ffffff;
+  background-color: #fffffffe;
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 1.5rem;
   padding: 1.5rem;
-}
 
-.btn-primary {
-  background-color: #161327;;
+
+button {
+  border: none;
+  background-color: #1d3557;
   border:none;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 2px;
+  padding: 0.7rem;
 
   &:hover {
-    background-color:#161327;;
+    background-color: #16324a;
     border: none;
   }
 }
 
 h3 {
-  color: #212529;
+  font-size: 1rem;
+  color: #3b3b3b;
   font-weight: 600;
 }
-
+}
 // tabela do cliente
 
 
@@ -49,7 +55,7 @@ main.table {
   height: 57vh;
   background-color: rgba(255, 255, 255, 0.333);
      overflow: hidden;
-}
+
 
 .table__header {
 width: 100%;
@@ -195,4 +201,80 @@ tr:nth-child(odd) {
     }
   }
   }
+}
 
+
+
+.filtros-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: #fcfcfc;
+  padding: 10px 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+
+.search-group {
+  display: flex;
+  align-items: center;
+  background: #fdfdfd;
+  padding: 3px 10px;
+  border-radius: 8px;
+
+  i {
+    font-size: 16px;
+    color: #6c757d;
+    margin-right: 6px;
+  }
+
+  .search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    width: 180px;
+  }
+}
+
+.filtros-selects {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  .filtro-item {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-size: 13px;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+
+    select {
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #f8f9fa;
+    }
+  }
+
+  .btn-filtrar {
+    background-color: #1d3557;
+    color: #fff;
+    padding: 8px 14px;
+    font-size: 13px;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+    margin-top: 22px;
+
+    &:hover {
+      background-color: #16324a;
+    }
+  }
+}
+}

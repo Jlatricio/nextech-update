@@ -13,14 +13,31 @@
 
   <!-- tabela de artigos -->
   <main class="table" id="customers_table">
-  <section class="table__header">
-    <div class="input-group">
-      <input type="search" placeholder="Procurar despesa" />
+    <div class="filtros-container">
+      <div class="search-group">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Pesquisar..."
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+
+      <div class="filtros-selects">
+        <div class="filtro-item">
+          <label for="mes">Categoria</label>
+          <select id="mes" [(ngModel)]="filtro.mes">
+            <option value="">Todos</option>
+            <option *ngFor="let categoria of Categorias" [value]="categoria">{{ categoria }}</option>
+          </select>
+        </div>
+
+
+
+        <button class="btn-filtrar" (click)="filtrar()">Filtrar</button>
+      </div>
     </div>
-    <div class="pesquisa-categoria"><select name="" id="">
-      <option readonly value="">Fornecedor</option>
-    </select></div>
-  </section>
   <section class="table__body">
     <table>
       <thead>

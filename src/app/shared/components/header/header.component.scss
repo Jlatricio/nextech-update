@@ -6,7 +6,7 @@ header {
   grid-template-columns: 1fr auto;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: #fcfcfc;
   padding: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
 
@@ -18,13 +18,10 @@ header {
   }
 
   .btn-primary {
-    background-color: #0a0c0e;
+    background-color: #ffffff;
     border: none;
     padding: 0.5rem 1rem;
-
-    &:hover {
-      background-color: #0b5ed7;
-      border-color: #0a58ca;
-    }
+    color: #1d3557;
+    font-weight: 600;
   }
 }
