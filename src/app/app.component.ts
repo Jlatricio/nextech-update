@@ -20,7 +20,7 @@ export class AppComponent {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         const rotaAtual = event.url;
-        this.mostrarLayout = rotaAtual !== '/login'; // esconde se for /login
+        this.mostrarLayout = rotaAtual !== '/login', '/criar-conta';
       });
   }
 }

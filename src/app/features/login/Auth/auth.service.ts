@@ -6,11 +6,11 @@ import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = environment.apiUrl.replace('', ''); 
+  private apiUrl = environment.apiUrl.replace('', '');
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(credentials: { email: string; senha: string }) {
+  login(email: string, senha: string, credentials: { email: string; senha: string; }) {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         localStorage.setItem('token', response.token);
