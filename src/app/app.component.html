@@ -1,4 +1,4 @@
-<div class="body">
+<div *ngIf="mostrarLayout" class="body">
   <div class="header">
     <app-header></app-header>
     <div class="content">
@@ -11,3 +11,6 @@
     </div>
   </div>
 </div>
+
+<!-- Se não mostrar layout, ainda precisa do router-outlet para login -->
+<router-outlet *ngIf="!mostrarLayout"></router-outlet>

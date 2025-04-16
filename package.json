@@ -22,12 +22,16 @@
     "@angular/router": "^19.2.0",
     "@angular/ssr": "^19.2.5",
     "@primeng/themes": "^19.0.10",
+    "body-parser": "^2.2.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.9",
-    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
     "json": "^11.0.0",
     "json-server": "^1.0.0-beta.3",
+    "mysql2": "^3.14.0",
     "ng2-charts": "^4.1.1",
     "ngx-bootstrap": "^19.0.2",
     "ngx-mask": "^19.0.6",
@@ -54,5 +58,18 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.7.2"
-  }
+  },
+  "description": "This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/A-Machado28/Nextech-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/A-Machado28/Nextech-frontend/issues"
+  },
+  "homepage": "https://github.com/A-Machado28/Nextech-frontend#readme"
 }

@@ -1,0 +1,38 @@
+<div class="login-container">
+  <div class="login-card">
+    <img src="assets/logo.png" alt="Logo Nextech" class="logo" />
+    <p>Faça login para acessar o sistema</p>
+
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          [(ngModel)]="email"
+          placeholder="Digite seu email" />
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input
+          type="password"
+          id="senha"
+          name="senha"
+          required
+          [(ngModel)]="senha"
+          placeholder="Digite sua senha" />
+      </div>
+
+      <button class="btn-login" [disabled]="!loginForm.form.valid">
+        Entrar
+      </button>
+    </form>
+
+    <div class="footer-login">
+      <small>© 2025 Nextech. Todos os direitos reservados.</small>
+    </div>
+  </div>
+</div>
