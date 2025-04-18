@@ -3,10 +3,7 @@ $cor-borda: #ffffff;
 $cor-fundo-th: #ffffff;
 
 
-:host {
-  display: block;
-  height: 100%;
-}
+
 
 .container-fluid {
   background-color: #fffffffe;
@@ -17,18 +14,19 @@ $cor-fundo-th: #ffffff;
 
 
 button {
-  border: none;
-  background-color: #1d3557;
-  border:none;
-  font-size: 12px;
-  color: #fff;
-  border-radius: 2px;
-  padding: 0.7rem;
-
-  &:hover {
-    background-color: #16324a;
     border: none;
-  }
+    background-color: #1d3557;
+    border:none;
+    font-weight: bold;
+  font-size: 0.6rem;
+    color: #fff;
+    border-radius: 2px;
+    padding: 0.7rem;
+
+    &:hover {
+      background-color: #16324a;
+      border: none;
+    }
 }
 
 h3 {
@@ -37,24 +35,14 @@ h3 {
   font-weight: 600;
 }
 }
-// tabela do cliente
 
 
-
-@media print {
-.table, .table__body {
-  overflow: visible;
-  height: auto !important;
-  width: auto !important;
-}
-}
 
 
 main.table {
     width: 80vw;
     height: 57vh;
     background-color: rgba(255, 255, 255, 0.333);
-       overflow: hidden;
 
 
 .table__header {
@@ -90,9 +78,40 @@ main.table {
   max-height: calc(89% - 1.6rem);
   background-color: #fffb;
   margin: .8rem auto;
-  overflow: auto;
-  overflow: overlay;
 }
+.btn-categoria {
+  background-color: #f4a261;
+  color: #1d3557;
+  padding: 0.3rem 0.5rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 0.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: darken(#f4a261, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  i {
+    background-color: transparent;
+    color: #1d3557;
+    font-size: 1.2rem;
+    font-weight: 700;
+    pointer-events: none; // previne clique no ícone
+  }
+}
+
 
 .table__body::-webkit-scrollbar {
   width: 0.5rem;
@@ -234,6 +253,7 @@ tbody tr button {
 
   .table__body{
 
+
   button {
     display: inline-flex;
     align-items: center;
@@ -310,8 +330,10 @@ tbody tr button {
 }
 
 .filtros-selects {
+
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
 

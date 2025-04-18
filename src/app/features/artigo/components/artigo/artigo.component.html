@@ -1,6 +1,8 @@
 
 
-<!-- btn artigo botão -->
+<!-- btn artig o botão -->
+
+
 <div class="container-fluid">
 <div>
   <h3>Artigos</h3>
@@ -13,7 +15,7 @@
 
 <!-- tabela de artigos -->
 <main class="table" id="customers_table">
-  <div class="filtros-container">
+ <div class="filtros-container">
     <div class="search-group">
       <i class="bi bi-search"></i>
       <input
@@ -24,7 +26,16 @@
       />
     </div>
 
+<!-- btn Categoria -->
+    <!-- <button type="button" class="btn-categoria" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+      <i class="bi bi-plus-circle"></i> Adicionar Categoria
+    </button> -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+      Launch static backdrop modal
+    </button>
+
     <div class="filtros-selects">
+
       <div class="filtro-item">
         <label for="mes">Categoria</label>
         <select id="mes" [(ngModel)]="filtro.mes">
@@ -32,8 +43,6 @@
           <option *ngFor="let categoria of Categorias" [value]="categoria">{{ categoria }}</option>
         </select>
       </div>
-
-
 
       <button class="btn-filtrar" (click)="filtrar()">Filtrar</button>
     </div>
@@ -143,3 +152,29 @@
       </form>
     </div>
 
+    <!-- Categoria Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Criar Categoria</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="form">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome da categoria</label>
+                <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required/>
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Referência (Exemplo: RDT)</label>
+              </div>
+
+              <div class="mb-3">
+                <button type="submit" class="btn btn-success"(click)="onSubmit()">Salvar</button>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>

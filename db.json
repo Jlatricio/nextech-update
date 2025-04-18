@@ -23,70 +23,6 @@
       "email": "divaldo@hotmail.com",
       "telefone": 948723289,
       "endereco": "Bairro popular"
-    },
-    {
-      "id": "7b5c",
-      "nome": "",
-      "tipo": "",
-      "email": "",
-      "telefone": "",
-      "endereco": ""
-    },
-    {
-      "id": "a17f",
-      "nome": "",
-      "tipo": "",
-      "email": "",
-      "telefone": "",
-      "endereco": ""
-    },
-    {
-      "id": "7dc7",
-      "nome": "",
-      "tipo": "",
-      "email": "",
-      "telefone": "",
-      "endereco": ""
-    },
-    {
-      "id": "45c8",
-      "nome": "",
-      "tipo": "",
-      "email": "",
-      "telefone": "",
-      "endereco": ""
-    },
-    {
-      "id": "15c2",
-      "nome": "",
-      "tipo": "",
-      "email": "",
-      "telefone": "",
-      "endereco": ""
-    },
-    {
-      "id": "5d9f",
-      "nome": "",
-      "tipo": "",
-      "email": "",
-      "telefone": "",
-      "endereco": ""
-    },
-    {
-      "id": "3924",
-      "nome": "",
-      "tipo": "",
-      "email": "",
-      "telefone": "",
-      "endereco": ""
-    },
-    {
-      "id": "0a36",
-      "nome": "Admin Divaldo",
-      "tipo": "pessoa-fisica",
-      "email": "divaldo@hotmail.com",
-      "telefone": 948723289,
-      "endereco": "Bairro popular"
     }
   ],
   "artigo": [
@@ -103,6 +39,27 @@
       "categoria": "Telefone",
       "imposto": "iva",
       "precoUnitario": 1860000
+    },
+    {
+      "id": "0934",
+      "nome": "teste2",
+      "categoria": "d",
+      "imposto": "direitos_aduaneiros",
+      "precoUnitario": 3333
+    },
+    {
+      "id": "048c",
+      "nome": "kkoioi",
+      "categoria": "kjjj",
+      "imposto": "iec",
+      "precoUnitario": 9999988
+    },
+    {
+      "id": "1456",
+      "nome": "teste2",
+      "categoria": "oooio",
+      "imposto": "sisa",
+      "precoUnitario": 9999988
     }
   ],
   "despesa": [

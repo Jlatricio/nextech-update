@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
 import { TitleService } from '../../core/services/title.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-relatorios',
@@ -13,7 +14,9 @@ import { TitleService } from '../../core/services/title.service';
   imports: [
     CommonModule,
     FormsModule,
-    NgChartsModule
+    NgChartsModule,
+    RouterModule
+
   ]
 })
 export class RelatoriosComponent {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component} from '@angular/core';
-import { Router, RouterModule} from '@angular/router';
+import { ActivatedRoute, Router, RouterModule} from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,7 +11,7 @@ import { Router, RouterModule} from '@angular/router';
 })
 export class SidebarComponent {
 
-  constructor(private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   menus: { route: string; name: string; icon: string; activeIcon: string }[] = [
     {

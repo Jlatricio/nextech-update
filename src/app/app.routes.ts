@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { FacturaComponent } from './features/documento/components/factura/factura.component';
 
 export const routes: Routes = [
   {
@@ -19,24 +20,37 @@ export const routes: Routes = [
   },
   {
     path: 'documento',
-    loadComponent: () => import('./features/documento/documentos.component').then(m => m.DocumentosComponent)
+    loadComponent: () => import('./features/documento/components/documento/documento.component').then(m => m.DocumentosComponent)
   },
   {
-    path: 'fornecedor',
-    loadComponent: () => import('./features/fornecedor/fornecedores.component').then(m => m.FornecedoresComponent)
+    path: 'factura',
+    loadComponent: () => import('./features/documento/components/factura/factura.component').then(m => m.FacturaComponent)
   },
+  {
+    path: 'proforma',
+    loadComponent: () => import('./features/documento/components/proforma/proforma.component').then(m => m.ProformaComponent)
+  },
+  {
+    path: 'factura-recibo',
+    loadComponent: () => import('./features/documento/components/fatura-recibo/fatura-recibo.component').then(m => m.FaturaReciboComponent)
+  },
+
   {
     path: 'relatorio',
     loadComponent: () => import('./features/relatorio/relatorios.component').then(m => m.RelatoriosComponent)
   },
   {
     path: 'usuario',
-    loadComponent: () => import('./features/usuario/usuarios.component').then(m => m.UsuariosComponent)
+    loadComponent: () => import('./features/usuario/components/usuario/usuario.component').then(m => m.UsuariosComponent)
   },
   {
     path: 'despesa',
     loadComponent: () => import('./features/despesas/components/despesa/despesa.component').then(m => m.DespesaComponent)
   },
+  {
+    path: 'fornecedor',
+    loadComponent: () => import('./features/fornecedor/component/fornecedor/fornecedor.component').then(m => m.FornecedoresComponent)
+   },
   {
     path: 'configuracao',
     loadComponent: () => import('./features/configuracao/configuracao.component').then(m => m.ConfiguracaoComponent)

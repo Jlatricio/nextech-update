@@ -8,11 +8,12 @@ import { Modal } from 'bootstrap';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { TitleService } from '../../../../core/services/title.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-artigo',
   standalone: true,
-  imports: [NgxMaskDirective, ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [NgxMaskDirective, ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
   providers: [provideNgxMask()],
   templateUrl: './artigo.component.html',
   styleUrls: ['./artigo.component.scss'] // Fixed typo

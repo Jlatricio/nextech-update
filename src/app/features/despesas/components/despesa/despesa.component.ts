@@ -9,10 +9,11 @@ import { DespesaService } from '../../service/despesa.service';
 import { Despesa } from '../../interface/despesa';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TitleService } from '../../../../core/services/title.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-despesa',
-  imports: [NgxMaskDirective,ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [NgxMaskDirective,ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
    providers: [provideNgxMask()],
   templateUrl: './despesa.component.html',
   styleUrl: './despesa.component.scss'

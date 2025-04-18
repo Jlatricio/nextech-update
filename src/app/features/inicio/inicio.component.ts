@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TitleService } from '../../core/services/title.service';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.scss',
 })
@@ -17,7 +18,7 @@ export class InicioComponent {
   ngOnInit(): void {
     this.titleService.setTitle('Dashboard');
   }
-  
+
   cards = [
     {
       title: 'Facturado',
