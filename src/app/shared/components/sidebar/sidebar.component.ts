@@ -22,7 +22,7 @@ export class SidebarComponent {
     },
     {
       route: '/artigo',
-      name: 'Artigo',
+      name: 'Artigos',
       icon: 'bi bi-grid-3x3-gap-fill',
       activeIcon: 'bi bi-grid-3x3-gap-fill',
     },
@@ -32,28 +32,28 @@ export class SidebarComponent {
       icon: 'bi bi-wallet2',
       activeIcon: 'bi bi-wallet2',
     },
-   
+
     {
       route: '/cliente',
-      name: 'Cliente',
+      name: 'Clientes',
       icon: 'bi bi-people',
       activeIcon: 'bi bi-people',
     },
     {
       route: '/documento',
-      name: 'Documento',
+      name: 'Documentos',
       icon: 'bi bi-file-text-fill',
       activeIcon: 'bi bi-file-text-fill',
     },
     {
       route: '/fornecedor',
-      name: 'Fornecedor',
+      name: 'Fornecedores',
       icon: 'bi bi-truck',
       activeIcon: 'bi bi-truck',
     },
     {
       route: '/relatorio',
-      name: 'Relatório',
+      name: 'Relatórios',
       icon: 'bi bi-bar-chart-line',
       activeIcon: 'bi bi-bar-chart-line',
     },
@@ -65,7 +65,7 @@ export class SidebarComponent {
     },
     {
       route: '/configuracao',
-      name: 'Configuração',
+      name: 'Configurações',
       icon: 'bi bi-gear-fill',
       activeIcon: 'bi bi-gear-fill',
     },

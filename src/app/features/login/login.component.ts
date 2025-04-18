@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './Auth/auth.service';
 import { Router } from '@angular/router';
+import { TitleService } from '../../core/services/title.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,11 @@ export class LoginComponent {
   email: string = '';
   senha: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router,  private titleService: TitleService) {}
+  ngOnInit(): void {
+    this.titleService.setTitle('Login');
+  }
+
 
   login() {
     this.authService.login(this.email, this.senha, { email: this.email, senha: this.senha }).subscribe(
@@ -47,4 +52,7 @@ ngAfterViewInit() {
     });
   }
 }
+
+
+
 }

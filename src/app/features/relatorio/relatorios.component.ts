@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
+import { TitleService } from '../../core/services/title.service';
 
 @Component({
   selector: 'app-relatorios',
@@ -16,6 +17,10 @@ import { ChartConfiguration } from 'chart.js';
   ]
 })
 export class RelatoriosComponent {
+  constructor(private titleService: TitleService){}
+  ngOnInit(): void {
+    this.titleService.setTitle('Relatórios');
+  }
   mesSelecionado = 'Jan';
   meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'];
 

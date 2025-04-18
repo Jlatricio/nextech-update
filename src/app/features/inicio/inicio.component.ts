@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TitleService } from '../../core/services/title.service';
+
 
 @Component({
   selector: 'app-inicio',
@@ -10,6 +12,12 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './inicio.component.scss',
 })
 export class InicioComponent {
+  constructor(private titleService: TitleService) {}
+
+  ngOnInit(): void {
+    this.titleService.setTitle('Dashboard');
+  }
+  
   cards = [
     {
       title: 'Facturado',

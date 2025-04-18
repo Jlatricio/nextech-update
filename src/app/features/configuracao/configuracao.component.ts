@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TitleService } from '../../core/services/title.service';
 
 
 @Component({
@@ -11,6 +12,23 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './configuracao.component.scss',
 })
 export class ConfiguracaoComponent {
+constructor(private titleService: TitleService){}
+ngOnInit(): void {
+  this.titleService.setTitle('Configurações');
+}
+
+
+  dadosEmpresa = {
+    nome: 'Nextech Lda',
+    nif: '999999999',
+    endereco: 'Luanda - Angola',
+    regimeIva: 'Regime Geral',
+    telefone: '923000000',
+    email: 'contato@nextech.com',
+    logoUrl: 'assets/logo.png'
+  };
+
+
 onFileSelected($event: Event) {
 throw new Error('Method not implemented.');
 }

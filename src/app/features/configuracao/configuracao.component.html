@@ -13,7 +13,7 @@
     </nav>
 
     <section [ngSwitch]="aba" class="container-card">
-      <div *ngSwitchCase="'configuracao'">
+      <div *ngSwitchCase="'configuracao'" class="configuracao-container">
         <form class="form-container" (ngSubmit)="onSubmit()" #form="ngForm">
 
           <!-- Logotipo -->
@@ -72,7 +72,38 @@
           <button type="submit">Salvar</button>
         </form>
 
-      </div>
+          <div class="dados-atuais">
+            <h3>Dados atuais</h3>
+            <div class="dado">
+              <strong>Nome:</strong>
+              <span>{{ dadosEmpresa.nome }}</span>
+            </div>
+            <div class="dado">
+              <strong>NIF:</strong>
+              <span>{{ dadosEmpresa.nif }}</span>
+            </div>
+            <div class="dado">
+              <strong>Endereço:</strong>
+              <span>{{ dadosEmpresa.endereco }}</span>
+            </div>
+            <div class="dado">
+              <strong>Regime IVA:</strong>
+              <span>{{ dadosEmpresa.regimeIva }}</span>
+            </div>
+            <div class="dado">
+              <strong>Telefone:</strong>
+              <span>{{ dadosEmpresa.telefone }}</span>
+            </div>
+            <div class="dado">
+              <strong>Email:</strong>
+              <span>{{ dadosEmpresa.email }}</span>
+            </div>
+          </div>
+
+        </div>
+
+
+
 
       <div *ngSwitchCase="'subscribe'">
         <div class="subscription-container">

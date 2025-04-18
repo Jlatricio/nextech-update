@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 import { ArtigoService } from '../../service/artigo.service';
 import { Modal } from 'bootstrap';
 import { CommonModule } from '@angular/common';
+import { Title } from '@angular/platform-browser';
+import { TitleService } from '../../../../core/services/title.service';
 
 @Component({
   selector: 'app-artigo',
@@ -16,6 +18,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./artigo.component.scss'] // Fixed typo
 })
 export class ArtigoComponent implements OnInit {
+
   artigo$: Observable<Artigo[]>;
   form: FormGroup;
   populateForm(artigo: any): void {
@@ -27,7 +30,7 @@ export class ArtigoComponent implements OnInit {
   });
 }
 
-  constructor(private formBuilder: FormBuilder, private artigoService: ArtigoService) {
+  constructor(private formBuilder: FormBuilder, private artigoService: ArtigoService, private titleService: TitleService) {
     this.artigo$ = this.artigoService.listaArtigos();
 
     this.form = this.formBuilder.group({
@@ -38,7 +41,11 @@ export class ArtigoComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.titleService.setTitle('Artigos');
+  }
+
+
 
   onSubmit() {
     if (this.form.valid) {
@@ -136,5 +143,8 @@ filteredCards() {
     card.title.toLowerCase().includes(this.searchTerm.toLowerCase())
   );
 }
+
+
+
 
 }

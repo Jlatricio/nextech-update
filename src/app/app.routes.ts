@@ -1,29 +1,48 @@
 import { Routes } from '@angular/router';
 
-import { UsuariosComponent } from './features/usuario/usuarios.component';
-import { FornecedoresComponent } from './features/fornecedor/fornecedores.component';
-import { DocumentosComponent } from './features/documento/documentos.component';
-import { RelatoriosComponent } from './features/relatorio/relatorios.component';
-import { ConfiguracaoComponent } from './features/configuracao/configuracao.component';
-
-import { InicioComponent } from './features/inicio/inicio.component';
-import { ClienteComponent } from './features/clientes/components/cliente/cliente.component';
-import { ArtigoComponent } from './features/artigo/components/artigo/artigo.component';
-import { DespesaComponent } from './features/despesas/components/despesa/despesa.component';
-import { LoginComponent } from './features/login/login.component';
-import { CriarContaComponent } from './features/criar-conta/criar-conta.component';
-
 export const routes: Routes = [
-  { path: 'criar-conta', component: CriarContaComponent},
-  { path: 'login', component: LoginComponent },
-  { path: 'inicio', component: InicioComponent },
-  { path: 'artigo', component: ArtigoComponent },
-  { path: 'cliente', component: ClienteComponent },
-  { path: 'documento', component: DocumentosComponent },
-  { path: 'fornecedor', component: FornecedoresComponent },
-  { path: 'relatorio', component: RelatoriosComponent },
-  { path: 'usuario', component: UsuariosComponent },
-  {path: 'despesa', component: DespesaComponent},
-  { path: 'configuracao', component: ConfiguracaoComponent },
-  { path: '**', redirectTo: 'inicio' },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'inicio',
+    loadComponent: () => import('./features/inicio/inicio.component').then(m => m.InicioComponent)
+  },
+  {
+    path: 'artigo',
+    loadComponent: () => import('./features/artigo/components/artigo/artigo.component').then(m => m.ArtigoComponent)
+  },
+  {
+    path: 'cliente',
+    loadComponent: () => import('./features/clientes/components/cliente/cliente.component').then(m => m.ClienteComponent)
+  },
+  {
+    path: 'documento',
+    loadComponent: () => import('./features/documento/documentos.component').then(m => m.DocumentosComponent)
+  },
+  {
+    path: 'fornecedor',
+    loadComponent: () => import('./features/fornecedor/fornecedores.component').then(m => m.FornecedoresComponent)
+  },
+  {
+    path: 'relatorio',
+    loadComponent: () => import('./features/relatorio/relatorios.component').then(m => m.RelatoriosComponent)
+  },
+  {
+    path: 'usuario',
+    loadComponent: () => import('./features/usuario/usuarios.component').then(m => m.UsuariosComponent)
+  },
+  {
+    path: 'despesa',
+    loadComponent: () => import('./features/despesas/components/despesa/despesa.component').then(m => m.DespesaComponent)
+  },
+  {
+    path: 'configuracao',
+    loadComponent: () => import('./features/configuracao/configuracao.component').then(m => m.ConfiguracaoComponent)
+  },
+  {
+    path: '**',
+    redirectTo: 'inicio'
+  }
 ];

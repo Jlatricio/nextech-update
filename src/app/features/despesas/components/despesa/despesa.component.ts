@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { DespesaService } from '../../service/despesa.service';
 import { Despesa } from '../../interface/despesa';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { TitleService } from '../../../../core/services/title.service';
 
 @Component({
   selector: 'app-despesa',
@@ -35,7 +36,7 @@ export class DespesaComponent {
   });
 }
 
-  constructor(private formBuilder: FormBuilder, private despesaService: DespesaService) {
+  constructor(private formBuilder: FormBuilder, private despesaService: DespesaService,  private titleService: TitleService) {
     this.despesa$ = this.despesaService.listaDespesas();
 
     this.form = this.formBuilder.group({
@@ -49,7 +50,10 @@ export class DespesaComponent {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.titleService.setTitle('Login');
+  }
+
 
   onSubmit() {
     if (this.form.valid) {
