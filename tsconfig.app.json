@@ -1,24 +1,13 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-<<<<<<< HEAD
-    "types": []
-  },
-  "files": [
-    "src/main.ts"
-=======
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "files": [
     "src/main.ts",
     "src/main.server.ts",
     "src/server.ts"
->>>>>>> minha-nova-feature
   ],
   "include": [
     "src/**/*.d.ts"
