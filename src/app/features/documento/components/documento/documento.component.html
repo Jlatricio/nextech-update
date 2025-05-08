@@ -1,0 +1,171 @@
+<div class="container-fluid">
+  <div>
+    <h3>Documentos</h3>
+    <div class="btn-group"></div>
+      <button type="button" class="new-d">Novo Documento</button>
+      <button type="button" class="dd" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-caret-down-fill"></i>
+        <span class="visually-hidden">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" [routerLink]="['/proforma']">Proforma</a></li>
+        <li><a class="dropdown-item" [routerLink]="['/factura']">Factura</a></li>
+        <li><a class="dropdown-item" [routerLink]="['/factura-recibo']">Factura/Recibo</a></li>
+      </ul>
+    </div>
+  </div>
+  <nav class="tabs">
+    <a [class.active]="aba =='facturas'" (click)="aba='facturas'">Factura</a>
+    <a [class.active]="aba =='fr'" (click)="aba='fr'">F/R</a>
+    <a [class.active]="aba =='recibo'" (click)="aba='recibo'">Recibo</a>
+    <a [class.active]="aba =='proformas'" (click)="aba='proformas'">Proforma</a>
+  </nav>
+
+  <!-- tabela de clientes -->
+  <main class="table" id="customers_table">
+    <section [ngSwitch]="aba">
+      <div *ngSwitchCase="'proformas'">
+        <main class="table" id="customers_table">
+          <section class="table__body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Entidade</th>
+                  <th>Criado Por</th>
+                  <th>Valor</th>
+                  <th>Documento</th>
+                  <th>Acção</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <button type="button">
+                      <i class="bi bi-trash"></i> Deletar
+                    </button>
+                    <button type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      <i class="bi bi-pencil-square"></i> Editar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </main>
+      </div>
+
+      <div *ngSwitchDefault>
+        <main class="table" id="customers_table">
+          <section class="table__body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Nome</th>
+                  <th>Categoria</th>
+                  <th>Imposto</th>
+                  <th>Preço Unitário</th>
+                  <th>Acção</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>miguel</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <button type="button">
+                      <i class="bi bi-trash"></i> Deletar
+                    </button>
+                    <button type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      <i class="bi bi-pencil-square"></i> Editar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </main>
+      </div>
+
+      <div *ngSwitchCase="'fr'">
+        <main class="table" id="customers_table">
+          <section class="table__body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Nome</th>
+                  <th>Categoria</th>
+                  <th>Imposto</th>
+                  <th>Preço Unitário</th>
+                  <th>Acção</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>paulo</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <button type="button">
+                      <i class="bi bi-trash"></i> Deletar
+                    </button>
+                    <button type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      <i class="bi bi-pencil-square"></i> Editar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </main>
+      </div>
+
+      <div *ngSwitchCase="'recibo'">
+        <main class="table" id="customers_table">
+          <section class="table__body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Nome</th>
+                  <th>Categoria</th>
+                  <th>Imposto</th>
+                  <th>Preço Unitário</th>
+                  <th>Acção</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <button type="button">
+                      <i class="bi bi-trash"></i> Deletar
+                    </button>
+                    <button type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      <i class="bi bi-pencil-square"></i> Editar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </main>
+      </div>
+    </section>
+  </main>

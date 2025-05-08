@@ -3,7 +3,11 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+<<<<<<< HEAD
     "nextech-front": {
+=======
+    "Nextech-frontend-main": {
+>>>>>>> minha-nova-feature
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,6 +21,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+<<<<<<< HEAD
             "outputPath": "dist/nextech-front",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -35,6 +40,31 @@
               "src/styles.scss"
             ],
             "scripts": []
+=======
+            "outputPath": "dist/nextech-frontend-main",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/assets",
+              "src/public"
+            ],
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ],
+            "server": "src/main.server.ts",
+            "prerender": true,
+            "ssr": {
+              "entry": "src/server.ts"
+            }
+>>>>>>> minha-nova-feature
           },
           "configurations": {
             "production": {
@@ -55,7 +85,17 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
+<<<<<<< HEAD
               "sourceMap": true
+=======
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ]
+>>>>>>> minha-nova-feature
             }
           },
           "defaultConfiguration": "production"
@@ -64,10 +104,17 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
+<<<<<<< HEAD
               "buildTarget": "nextech-front:build:production"
             },
             "development": {
               "buildTarget": "nextech-front:build:development"
+=======
+              "buildTarget": "Nextech-frontend-main:build:production"
+            },
+            "development": {
+              "buildTarget": "Nextech-frontend-main:build:development"
+>>>>>>> minha-nova-feature
             }
           },
           "defaultConfiguration": "development"
@@ -78,10 +125,14 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
+<<<<<<< HEAD
             "polyfills": [
               "zone.js",
               "zone.js/testing"
             ],
+=======
+            "polyfills": ["zone.js", "zone.js/testing"],
+>>>>>>> minha-nova-feature
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -91,8 +142,12 @@
               }
             ],
             "styles": [
+<<<<<<< HEAD
               "src/styles.scss"
             ],
+=======
+              "src/styles.scss"],
+>>>>>>> minha-nova-feature
             "scripts": []
           }
         }
@@ -100,6 +155,10 @@
     }
   },
   "cli": {
+<<<<<<< HEAD
     "analytics": "2e74b457-8f82-4f8b-963a-3ca17cc52861"
+=======
+    "analytics": false
+>>>>>>> minha-nova-feature
   }
 }
