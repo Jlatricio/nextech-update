@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
 import { ArtigoService } from '../../service/artigo.service';
 import { Modal } from 'bootstrap';
 import { CommonModule } from '@angular/common';
-import { Title } from '@angular/platform-browser';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 
@@ -16,75 +15,23 @@ import { RouterModule } from '@angular/router';
   imports: [NgxMaskDirective, ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
   providers: [provideNgxMask()],
   templateUrl: './artigo.component.html',
-  styleUrls: ['./artigo.component.scss'] // Fixed typo
+  styleUrls: ['./artigo.component.scss']
 })
 export class ArtigoComponent implements OnInit {
 
   artigo$: Observable<Artigo[]>;
   form: FormGroup;
-  populateForm(artigo: any): void {
-  this.form.patchValue({
-    nome: artigo.nome,
-    categoria: artigo.categoria,
-    imposto: artigo.imposto,
-    precoUnitario: artigo.precoUnitario
-  });
-}
+  categoriaForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private artigoService: ArtigoService, private titleService: TitleService) {
-    this.artigo$ = this.artigoService.listaArtigos();
+  filtro = {
+    Categorias: '',
+    mes: '',
+    tipo: ''
+  };
 
-    this.form = this.formBuilder.group({
-      nome: ['', Validators.required],
-      categoria: ['', Validators.required],
-      imposto: ['', Validators.required],
-      precoUnitario: ['', Validators.required]
-    });
-  }
+  searchTerm: string = '';
 
-  ngOnInit(): void {
-    this.titleService.setTitle('Artigos');
-  }
-
-
-
-  onSubmit() {
-    if (this.form.valid) {
-      this.artigoService.salvarArtigo(this.form.value).subscribe(result => {
-        console.log(result);
-        this.form.reset(); // Clear the form
-        const modal = document.getElementById('exampleModal');
-        if (modal) {
-          const bootstrapModal = Modal.getInstance(modal);
-          bootstrapModal?.hide(); // Close the modal
-        }
-      });
-    }
-  }
-
-  deleteArtigo(id: number | undefined) {
-    if (id !== undefined) {
-      this.artigoService.deletarArtigo(id).subscribe(() => {
-        console.log(`Artigo with ID ${id} deleted`);
-        this.artigo$ = this.artigoService.listaArtigos(); // Refresh the list
-      });
-    }
-  }
-
-  updateArtigo(id: number) {
-    if (this.form.valid) {
-      this.artigoService.atualizarArtigo(id, this.form.value).subscribe(updatedArtigo => {
-        console.log(`Artigo with ID ${id} updated`, updatedArtigo);
-        this.form.reset(); // Clear the form
-        const modal = document.getElementById('exampleModal');
-        if (modal) {
-          const bootstrapModal = Modal.getInstance(modal);
-          bootstrapModal?.hide(); // Close the modal
-        }
-        this.artigo$ = this.artigoService.listaArtigos(); // Refresh the list
-      });
-    }
-  }
+  Categorias = ['Serviço', 'Produto'];
 
   cards = [
     {
@@ -121,31 +68,105 @@ export class ArtigoComponent implements OnInit {
     }
   ];
 
+  constructor(
+    private formBuilder: FormBuilder,
+    private artigoService: ArtigoService,
+    private titleService: TitleService
+  ) {
+    this.artigo$ = this.artigoService.listaArtigos();
 
-  filtro = {
-    Categorias: '',
-    mes: '',
-    tipo: ''
-  };
+    this.form = this.formBuilder.group({
+      nome: ['', Validators.required],
+      categoria: ['', Validators.required],
+      imposto: ['', Validators.required],
+      precoUnitario: ['', Validators.required]
+    });
 
-  Categorias = ['Serviço','Produto'];
-
-  filtrar() {
-    console.log('Filtro aplicado:', this.filtro);
-    // aqui você pode fazer um filtro real nos dados ou chamada a um serviço/backend
+    this.categoriaForm = this.formBuilder.group({
+      nome: ['', Validators.required],
+      referencia: ['', Validators.required]
+    });
   }
 
-  searchTerm: string = '';
+  ngOnInit(): void {
+    this.titleService.setTitle('Artigos');
+  }
 
-filteredCards() {
-  if (!this.searchTerm) return this.cards;
+  populateForm(artigo: Artigo): void {
+    this.form.patchValue({
+      nome: artigo.nome,
+      categoria: artigo.categoria,
+      imposto: artigo.imposto,
+      precoUnitario: artigo.precoUnitario
+    });
+  }
 
-  return this.cards.filter(card =>
-    card.title.toLowerCase().includes(this.searchTerm.toLowerCase())
-  );
-}
+  onSubmit(): void {
+    if (this.form.valid) {
+      this.artigoService.salvarArtigo(this.form.value).subscribe(result => {
+        console.log(result);
+        this.form.reset();
 
+        const modal = document.getElementById('exampleModal');
+        if (modal) {
+          const bootstrapModal = Modal.getInstance(modal);
+          bootstrapModal?.hide();
+        }
+      });
+    }
+  }
 
+  deleteArtigo(id: number | undefined): void {
+    if (id !== undefined) {
+      this.artigoService.deletarArtigo(id).subscribe(() => {
+        console.log(`Artigo with ID ${id} deleted`);
+        this.artigo$ = this.artigoService.listaArtigos();
+      });
+    }
+  }
 
+  updateArtigo(id: number): void {
+    if (this.form.valid) {
+      this.artigoService.atualizarArtigo(id, this.form.value).subscribe(updatedArtigo => {
+        console.log(`Artigo with ID ${id} updated`, updatedArtigo);
+        this.form.reset();
 
+        const modal = document.getElementById('exampleModal');
+        if (modal) {
+          const bootstrapModal = Modal.getInstance(modal);
+          bootstrapModal?.hide();
+        }
+
+        this.artigo$ = this.artigoService.listaArtigos();
+      });
+    }
+  }
+
+  filtrar(): void {
+    console.log('Filtro aplicado:', this.filtro);
+    // Aqui você pode implementar o filtro para os artigos
+  }
+
+  filteredCards(): any[] {
+    if (!this.searchTerm) return this.cards;
+
+    return this.cards.filter(card =>
+      card.title.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+
+  onCategoriaSubmit(): void {
+    if (this.categoriaForm.valid) {
+      console.log('Categoria Form Data:', this.categoriaForm.value);
+      // Lógica para salvar categoria (futura implementação)
+
+      this.categoriaForm.reset();
+
+      const modal = document.getElementById('categoriaModal');
+      if (modal) {
+        const bootstrapModal = Modal.getInstance(modal);
+        bootstrapModal?.hide();
+      }
+    }
+  }
 }
