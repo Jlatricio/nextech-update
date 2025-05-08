@@ -1,0 +1,77 @@
+<div class="dashboard-cards">
+  <div class="card" *ngFor="let card of cards" [ngClass]="card.style">
+    <i class="{{ card.icon }} icon"></i>
+    <h4>{{ card.title }}</h4>
+    <div class="value">{{ card.value }}</div>
+    <div class="info">{{ card.info }}</div>
+    <div class="percentage">{{ card.percentage }}</div>
+  </div>
+</div>
+
+<div class="tabela-container">
+  <h2 class="titulo-tabela">Últimos movimentos</h2>
+
+  <div class="filtros-container">
+    <div class="search-group">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Pesquisar..."
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+
+    <div class="filtros-selects">
+      <div class="filtro-item">
+        <label for="mes">Mês</label>
+        <select id="mes" [(ngModel)]="filtro.mes">
+          <option value="">Todos</option>
+          <option *ngFor="let mes of meses" [value]="mes">{{ mes }}</option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" [(ngModel)]="filtro.tipo">
+          <option value="">Todos</option>
+          <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
+        </select>
+      </div>
+
+      <button class="btn-filtrar" (click)="filtrar()">Filtrar</button>
+    </div>
+  </div>
+
+
+
+
+  <table class="tabela-movimentos">
+    <thead>
+      <tr>
+        <th>Ano</th>
+        <th>Mês</th>
+        <th>Tipo</th>
+        <th>Nº</th>
+        <th>Entidade</th>
+        <th>Criado por</th>
+        <th>Data</th>
+        <th>Valor</th>
+        <th>Documento</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let movimento of movimentos">
+        <td>{{ movimento.ano }}</td>
+        <td>{{ movimento.mes }}</td>
+        <td>{{ movimento.tipo }}</td>
+        <td>{{ movimento.numero }}</td>
+        <td>{{ movimento.entidade }}</td>
+        <td>{{ movimento.criadoPor }}</td>
+        <td>{{ movimento.data | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ movimento.valor | currency:'AOA':'symbol' }}</td>
+        <td><a [href]="movimento.documento" target="_blank">Ver</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

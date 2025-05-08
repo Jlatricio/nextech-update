@@ -1,11 +1,16 @@
 {
+<<<<<<< HEAD
   "name": "nextech-front",
+=======
+  "name": "nextech-frontend-main",
+>>>>>>> minha-nova-feature
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+<<<<<<< HEAD
     "test": "ng test"
   },
   "private": true,
@@ -17,15 +22,60 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
+=======
+    "test": "ng test",
+    "serve:ssr:Nextech-frontend-main": "node dist/nextech-frontend-main/server/server.mjs"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/cdk": "^19.2.8",
+    "@angular/common": "^19.2.0",
+    "@angular/compiler": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "@angular/forms": "^19.2.6",
+    "@angular/platform-browser": "^19.2.0",
+    "@angular/platform-browser-dynamic": "^19.2.0",
+    "@angular/platform-server": "^19.2.0",
+    "@angular/router": "^19.2.0",
+    "@angular/ssr": "^19.2.5",
+    "@primeng/themes": "^19.0.10",
+    "body-parser": "^2.2.0",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "json": "^11.0.0",
+    "json-server": "^1.0.0-beta.3",
+    "mysql2": "^3.14.0",
+    "ng2-charts": "^4.1.1",
+    "ngx-bootstrap": "^19.0.2",
+    "ngx-mask": "^19.0.6",
+    "npm": "^10.9.2",
+    "primeflex": "^4.0.0",
+    "primeicons": "^7.0.0",
+    "primeng": "^19.0.10",
+>>>>>>> minha-nova-feature
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@angular-devkit/build-angular": "^19.2.4",
     "@angular/cli": "^19.2.4",
     "@angular/compiler-cli": "^19.2.0",
     "@types/jasmine": "~5.1.0",
+=======
+    "@angular-devkit/build-angular": "^19.2.5",
+    "@angular/cli": "^19.2.5",
+    "@angular/compiler-cli": "^19.2.0",
+    "@types/bootstrap": "^5.2.10",
+    "@types/express": "^4.17.17",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "^18.18.0",
+>>>>>>> minha-nova-feature
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -33,5 +83,22 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.7.2"
+<<<<<<< HEAD
   }
+=======
+  },
+  "description": "This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/A-Machado28/Nextech-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/A-Machado28/Nextech-frontend/issues"
+  },
+  "homepage": "https://github.com/A-Machado28/Nextech-frontend#readme"
+>>>>>>> minha-nova-feature
 }

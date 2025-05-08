@@ -4,10 +4,21 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
+<<<<<<< HEAD
     "types": []
   },
   "files": [
     "src/main.ts"
+=======
+    "types": [
+      "node"
+    ]
+  },
+  "files": [
+    "src/main.ts",
+    "src/main.server.ts",
+    "src/server.ts"
+>>>>>>> minha-nova-feature
   ],
   "include": [
     "src/**/*.d.ts"

@@ -1,0 +1,117 @@
+<div class="container">
+  <div class="header">
+      <h1>Criar Factura</h1>
+  </div>
+
+  <div class="form-grid">
+      <div class="form-group">
+          <label>Cliente</label>
+          <div class="fbtnTop">
+              <div class="bank-selectbtnTop">
+                  <select>
+                      <option>Seleciona</option>
+                      <option>Caixa</option>
+                  </select>
+              </div>
+      </div>
+      <div class="form-group">
+          <label>Nº da fatura</label>
+          <input type="text" value="PP 2025/1" readonly class="readonly-input">
+      </div>
+      <div class="form-group">
+          <label>Data de validade</label>
+          <input type="text" value="31 de Jan, 2018">
+      </div>
+  </div>
+
+  <table>
+      <thead>
+          <tr>
+              <th>#</th>
+              <th>Categoria</th>
+              <th>Produto/Serviço</th>
+              <th>Preço un.</th>
+              <th>Qtd.</th>
+              <th>Total líquido</th>
+              <th></th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td>1</td>
+              <td>
+                  <select>
+                      <option>Selecione...</option>
+                  </select>
+              </td>
+              <td>
+                  <select>
+                      <option>Selecione...</option>
+                  </select>
+              </td>
+              <td>Kz 0,00</td>
+              <td>
+                  <div class="quantity-control">
+                      <button>-</button>
+                      <input type="text" value="0">
+                      <button>+</button>
+                  </div>
+              </td>
+              <td>Kz 0,00</td>
+              <td>
+                  <button class="delete-btn">
+                      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                  </button>
+              </td>
+          </tr>
+      </tbody>
+  </table>
+
+  <button class="discount-btn">+ Desconto</button>
+
+  <div class="bottom-grid">
+      <div class="observations">
+          <label>Observações</label>
+          <textarea rows="4"></textarea>
+      </div>
+      <div class="summary">
+          <div class="summary-item">
+              <span>Total líquido</span>
+              <span>Kz 0,00</span>
+          </div>
+          <div class="summary-item">
+              <span>Desconto Financeiro</span>
+              <span>Kz 0,00</span>
+          </div>
+          <div class="summary-item">
+              <span>Total de Impostos</span>
+              <span>Kz 0,00</span>
+          </div>
+          <div class="summary-item">
+              <span>Impostos Retidos</span>
+              <span>Kz 0,00</span>
+          </div>
+          <div class="summary-item total">
+              <span>Total</span>
+              <span>Kz 0,00</span>
+          </div>
+      </div>
+  </div>
+
+  <div class="footer">
+      <div class="bank-select">
+          <label>Banco</label>
+          <select>
+              <option>Seleciona</option>
+              <option>Caixa</option>
+          </select>
+      </div>
+      <div class="action-buttons">
+          <button class="cancel-btn">Cancelar</button>
+          <button class="save-btn">Salvar</button>
+      </div>
+  </div>
+</div>

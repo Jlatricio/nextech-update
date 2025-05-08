@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
 <!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
@@ -334,3 +335,21 @@
 
 
 <router-outlet />
+=======
+<div *ngIf="mostrarLayout" class="body">
+  <div class="header">
+    <app-header></app-header>
+    <div class="content">
+      <div class="sidebar">
+        <app-sidebar></app-sidebar>
+      </div>
+      <div class="outlet">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Se não mostrar layout, ainda precisa do router-outlet para login -->
+<router-outlet *ngIf="!mostrarLayout"></router-outlet>
+>>>>>>> minha-nova-feature

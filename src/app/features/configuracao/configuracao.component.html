@@ -1,0 +1,241 @@
+  <div class="container-fluid">
+    <div>
+      <h3>Configurações</h3>
+    </div>
+
+    <nav>
+      <a [class.active]="aba =='configuracao'" (click)="aba='configuracao'">Configuracões Gerais</a>
+      <a [class.active]="aba =='subscribe'" (click)="aba='subscribe'">Subscrição</a>
+      <a [class.active]="aba =='contas'" (click)="aba='contas'">Contas</a>
+      <a [class.active]="aba =='ajuda'" (click)="aba='ajuda'">Como usar o Nextech</a>
+      <a [class.active]="aba =='tutoriais'" (click)="aba='tutoriais'">Tutoriais</a>
+      <a [class.active]="aba =='termos'" (click)="aba='termos'">Termos de uso</a>
+    </nav>
+
+    <section [ngSwitch]="aba" class="container-card">
+      <div *ngSwitchCase="'configuracao'" class="configuracao-container">
+        <form class="form-container" (ngSubmit)="onSubmit()" #form="ngForm">
+
+          <!-- Logotipo -->
+          <div class="form-group">
+            <label for="logo">Logotipo</label>
+            <div class="logo-preview">
+              <img src="assets/logo.png" alt="Logotipo Atual" width="100">
+              <span></span>
+            </div>
+            <input type="file" id="logo" name="logo" (change)="onFileSelected($event)" accept="image/*">
+            <button type="button">Substituir</button>
+          </div>
+
+          <!-- Nome da empresa -->
+          <div class="form-group">
+            <label for="nomeEmpresa">Nome da empresa</label>
+            <input type="text" id="nomeEmpresa" name="nomeEmpresa" ngModel required placeholder="Ex: Nextech Lda">
+          </div>
+
+          <!-- NIF -->
+          <div class="form-group">
+            <label for="nif">NIF</label>
+            <input type="text" id="nif" name="nif" ngModel required placeholder="Ex: 999999999">
+          </div>
+
+          <!-- Endereço -->
+          <div class="form-group">
+            <label for="endereco">Endereço</label>
+            <input type="text" id="endereco" name="endereco" ngModel required>
+          </div>
+
+          <!-- Regime do IVA -->
+          <div class="form-group">
+            <label for="regimeIva">Regime do IVA</label>
+            <input type="text" id="regimeIva" name="regimeIva" ngModel required>
+          </div>
+
+          <!-- Telefone -->
+          <div class="form-group">
+            <label for="telefone">Nº de telefone da empresa</label>
+            <input type="tel" id="telefone" name="telefone" ngModel required placeholder="Ex: 923000000">
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" ngModel required placeholder="seuemail@empresa.com">
+          </div>
+
+          <!-- Senha do Admin -->
+          <div class="form-group">
+            <label for="senhaAdmin">Senha do Admin</label>
+              <input type="password" id="senhaAdmin" placeholder="Digite sua senha" name="senhaAdmin" ngModel required>
+          </div>
+
+          <button type="submit">Salvar</button>
+        </form>
+
+          <div class="dados-atuais">
+            <h3>Dados atuais</h3>
+            <div class="dado">
+              <strong>Nome:</strong>
+              <span>{{ dadosEmpresa.nome }}</span>
+            </div>
+            <div class="dado">
+              <strong>NIF:</strong>
+              <span>{{ dadosEmpresa.nif }}</span>
+            </div>
+            <div class="dado">
+              <strong>Endereço:</strong>
+              <span>{{ dadosEmpresa.endereco }}</span>
+            </div>
+            <div class="dado">
+              <strong>Regime IVA:</strong>
+              <span>{{ dadosEmpresa.regimeIva }}</span>
+            </div>
+            <div class="dado">
+              <strong>Telefone:</strong>
+              <span>{{ dadosEmpresa.telefone }}</span>
+            </div>
+            <div class="dado">
+              <strong>Email:</strong>
+              <span>{{ dadosEmpresa.email }}</span>
+            </div>
+          </div>
+
+        </div>
+
+
+
+
+      <div *ngSwitchCase="'subscribe'">
+        <div class="subscription-container">
+          <h2>Subscrição</h2>
+          <p class="description">
+            Para ativar sua subscrição, selecione um pacote
+            e realize o pagamento via referência bancária no
+            ATM ou plataformas digitais como Multicaixa Express.
+          </p>
+
+          <div class="packages">
+            <div class="package-card">
+              <h3>1 mês</h3>
+              <p class="price">4.000,00KZ</p>
+              <button>Assinar por 1 mês</button>
+            </div>
+
+            <div class="package-card">
+              <h3>7 meses</h3>
+              <p class="price">25.000,00KZ</p>
+              <button>Assinar por 6 meses</button>
+            </div>
+
+            <div class="package-card">
+              <h3>12 meses</h3>
+              <p class="price">45.000,00KZ</p>
+              <button>Assinar por 12 meses</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngSwitchCase="'contas'">
+        <div class="contas-wrapper">
+          <div class="contas-top">
+            <div class="img-box">
+              <img src="assets/card.svg"/>
+            </div>
+            <div class="info-box">
+              <div class="col">
+                <p><strong>Banco</strong><br />Caixa</p>
+                <p><strong>IBAN</strong><br />Caixa</p>
+                <p><strong>Nº de Conta</strong><br />Caixa</p>
+                <p><strong>Gestor de conta</strong><br />Caixa</p>
+              </div>
+              <div class="col">
+                <p><strong>Endereço</strong></p>
+                <p><strong>Telemóvel</strong></p>
+                <p><strong>Email</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="tabs-wrapper">
+            <nav class="tabs">
+              <a class="active">Proformas</a>
+              <a>Facturas</a>
+              <a>Factura/Recibos</a>
+              <a>Notas</a>
+              <a>Recibos</a>
+              <a>Despesas</a>
+            </nav>
+
+            <table class="tabela-contas">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" /></th>
+                  <th>Nº</th>
+                  <th>Entidade</th>
+                  <th>Criado por</th>
+                  <th>Data</th>
+                  <th>Valor</th>
+                  <th>Documento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem;">Nenhum dado disponível</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div *ngSwitchCase="'ajuda'">
+        <div class="faq-container">
+          <h2>Perguntas Frequentes</h2>
+          <p class="intro">Estamos aqui para tirar todas as tuas dúvidas.</p>
+
+          <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.open]="faq.open">
+            <div class="question" (click)="toggleFaq(i)">
+              {{ faq.question }}
+              <span class="icon">+</span>
+            </div>
+            <div class="answer-wrapper">
+              <div class="answer">{{ faq.answer }}</div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+      <div *ngSwitchCase="'tutoriais'"></div>
+      <div *ngSwitchCase="'termos'">
+        <div class="termos-container">
+          <h2>Termos de Uso da Nextech</h2>
+          <p>Leia atentamente os nossos termos e condições antes de usar os serviços da Nextech. Ao acessar ou usar nossos serviços, você concorda em cumprir os seguintes termos:</p>
+
+          <h3>1. Introdução</h3>
+          <p>Bem-vindo ao Nextech! Ao utilizar nossos serviços, você concorda com nossos termos e condições. Se não concordar, não poderá utilizar os serviços da Nextech. Caso tenha dúvidas, entre em contato conosco para esclarecimentos.</p>
+
+          <h3>2. Pacotes e Subscrições</h3>
+          <p>Os serviços da Nextech estão disponíveis por meio de planos de subscrição. Através de sua assinatura, você concorda em pagar pelos pacotes escolhidos e usar os serviços conforme descrito na nossa oferta.</p>
+
+          <h3>3. Uso dos Serviços</h3>
+          <p>Os serviços da Nextech podem ser acessados por assinantes e usuários convidados. Os assinantes são responsáveis pelo gerenciamento da conta e pelo controle de acesso aos serviços. O uso dos serviços é concedido enquanto a subscrição estiver ativa.</p>
+
+          <h3>4. Pagamento e Renovação</h3>
+          <p>O pagamento dos serviços é feito via referências bancárias, incluindo plataformas digitais e Multicaixa. O não pagamento pode resultar em perda temporária do acesso aos serviços, até que a renovação seja realizada.</p>
+
+          <h3>5. Proteção de Dados</h3>
+          <p>Tomamos todas as medidas necessárias para garantir que seus dados pessoais estejam protegidos. Usamos criptografia e backups regulares para garantir a segurança das informações.</p>
+
+          <h3>6. Responsabilidades do Usuário</h3>
+          <p>Ao usar nossos serviços, você se compromete a não violar nossas políticas e a seguir todas as leis e regulamentos aplicáveis. A Nextech não se responsabiliza por qualquer uso inadequado dos nossos serviços.</p>
+
+          <h3>7. Modificações nos Termos</h3>
+          <p>A Nextech se reserva o direito de modificar estes termos a qualquer momento. Caso haja alterações significativas, notificaremos os usuários por meio dos canais apropriados.</p>
+
+          <h3>8. Suporte e Contato</h3>
+          <p>Nosso suporte está disponível para dúvidas ou problemas relacionados aos nossos serviços. Entre em contato conosco pelo email, WhatsApp ou telefone.</p>
+        </div>
+      </div>
+
+    </section>

@@ -1,0 +1,28 @@
+
+header {
+  width: 100vw;
+  height: 70px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  justify-content: center;
+  align-items: center;
+  background: #fcfcfc;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
+
+  h1 {
+    color: #212529;
+    font-weight: 600;
+    //padding-left: 240px;
+    margin: 0;
+  }
+
+  .btn-primary {
+    background-color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    color: #1d3557;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+}
