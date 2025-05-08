@@ -1,9 +1,4 @@
 import { Routes } from '@angular/router';
-<<<<<<< HEAD
-
-export const routes: Routes = [];
-=======
-import { FacturaComponent } from './features/documento/components/factura/factura.component';
 
 export const routes: Routes = [
   {
@@ -64,4 +59,3 @@ export const routes: Routes = [
     redirectTo: 'inicio'
   }
 ];
->>>>>>> minha-nova-feature
