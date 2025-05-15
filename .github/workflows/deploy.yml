@@ -24,6 +24,10 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # Debug: confirmar onde estão os arquivos buildados
+      - name: List dist folder contents (for debug)
+        run: ls -la dist/nextech-frontend-main
+
       - name: Clean old build folder on server
         uses: appleboy/ssh-action@v0.1.10
         with:
