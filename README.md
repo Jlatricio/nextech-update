@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 📂 src/
  ├── 📂 app/                
  │   ├── 📂 core/          # Serviços globais e configurações
