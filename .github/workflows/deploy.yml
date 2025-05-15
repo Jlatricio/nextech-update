@@ -27,8 +27,8 @@ jobs:
       - name: Clean old build folder on server
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          host: 82.29.184.231
+          username: juvenal
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           script: |
