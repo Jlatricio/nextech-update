@@ -35,9 +35,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
-             script: |
-      mv /home/juvenal/public_html/nextech/dist/nextech-frontend-main/* /home/juvenal/public_html/nextech/
-      rm -rf /home/juvenal/public_html/nextech/dist
+          script: |
+            rm -rf /home/juvenal/public_html/nextech
+            mkdir -p /home/juvenal/public_html/nextech
 
       - name: Deploy build files via SCP
         uses: appleboy/scp-action@master
@@ -48,6 +48,17 @@ jobs:
           port: 22
           source: "dist/nextech-frontend-main/*"
           target: /home/juvenal/public_html/nextech
+
+      - name: Move build files to correct folder on server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          script: |
+            mv /home/juvenal/public_html/nextech/dist/nextech-frontend-main/* /home/juvenal/public_html/nextech/
+            rm -rf /home/juvenal/public_html/nextech/dist
 
       - name: Fix permissions on server
         uses: appleboy/ssh-action@v0.1.10
