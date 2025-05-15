@@ -1,58 +1,142 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { AuthService } from './Auth/auth.service';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from './Auth/auth.service';
 import { TitleService } from '../../core/services/title.service';
+import { CadastroService } from '../../core/services/cadastro.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  email: string = '';
-  senha: string = '';
+  loginForm: FormGroup;
+  registerForm: FormGroup;
 
-  constructor(private authService: AuthService, private router: Router,  private titleService: TitleService) {}
-  ngOnInit(): void {
-    this.titleService.setTitle('Login');
+  signUpMode = false;
+  isLoading = false;
+  errorMessage = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private titleService: TitleService,
+    private cadastroService: CadastroService,
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', Validators.required]
+    });
+
+    this.registerForm = this.fb.group({
+      nome: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      senharegisto: ['', Validators.required]
+    });
   }
 
+  toggleSignUpMode(): void {
+    this.signUpMode = !this.signUpMode;
+    this.errorMessage = '';
+  }
 
-  login() {
-    this.authService.login(this.email, this.senha, { email: this.email, senha: this.senha }).subscribe(
-      (response) => {
-        // Handle successful login here
-        console.log('Login successful', response);
-        this.router.navigate(['/home']); // Redirect to home or another page
-      },
-      (error) => {
-        // Handle login error here
-        console.error('Login failed', error);
+  emailOrPhoneValidator(control: AbstractControl) {
+    const value = control.value?.trim();
+    if (!value) return null;
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phonePattern = /^\d{9}$/;
+
+    if (emailPattern.test(value) || phonePattern.test(value)) {
+      return null;
+    }
+
+    return { invalidInput: true };
+  }
+
+  get loginemail() { return this.loginForm.get('email'); }
+  get loginsenha() { return this.loginForm.get('senha'); }
+
+  get registerName() { return this.registerForm.get('nome'); }
+  get registerEmail() { return this.registerForm.get('email'); }
+  get registerTelefone() { return this.registerForm.get('telefone'); }
+  get registerPassword() { return this.registerForm.get('senharegisto'); }
+
+  onEmailOrPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+
+    if (/^\d*$/.test(value)) {
+      const onlyNumbers = value.replace(/\D/g, '').slice(0, 9);
+      this.loginemail?.setValue(onlyNumbers, { emitEvent: false });
+    } else {
+      this.loginemail?.setValue(value, { emitEvent: false });
+    }
+  }
+onSubmit(): void {
+  const emailLogin = this.loginForm.value.email;
+  const senhaLogin = this.loginForm.value.senha;
+
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  this.authService.login(emailLogin, senhaLogin).subscribe({
+    next: (response) => {
+      this.router.navigate(['/inicio']);
+    },
+    error: (error) => {
+      console.error('Login Error:', error);
+
+      if (error.status === 401) {
+        this.errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
+      } else {
+        this.errorMessage = error.error?.message || 'Erro ao fazer login.';
       }
-    );
-}
 
-ngAfterViewInit() {
-  const signInBtn = document.querySelector("#sign-in-btn") as HTMLElement;
-  const signUpBtn = document.querySelector("#sign-up-btn") as HTMLElement;
-  const container = document.querySelector(".container") as HTMLElement;
-
-  if (signUpBtn && container) {
-    signUpBtn.addEventListener("click", () => {
-      container.classList.add("sign-up-mode");
-    });
-  }
-
-  if (signInBtn && container) {
-    signInBtn.addEventListener("click", () => {
-      container.classList.remove("sign-up-mode");
-    });
-  }
+      this.isLoading = false;
+    },
+    complete: () => {
+      this.isLoading = false;
+    }
+  });
 }
 
 
+  onRegister(): void {
+    if (!this.signUpMode) return;
 
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      this.errorMessage = 'Preencha todos os campos do cadastro corretamente.';
+      return;
+    }
+
+    const payload = this.registerForm.value;
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.cadastroService.cadastrarUsuario(payload).subscribe({
+      next: (response) => {
+        alert('Cadastro realizado com sucesso!');
+        this.toggleSignUpMode();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Cadastro Error:', error);
+        this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.titleService.setTitle('Nextech - Login');
+  }
 }

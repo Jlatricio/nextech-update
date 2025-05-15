@@ -52,7 +52,7 @@ export class DespesaComponent {
   }
 
   ngOnInit(): void {
-    this.titleService.setTitle('Login');
+    this.titleService.setTitle('Nextech - Despesas');
   }
 
 

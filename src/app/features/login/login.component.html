@@ -1,60 +1,109 @@
-<div class="container">
+<div class="container" [ngClass]="{'sign-up-mode': signUpMode}">
   <div class="forms-container">
     <div class="signin-signup">
-      <form action="#" class="sign-in-form">
-        <div class="logo">
-          <img src="assets/logo.png" alt="Company Logo" />
-        </div>
-        <h2 class="title">Entrar</h2>
-        <div class="input-field">
-          <i class="fas fa-user"></i>
-          <input type="number" placeholder="Telefone" required />
-        </div>
-        <div class="input-field">
-          <i class="fas fa-lock"></i>
-          <input type="password" placeholder="Password" required />
-        </div>
-        <input type="submit" value="Login" class="btn solid" />
-        <div class="forgot-password">
-          <a href="#" class="forgot-password-link">Esqueceu sua senha?</a>
-        </div>
-      </form>
-      <form action="#" class="sign-up-form">
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="sign-in-form">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Company Logo" />
+  </div>
+  <h2 class="title">Entrar</h2>
+
+  <!-- Campo Email ou Telefone -->
+  <div class="input-field" [ngClass]="{'has-error': loginemail?.invalid && (loginemail?.dirty || loginemail?.touched)}">
+    <i class="fas fa-user"></i>
+    <input type="text" formControlName="email" placeholder="Email" (input)="onEmailOrPhoneInput($event)" />
+  </div>
+  <div *ngIf="loginemail?.invalid && (loginemail?.dirty || loginemail?.touched)" class="error">
+    <small *ngIf="loginemail?.errors?.['required']">Campo obrigatório.</small>
+    <small *ngIf="loginemail?.errors?.['invalidInput']">Insira um email válido ou um telefone com 9 dígitos.</small>
+  </div>
+
+  <!-- Campo Senha -->
+  <div class="input-field" [ngClass]="{'has-error': loginsenha?.invalid && (loginsenha?.dirty || loginsenha?.touched)}">
+    <i class="fas fa-lock"></i>
+    <input type="password" formControlName="senha" placeholder="Senha" />
+  </div>
+  <div *ngIf="loginsenha?.invalid && (loginsenha?.dirty || loginsenha?.touched)" class="error">
+    <small *ngIf="loginsenha?.errors?.['required']">Senha é obrigatória.</small>
+  </div>
+
+
+  <!-- Botão Login -->
+<button class="btn solid" type="submit" [disabled]="isLoading">
+    {{ isLoading ? 'Entrando...' : 'Entrar' }}
+  </button>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+  <!-- Link de Esqueceu Senha -->
+  <div class="forgot-password">
+    <a href="#" class="forgot-password-link">Esqueceu sua senha?</a>
+  </div>
+</form>
+
+      <!-- Register Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="sign-up-form">
         <div class="logo">
           <img src="assets/logo.png" alt="Company Logo" />
         </div>
         <h2 class="title">Criar conta</h2>
-        <div class="input-field">
-          <i class="fas fa-user"></i>
-          <input type="text" placeholder="Nome" required />
-        </div>
-        <div class="input-field">
-          <i class="fas fa-envelope"></i>
-          <input type="email" placeholder="Email" required />
-        </div>
-        <div class="input-field">
-          <i class="fas fa-lock"></i>
-          <input type="password" placeholder="Password" required />
-        </div>
-        <input type="submit" class="btn" value="Cadastre-se" />
 
+        <!-- Nome -->
+        <div class="input-field" [ngClass]="{'has-error': registerName?.invalid && (registerName?.dirty || registerName?.touched)}">
+          <i class="fas fa-user"></i>
+          <input type="text" formControlName="nome" placeholder="Nome Completo" />
+        </div>
+        <div *ngIf="registerName?.invalid && (registerName?.dirty || registerName?.touched)" class="error">
+          <small *ngIf="registerName?.errors?.['required']">Nome é obrigatório.</small>
+        </div>
+
+        <!-- Email -->
+        <div class="input-field" [ngClass]="{'has-error': registerEmail?.invalid && (registerEmail?.dirty || registerEmail?.touched)}">
+          <i class="fas fa-envelope"></i>
+          <input type="email" formControlName="email" placeholder="Email" />
+        </div>
+        <div *ngIf="registerEmail?.invalid && (registerEmail?.dirty || registerEmail?.touched)" class="error">
+          <small *ngIf="registerEmail?.errors?.['required']">Email é obrigatório.</small>
+          <small *ngIf="registerEmail?.errors?.['email']">Email inválido.</small>
+        </div>
+
+        <!-- Telefone -->
+        <div class="input-field" [ngClass]="{'has-error': registerTelefone?.invalid && (registerTelefone?.dirty || registerTelefone?.touched)}">
+          <i class="fas fa-phone"></i>
+          <input type="text" formControlName="telefone" placeholder="Telefone" />
+        </div>
+        <div *ngIf="registerTelefone?.invalid && (registerTelefone?.dirty || registerTelefone?.touched)" class="error">
+          <small *ngIf="registerTelefone?.errors?.['required']">Telefone é obrigatório.</small>
+          <small *ngIf="registerTelefone?.errors?.['pattern']">Telefone inválido. Insira 9 dígitos.</small>
+        </div>
+
+        <!-- Senha -->
+        <div class="input-field" [ngClass]="{'has-error': registerPassword?.invalid && (registerPassword?.dirty || registerPassword?.touched)}">
+          <i class="fas fa-lock"></i>
+          <input type="password" formControlName="senharegisto" placeholder="Senha" />
+        </div>
+        <div *ngIf="registerPassword?.invalid && (registerPassword?.dirty || registerPassword?.touched)" class="error">
+          <small *ngIf="registerPassword?.errors?.['required']">Senha é obrigatória.</small>
+        </div>
+
+        <input type="submit" class="btn" value="Cadastre-se" [disabled]="registerForm.invalid" />
       </form>
+
     </div>
   </div>
 
+  <!-- Panels -->
   <div class="panels-container">
     <div class="panel left-panel">
       <div class="content">
-        <h3>Novo aqui ?</h3>
+        <h3>Novo aqui?</h3>
         <p>
-            Bem-vindo! Cadastre-se para acessar e gerenciar suas faturas de forma prática e rápida.
-
+          Bem-vindo! Cadastre-se para acessar e gerenciar suas faturas de forma prática e rápida.
         </p>
-        <button class="btn transparent" id="sign-up-btn">
-          Conecte-se
-        </button>
+        <button class="btn transparent" (click)="toggleSignUpMode()">Cadastre-se</button>
       </div>
-      <img src="assets/invoice.svg" class="image" alt="" />
+      <img src="assets/invoice.svg" class="image" alt="Cadastro" />
     </div>
     <div class="panel right-panel">
       <div class="content">
@@ -62,11 +111,9 @@
         <p>
           Faça login para acessar sua conta e gerenciar suas faturas de forma prática e rápida.
         </p>
-        <button class="btn transparent" id="sign-in-btn">
-        Conecte-se
-        </button>
+        <button class="btn transparent" (click)="toggleSignUpMode()">Entrar</button>
       </div>
-      <img src="assets/invoice2.svg" class="image" alt="" />
+      <img src="assets/invoice2.svg" class="image" alt="Login" />
     </div>
   </div>
 </div>

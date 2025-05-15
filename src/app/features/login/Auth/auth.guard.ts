@@ -13,4 +13,7 @@ export const AuthGuard: CanActivateFn = () => {
     router.navigate(['/login']);
     return false;
   }
-};
+
+  // Removed the misplaced logout method as it does not belong here.
+
+}
