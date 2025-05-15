@@ -1,0 +1,24 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # ou a branch que você usa
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: 82.29.184.231
+          username: juvenal
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd /home/juvenal/public_html/nextech
+            git pull origin main
