@@ -1,15 +1,22 @@
 
 <aside>
     <img src="assets/logo.png">
-      <ul>
-        <li *ngFor="let menu of menus" [class.active]="isActive(menu.route)">
-            <a [routerLink]="menu.route">
-            <i [class]="isActive(menu.route) ? menu.activeIcon : menu.icon" class="menu-icon"></i>
-            <!-- <img [src]="isActive(menu.route) ? menu.activeIcon : menu.icon" alt="{{ menu.name }}" class="menu-icon" /> -->
-            {{ menu.name }}
-          </a>
-        </li>
-      </ul>
+     <ul>
+  <li *ngFor="let menu of menus" [class.active]="isActive(menu.route)">
+    <a [routerLink]="menu.route">
+      <i [class]="isActive(menu.route) ? menu.activeIcon : menu.icon" class="menu-icon"></i>
+      {{ menu.name }}
+    </a>
+  </li>
+
+  <!-- Link de logout -->
+  <li>
+    <a (click)="logout()">
+      <i class="bi bi-box-arrow-in-left menu-icon"></i>
+      Sair
+    </a>
+  </li>
+</ul>
+
   </aside>
-  
- 
+
