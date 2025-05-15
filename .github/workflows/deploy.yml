@@ -1,37 +1,47 @@
-name: Deploy to Server
+name: Deploy Nextech Frontend
 
 on:
   push:
     branches:
-      - main  # ou a branch que você usa
+      - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to server via rsync
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: 82.29.184.231
-          username: juvenal
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
           script: |
-            set -e  # Para parar em caso de erro
+            # Limpa build antigo com permissão correta
+            sudo rm -rf /home/juvenal/public_html/nextech
+            mkdir -p /home/juvenal/public_html/nextech
 
-            echo "📂 Acessando diretório do projeto..."
-            cd /home/juvenal/public_html/nextech
-
-            echo "🔄 Atualizando repositório com git pull..."
-            git pull origin main
-
-            echo "📦 Instalando dependências..."
-            npm install --production
-
-            echo "⚙️ Buildando aplicação..."
-            npm run build --prod
-
-            echo "✅ Deploy concluído com sucesso!"
+      - name: Sync build files
+        uses: burnett01/rsync-deployments@v2.0.0
+        with:
+          switches: -avz --delete
+          path: dist\nextech-frontend-main
+          remote_path: /home/juvenal/public_html/nextech
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.DEPLOY_KEY }}
