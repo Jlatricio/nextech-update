@@ -169,4 +169,26 @@ export class ArtigoComponent implements OnInit {
       }
     }
   }
+
+  categorias: string[] = ['Eletrônicos', 'Roupas', 'Alimentos'];
+novaCategoria: string = '';
+mostrarCampoNovaCategoria = false;
+
+toggleNovaCategoria() {
+  this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
+}
+
+adicionarCategoria() {
+  const novaCat = this.novaCategoria.trim();
+  if (novaCat) {
+    if (!this.categorias.includes(novaCat)) {
+      this.categorias.push(novaCat);
+      this.novaCategoria = '';
+      this.mostrarCampoNovaCategoria = false;
+    } else {
+      alert('Categoria já existe!');
+    }
+  }
+}
+
 }
