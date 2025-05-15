@@ -42,5 +42,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
-          source: "dist/**"
+          source: "dist/*"
           target: /home/juvenal/public_html/nextech
