@@ -42,5 +42,15 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
-          source: "dist/*"
+          source: "dist/nextech/*"
           target: /home/juvenal/public_html/nextech
+
+      - name: Fix permissions on server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          script: |
+            chmod -R 755 /home/juvenal/public_html/nextech
