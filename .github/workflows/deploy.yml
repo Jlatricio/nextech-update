@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
-          source: "dist/nextech/*"
+          source: "dist/nextech-frontend-main/*"
           target: /home/juvenal/public_html/nextech
 
       - name: Fix permissions on server
