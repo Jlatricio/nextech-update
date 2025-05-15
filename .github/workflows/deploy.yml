@@ -20,5 +20,18 @@ jobs:
           username: juvenal
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
+            set -e  # Para parar em caso de erro
+
+            echo "📂 Acessando diretório do projeto..."
             cd /home/juvenal/public_html/nextech
+
+            echo "🔄 Atualizando repositório com git pull..."
             git pull origin main
+
+            echo "📦 Instalando dependências..."
+            npm install --production
+
+            echo "⚙️ Buildando aplicação..."
+            npm run build --prod
+
+            echo "✅ Deploy concluído com sucesso!"
