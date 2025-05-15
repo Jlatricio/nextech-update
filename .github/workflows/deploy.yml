@@ -27,9 +27,9 @@ jobs:
       - name: Clean old build folder on server
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: 82.29.184.231
-          username: juvenal
-          key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGIaKbkRMOO34buSYAG3POO+PoSh7IT
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           script: |
             rm -rf /home/juvenal/public_html/nextech
