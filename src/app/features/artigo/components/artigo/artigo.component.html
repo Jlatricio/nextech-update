@@ -32,7 +32,7 @@
         <label for="mes">Categoria</label>
         <select id="mes" [(ngModel)]="filtro.mes">
           <option value="">Todos</option>
-          <option *ngFor="let categoria of Categorias" [value]="categoria">{{ categoria }}</option>
+          <option *ngFor="let categoria of categorias" [value]="categoria">{{ categoria }}</option>
         </select>
       </div>
 
@@ -116,6 +116,7 @@
       type="text"
       id="novaCategoria"
       class="form-control"
+      formControlName="nome"
       [(ngModel)]="novaCategoria"
       placeholder="Digite nova categoria"
     />

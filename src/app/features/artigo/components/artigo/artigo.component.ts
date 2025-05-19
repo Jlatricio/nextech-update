@@ -8,13 +8,14 @@ import { Modal } from 'bootstrap';
 import { CommonModule } from '@angular/common';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
+import { CategoriaService } from '../../service/categoria.service';
 
 @Component({
   selector: 'app-artigo',
   standalone: true,
   imports: [NgxMaskDirective, ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
   providers: [provideNgxMask()],
-  templateUrl: './artigo.component.html',
+  templateUrl:'./artigo.component.html',
   styleUrls: ['./artigo.component.scss']
 })
 export class ArtigoComponent implements OnInit {
@@ -22,6 +23,11 @@ export class ArtigoComponent implements OnInit {
   artigo$: Observable<Artigo[]>;
   form: FormGroup;
   categoriaForm!: FormGroup;
+
+    categorias: string[] = [];
+  mostrarCampoNovaCategoria = false;
+  novaCategoria = '';
+
 
   filtro = {
     Categorias: '',
@@ -31,7 +37,6 @@ export class ArtigoComponent implements OnInit {
 
   searchTerm: string = '';
 
-  Categorias = ['Serviço', 'Produto'];
 
   cards = [
     {
@@ -71,7 +76,8 @@ export class ArtigoComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private artigoService: ArtigoService,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private categoriaService: CategoriaService,
   ) {
     this.artigo$ = this.artigoService.listaArtigos();
 
@@ -82,14 +88,16 @@ export class ArtigoComponent implements OnInit {
       precoUnitario: ['', Validators.required]
     });
 
+
+
     this.categoriaForm = this.formBuilder.group({
-      nome: ['', Validators.required],
-      referencia: ['', Validators.required]
+      nome: ['']
     });
   }
 
   ngOnInit(): void {
     this.titleService.setTitle('Artigos');
+     this.carregarCategorias();
   }
 
   populateForm(artigo: Artigo): void {
@@ -170,25 +178,37 @@ export class ArtigoComponent implements OnInit {
     }
   }
 
-  categorias: string[] = ['Eletrônicos', 'Roupas', 'Alimentos'];
-novaCategoria: string = '';
-mostrarCampoNovaCategoria = false;
 
 toggleNovaCategoria() {
   this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
 }
 
-adicionarCategoria() {
-  const novaCat = this.novaCategoria.trim();
-  if (novaCat) {
-    if (!this.categorias.includes(novaCat)) {
-      this.categorias.push(novaCat);
-      this.novaCategoria = '';
-      this.mostrarCampoNovaCategoria = false;
-    } else {
-      alert('Categoria já existe!');
-    }
-  }
-}
+  adicionarCategoria(): void {
+    if (!this.novaCategoria.trim()) return;
 
+    const novaCat = { nome: this.novaCategoria };
+
+    this.categoriaService.criarCategoria(novaCat).subscribe({
+      next: (categoriaCriada) => {
+        this.categorias.push(categoriaCriada.nome);
+        this.form.get('categoria')?.setValue(categoriaCriada.nome);
+        this.novaCategoria = '';
+        this.mostrarCampoNovaCategoria = false;
+      },
+      error: (err) => {
+        console.error('Erro ao criar categoria:', err);
+      }
+    });
+  }
+
+  carregarCategorias(): void {
+    this.categoriaService.listarCategorias().subscribe({
+      next: (data) => {
+        this.categorias = data.map(cat => cat.nome); // Supondo que Categoria tem campo 'nome'
+      },
+      error: (err) => {
+        console.error('Erro ao carregar categorias:', err);
+      }
+    });
+  }
 }

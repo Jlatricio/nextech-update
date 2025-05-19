@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Categoria } from './../interface/categoria'; // ajuste se o caminho for diferente
+import { Categoria } from './../interface/categoria';
 import { environment } from './../../../../environments/environment';
 
 @Injectable({
