@@ -33,12 +33,12 @@ export class LoginComponent {
       senha: ['', Validators.required]
     });
 
-    this.registerForm = this.fb.group({
-      nome: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
-      senharegisto: ['', Validators.required]
-    });
+   this.registerForm = this.fb.group({
+  nome: ['', Validators.required],
+  email: ['', [Validators.required, Validators.email]],
+  telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+  senha: ['', Validators.required]
+});
   }
 
   toggleSignUpMode(): void {
@@ -66,7 +66,7 @@ export class LoginComponent {
   get registerName() { return this.registerForm.get('nome'); }
   get registerEmail() { return this.registerForm.get('email'); }
   get registerTelefone() { return this.registerForm.get('telefone'); }
-  get registerPassword() { return this.registerForm.get('senharegisto'); }
+  get registerPassword() { return this.registerForm.get('senha'); }
 
   onEmailOrPhoneInput(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -108,33 +108,43 @@ onSubmit(): void {
 }
 
 
-  onRegister(): void {
-    if (!this.signUpMode) return;
+ onRegister(): void {
+  if (!this.signUpMode) return;
 
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      this.errorMessage = 'Preencha todos os campos do cadastro corretamente.';
-      return;
-    }
-
-    const payload = this.registerForm.value;
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.cadastroService.cadastrarUsuario(payload).subscribe({
-      next: (response) => {
-        alert('Cadastro realizado com sucesso!');
-        this.toggleSignUpMode();
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Cadastro Error:', error);
-        this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
-        this.isLoading = false;
-      }
-    });
+  if (this.registerForm.invalid) {
+    this.registerForm.markAllAsTouched();
+    this.errorMessage = 'Preencha todos os campos do cadastro corretamente.';
+    return;
   }
+
+  // EXTRA: monte manualmente o payload (evita surpresas com nomes)
+  const payload = {
+    nome: this.registerForm.value.nome,
+    email: this.registerForm.value.email,
+    telefone: this.registerForm.value.telefone,
+    senha: this.registerForm.value.senha
+  };
+
+  console.log('▶️ payload de cadastro:', payload);
+
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  this.cadastroService.cadastrarUsuario(payload).subscribe({
+    next: (response) => {
+      alert('Cadastro realizado com sucesso!');
+      this.toggleSignUpMode();
+      this.isLoading = false;
+    },
+    error: (error) => {
+      console.error('🔥 Cadastro Error completo:', error);
+      console.error('💬 Mensagem do back‑end:', error.error);
+      this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
+      this.isLoading = false;
+    }
+  });
+}
+
 
   ngOnInit() {
     this.titleService.setTitle('Nextech - Login');
