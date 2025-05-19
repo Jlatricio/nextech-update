@@ -8,7 +8,7 @@ import { Artigo } from '../interface/artigo';
 })
 export class ArtigoService {
 
-    private readonly apiUrl = 'http://localhost:3000/artigo';
+    private readonly apiUrl = '';
   http: any;
 
     constructor(private httpClient: HttpClient) {}
