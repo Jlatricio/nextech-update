@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
 import { Observable } from 'rxjs/internal/Observable';
+
 
 import { FornecedorService} from '../../services/fornecedor.service'
 import { Fornecedor} from '../../interface/fornecedor';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-fornecedores',
@@ -16,52 +18,69 @@ import { RouterModule } from '@angular/router';
 })
 export class FornecedoresComponent {
   fornecedor$!: Observable<Fornecedor[]>;
+
   form: FormGroup;
-            populateForm(fornecedor: any): void {
-            this.form.patchValue({
-              nome: fornecedor.nome,
-              nif: fornecedor.nif,
-              telefone: fornecedor.telefone,
-              email: fornecedor.email,
-              endereco: fornecedor.endereco
-            });
-          }
+    fornecedor: Fornecedor = {
+          id: 0,
+          nome: '',
+          log: null,
+          nif: '',
+          endereco: '',
+          telefone: 0,
+          email: '',
+          empresaId: 0,
+          dataCriacao: new Date(),
+    };
 
-  constructor(private formBuilder: FormBuilder,private fornecedorService: FornecedorService
-  ) {
-    this.fornecedor$ = this.fornecedorService.listaFornecedor();
-
+    constructor(
+      private formBuilder: FormBuilder,
+      private fornecedorService: FornecedorService,
+      
+    ) {
     this.form = this.formBuilder.group({
-      nome: ['', Validators.required],
-      nif: ['', Validators.required],
-      telefone: ['', Validators.required],
-      email: ['', Validators.required, Validators.email],
-      endereco: ['', Validators.required],
+      id: [this.fornecedor.id],
+      nome: [this.fornecedor.nome, Validators.required],
+      log: [this.fornecedor.log],
+      nif: [this.fornecedor.nif, Validators.required],
+      endereco: [this.fornecedor.endereco, Validators.required],
+      telefone: [
+        this.fornecedor.telefone,
+        [
+          Validators.required,
+          Validators.pattern(/^(\(?\d{2}\)?\s?(9\d{4}|\d{4})-?\d{4})$/),
+          Validators.minLength(9),
+        ],
+      ],
+      email: [this.fornecedor.email, [Validators.required, Validators.email]],
+      dataCriacao: [this.fornecedor.dataCriacao],
     });
   }
-  ngOnInit(): void {}
+
+  ngOnInit(): void {
+    this.fornecedor$ = this.fornecedorService.getFornecedores();
+  }       
   onSubmit() {
-    this.fornecedorService
-      .salvarFornecedor(this.form.value)
-      .subscribe((result) => console.log(result));
-  }
-  deleteFornecedor(id: number | undefined) {
-    if (id !== undefined) {
-      this.fornecedorService.deleteFornecedor(id).subscribe(() => {
-        console.log(`fornecedor com ID ${id} deleted`);
-        this.fornecedor$ = this.fornecedorService.listaFornecedor(); // Refresh the list
+    console.log(this.form.value);
+    if (this.form.valid) {
+      this.fornecedorService.createFornecedor(this.form.value).subscribe(
+        (response) => {
+          console.log('Fornecedor created successfully:', response);
+          this.fornecedor$ = this.fornecedorService.getFornecedores();
+          this.form.reset();
+        },
+        (error) => {
+          console.error('Error creating fornecedor:', error);
+        }
+      );
+    } else {
+      console.log('Form is invalid');
+      Object.entries(this.form.controls).forEach(([key, control]) => {
+        console.log(
+          `${key} - valor: ${control.value}, válido: ${control.valid}, erros:`,
+          control.errors
+        );
       });
     }
   }
-  updatefornecedor(id: number) {
-    if (this.form.valid) {
-     this.fornecedorService
-       .atualizarFornecedor(id, this.form.value)
-       .subscribe(updatefornecedor =>{
-         console.log(`Fornecedor com ID ${id} updated`, updatefornecedor);
-         this.form.reset();
-         this.fornecedor$ = this.fornecedorService.listaFornecedor(); // Refresh the list
-       });
-    }
-  }
+
 }
