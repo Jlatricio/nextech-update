@@ -1,0 +1,50 @@
+ <div class="containeer">
+    <div class="header">
+        <h1>Visualizar Documento</h1>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Cliente</label>
+            <input type="text" value="PP 2025/2" readonly class="readonly-input" disabled>
+        </div>
+
+        <div class="form-group">
+            <label>Nº do documento</label>
+            <input type="text" value="PP 2025/4" readonly class="readonly-input" disabled>
+        </div>
+
+        <div class="form-group">
+            <label>Data de criação</label>
+            <input type="text" value="31 de Jan, 2018" readonly class="readonly-input" disabled>
+        </div>
+        <div class="form-group">
+            <label>Prazo de validade</label>
+            <input type="text" value="20 de Agosto, 2018" readonly class="readonly-input" disabled>
+        </div>
+
+        <div class="form-group">
+            <label>Valor</label>
+            <input type="text" value="4.0000 " readonly class="readonly-input" disabled>
+        </div>
+
+        <div class="form-group">
+            <label>Imposto</label>
+            <input type="text" value="0" readonly class="readonly-input" disabled>
+        </div>
+
+        <div class="form-group">
+            <label>Operador</label>
+            <input type="text" value="Admin" readonly class="readonly-input" disabled>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="cancel-btn" (click)="voltar()">Voltar</button>
+        <button  (click)="gerarDocumento(1)">Imprimir </button>
+    </div>
+</div>
+
+
+
+
