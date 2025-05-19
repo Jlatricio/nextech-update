@@ -1,36 +1,46 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 
 import { Fornecedor } from '../interface/fornecedor';
-import { Observable, pipe, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FornecedorService {
-  private readonly apiUrl = 'http://localhost:3000/fornecedor'; // URL de la API de clientes
 
-  constructor(private httpClient: HttpClient) {}
+  private readonly apiUrl = `${environment.apiUrl}/suppliers`;
 
-  listaFornecedor() {
-    return this.httpClient
+  constructor(private readonly http: HttpClient) {}
+  
+  createFornecedor(fornecedor: Fornecedor): Observable<Fornecedor> {
+    return this.http
+      .post<Fornecedor>(this.apiUrl, fornecedor)
+      .pipe(
+        tap((newFornecedor) => console.log('Novo Fornecedor:', newFornecedor))
+      );
+  }
+  
+  getFornecedores(): Observable<Fornecedor[]> {
+    return this.http
       .get<Fornecedor[]>(this.apiUrl)
-      .pipe(tap((fornecedor) => console.log(fornecedor)));
+      .pipe(tap((fornecedores) => console.log('Fornecedores:', fornecedores)));
   }
 
-  salvarFornecedor(registro: Fornecedor) {
-    return this.httpClient
-      .post<Fornecedor>(this.apiUrl, registro)
-      .pipe(tap((fornecedor) => console.log(fornecedor)));
-  }
 
-  deleteFornecedor(id: number): Observable<void> {
-    // Replace the URL with the correct API endpoint
-    return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  atualizarFornecedor(id: number, registro: Fornecedor): Observable<Fornecedor> {
-        return this.httpClient.put<Fornecedor>(`${this.apiUrl}/${id}`, registro)
-       .pipe(tap((fornecedorAtualizado) => console.log(fornecedorAtualizado)));
-  }
+  // getFornecedoresByEmpresaId(empresaId: number): Observable<Fornecedor[]> {
+  //   return this.http
+  //     .get<Fornecedor[]>(`${this.apiUrl}/empresa/${empresaId}`)
+  //     .pipe(
+  //       tap((fornecedores) =>
+  //         console.log('Fornecedores por Empresa ID:', fornecedores)
+  //       )
+  //     );
+  // }
+  // getFornecedorById(id: number): Observable<Fornecedor> {
+  //   return this.http
+  //     .get<Fornecedor>(`${this.apiUrl}/${id}`)
+  //     .pipe(tap((fornecedor) => console.log('Fornecedor:', fornecedor)));
+  // }
 }

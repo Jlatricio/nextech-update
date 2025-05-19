@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://api.nextechgestao.cloud/v1'
+  apiUrl: 'http://localhost:3000/fornecedor', // URL de la API de clientes
 };
