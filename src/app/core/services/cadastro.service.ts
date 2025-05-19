@@ -12,10 +12,10 @@ export class CadastroService {
   constructor(private http: HttpClient) { }
 
   cadastrarUsuario(payload: {
-    name: string,
+    nome: string,
     email: string,
     telefone: string,
-    password: string
+    senha: string
   }): Observable<any> {
     return this.http.post(this.apiUrl, payload);
   }

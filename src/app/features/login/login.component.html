@@ -81,7 +81,7 @@
         <!-- Senha -->
         <div class="input-field" [ngClass]="{'has-error': registerPassword?.invalid && (registerPassword?.dirty || registerPassword?.touched)}">
           <i class="fas fa-lock"></i>
-          <input type="password" formControlName="senharegisto" placeholder="Senha" />
+          <input type="password" formControlName="senha" placeholder="Senha" />
         </div>
         <div *ngIf="registerPassword?.invalid && (registerPassword?.dirty || registerPassword?.touched)" class="error">
           <small *ngIf="registerPassword?.errors?.['required']">Senha é obrigatória.</small>
