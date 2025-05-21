@@ -1,11 +1,8 @@
 export interface Fornecedor {
   id: number;
-  log: null;
   nome: string;
   nif: string;
   endereco: string;
-  telefone: number;
+  telefone: string;
   email: string;
-  empresaId: number;
-  dataCriacao: Date;
 }
