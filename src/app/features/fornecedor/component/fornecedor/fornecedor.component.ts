@@ -8,6 +8,7 @@ import { Observable } from 'rxjs/internal/Observable';
 
 import { FornecedorService} from '../../services/fornecedor.service'
 import { Fornecedor} from '../../interface/fornecedor';
+import { Alert } from 'bootstrap';
 
 @Component({
   selector: 'app-fornecedores',
@@ -23,13 +24,10 @@ export class FornecedoresComponent {
     fornecedor: Fornecedor = {
           id: 0,
           nome: '',
-          log: null,
           nif: '',
           endereco: '',
-          telefone: 0,
-          email: '',
-          empresaId: 0,
-          dataCriacao: new Date(),
+          telefone: '',
+          email: ''
     };
 
     constructor(
@@ -39,20 +37,11 @@ export class FornecedoresComponent {
     ) {
     this.form = this.formBuilder.group({
       id: [this.fornecedor.id],
-      nome: [this.fornecedor.nome, Validators.required],
-      log: [this.fornecedor.log],
+      nome: [this.fornecedor.nome, Validators.required],  
       nif: [this.fornecedor.nif, Validators.required],
       endereco: [this.fornecedor.endereco, Validators.required],
-      telefone: [
-        this.fornecedor.telefone,
-        [
-          Validators.required,
-          Validators.pattern(/^(\(?\d{2}\)?\s?(9\d{4}|\d{4})-?\d{4})$/),
-          Validators.minLength(9),
-        ],
-      ],
+      telefone: [this.fornecedor.telefone,[Validators.required,Validators.minLength(9),],],
       email: [this.fornecedor.email, [Validators.required, Validators.email]],
-      dataCriacao: [this.fornecedor.dataCriacao],
     });
   }
 
@@ -64,12 +53,19 @@ export class FornecedoresComponent {
     if (this.form.valid) {
       this.fornecedorService.createFornecedor(this.form.value).subscribe(
         (response) => {
-          console.log('Fornecedor created successfully:', response);
+
+          // Exibir mensagem de sucesso
+          alert('Fornecedor criado com sucesso' + response);
+          // Limpar o formulário
+          this.form.reset();
+
+          // Atualizar a lista de fornecedores
           this.fornecedor$ = this.fornecedorService.getFornecedores();
           this.form.reset();
         },
         (error) => {
-          console.error('Error creating fornecedor:', error);
+          // Exibir mensagem de erro
+          alert('Erro ao criar fornecedor:' + error);
         }
       );
     } else {
@@ -82,5 +78,26 @@ export class FornecedoresComponent {
       });
     }
   }
+
+  deleteFornecedor(fornecedor: Fornecedor) {
+    this.fornecedorService.deleteFornecedor(fornecedor.id).subscribe(
+      () => {
+        // Exibir mensagem de sucesso
+        alert('Fornecedor excluído com sucesso');
+
+        // Atualizar a lista de fornecedores
+        this.fornecedor$ = this.fornecedorService.getFornecedores();
+      },
+      (error) => {
+        // Exibir mensagem de erro
+        alert('Erro ao excluir fornecedor:' + error.message);
+      }
+    );
+  }
+
+
+
+
+
 
 }

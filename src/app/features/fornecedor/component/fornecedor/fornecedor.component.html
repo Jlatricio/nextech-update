@@ -21,11 +21,12 @@
       <thead>
         <tr>
           <th>Id</th>
-          <th>Nome do fornecedor</th>
+          <th>Nome/fornecedor</th>
           <th>NIF</th>
           <th>Telefone</th>
           <th>E-mail</th>
           <th>Endereço</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -37,12 +38,12 @@
           <td>{{ fornecedor.email }}</td>
           <td>{{ fornecedor.endereco }}</td>
           <td>
-            <!-- <button type="button" class="btn btn-danger"
-            (click)="deleteFornecedor(fornecedor.id)">
+            <button type="button" class="btn btn-danger"
+            (click)="deleteFornecedor(fornecedor)">
               <i class="bi bi-trash"></i>
-            </button> -->
-            <!-- <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
-              (click)="populateForm(fornecedor)">
+            </button> 
+             <!-- <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
+              (click)="populateForm(fornecedor.id)">
               <i class="bi bi-pencil-square"></i>
             </button> -->
           </td>
@@ -65,35 +66,51 @@
             <h1 class="modal-title fs-5">Criar Fornecedor</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-
-          <div class="mb-3">
-            <input class="form-control" type="file" />
-            <small class="form-text text-muted">Ficheiro menos de 1MB</small>
-          </div>
-
+            <!-- input nome -->
           <div class="mb-3">
             <label for="nome" class="form-label">Nome do Fornecedor</label>
             <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required/>
+            <!-- validar o nome -->
+            <div class="text-danger" *ngIf="form.get('nome')?.invalid && (form.get('nome')?.touched || form.get('nome')?.dirty)">
+              Nome é obrigatório.
+            </div>
+      
           </div>
 
           <div class="mb-3">
             <label for="nome" class="form-label">NIF</label>
             <input type="text" id="nif" name="nif" class="form-control" formControlName="nif" required/>
+            <div class="text-danger" *ngIf="form.get('nif')?.invalid && (form.get('nif')?.touched || form.get('nif')?.dirty)">
+              NIF é obrigatório.
+            </div>
+
           </div>
 
           <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="number" id="telefone" name="telefone" class="form-control"formControlName='telefone' required/>
+            <input type="text" id="telefone" name="telefone" class="form-control"formControlName='telefone' required/>
+            <div class="text-danger"
+              *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)">
+              Telefone é obrigatório.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" id="email" name="email" class="form-control" formControlName='email' required />
+            <div class="text-danger" *ngIf="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty)">
+              <span *ngIf="form.get('email')?.errors?.['required']">Email é obrigatório.</span>
+              <span *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido.</span>
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="endereco" class="form-label">Endereço</label>
             <input type="text" id="endereco" name="endereco" class="form-control" formControlName='endereco' required />
+            <div class="text-danger"
+              *ngIf="form.get('endereco')?.invalid && (form.get('endereco')?.touched || form.get('endereco')?.dirty)">
+              Endereço é obrigatório.
+            </div>
           </div>
 
           <div class="mb-3">
