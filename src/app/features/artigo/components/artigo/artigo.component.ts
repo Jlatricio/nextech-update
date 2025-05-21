@@ -4,7 +4,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Artigo } from '../../interface/artigo';
 import { Observable } from 'rxjs';
 import { ArtigoService } from '../../service/artigo.service';
-import { Modal } from 'bootstrap';
+import bootstrap, { Modal } from 'bootstrap';
 import { CommonModule } from '@angular/common';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
@@ -20,13 +20,14 @@ import { CategoriaService } from '../../service/categoria.service';
 })
 export class ArtigoComponent implements OnInit {
 
-  artigo$: Observable<Artigo[]>;
   form: FormGroup;
   categoriaForm!: FormGroup;
-
-    categorias: string[] = [];
+artigos: Artigo[] = [];
+ artigoSelecionadoId: number | null = null;
+    categorias: { id: number, nome: string }[] = [];
   mostrarCampoNovaCategoria = false;
   novaCategoria = '';
+modoEdicao = false;
 
 
   filtro = {
@@ -38,40 +39,35 @@ export class ArtigoComponent implements OnInit {
   searchTerm: string = '';
 
 
-  cards = [
-    {
-      title: 'Facturado',
-      value: 'Kz 0,00',
-      info: '8 transações',
-      percentage: '0,00%',
-      icon: 'fas fa-file-invoice',
-      style: ''
-    },
-    {
-      title: 'Despesas',
-      value: 'Kz 0,00',
-      info: '8 registos',
-      percentage: '0,00%',
-      icon: 'fas fa-money-bill-wave',
-      style: 'warning'
-    },
-    {
-      title: 'Recibos',
-      value: 'Kz 0,00',
-      info: '8 emitidos',
-      percentage: '0,00%',
-      icon: 'fas fa-receipt',
-      style: ''
-    },
-    {
-      title: 'Reembolso',
-      value: 'Kz 0,00',
-      info: '8 pedidos',
-      percentage: '0,00%',
-      icon: 'fas fa-undo',
-      style: 'danger'
+
+  filtrar(): void {
+  this.artigoService.listarArtigo().subscribe({
+    next: artigos => {
+      this.categoriaService.listarCategorias().subscribe({
+        next: categorias => {
+          const artigosComCategoria = artigos.map(a => ({
+            ...a,
+            categoria: categorias.find(c => c.id === a.categoriaId)
+          }));
+
+          if (this.filtro.Categorias) {
+            this.artigos = artigosComCategoria.filter(a =>
+              a.categoria && a.categoria.id === Number(this.filtro.Categorias)
+            );
+          } else {
+            this.artigos = artigosComCategoria; // mostra todos
+          }
+        }
+      });
     }
-  ];
+  });
+}
+
+
+
+
+
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -79,7 +75,7 @@ export class ArtigoComponent implements OnInit {
     private titleService: TitleService,
     private categoriaService: CategoriaService,
   ) {
-    this.artigo$ = this.artigoService.listaArtigos();
+
 
     this.form = this.formBuilder.group({
       nome: ['', Validators.required],
@@ -98,70 +94,132 @@ export class ArtigoComponent implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle('Artigos');
      this.carregarCategorias();
-  }
+       this.inicializarFormulario();
+    this.carregarArtigos();
 
-  populateForm(artigo: Artigo): void {
-    this.form.patchValue({
-      nome: artigo.nome,
-      categoria: artigo.categoria,
-      imposto: artigo.imposto,
-      precoUnitario: artigo.precoUnitario
+     this.form.addControl('descricao', this.formBuilder.control('', [Validators.maxLength(300)]));
+    this.form.get('descricao')?.valueChanges.subscribe((value: string) => {
+      this.descricao = value;
+      this.descricaoRestante = 300 - (value?.length || 0);
     });
   }
 
-  onSubmit(): void {
-    if (this.form.valid) {
-      this.artigoService.salvarArtigo(this.form.value).subscribe(result => {
-        console.log(result);
-        this.form.reset();
 
-        const modal = document.getElementById('exampleModal');
-        if (modal) {
-          const bootstrapModal = Modal.getInstance(modal);
-          bootstrapModal?.hide();
+
+
+    inicializarFormulario(): void {
+    this.form = this.formBuilder.group({
+      nome: ['', Validators.required],
+      precoUnitario: ['', Validators.required],
+      categoria: ['', Validators.required],
+      imposto: [0, Validators.required],
+      tipo: ['', Validators.required],
+      descricao: ['']
+    });
+  }
+
+carregarArtigos(): void {
+  this.artigoService.listarArtigo().subscribe({
+    next: artigos => {
+      this.categoriaService.listarCategorias().subscribe({
+        next: categorias => {
+          this.artigos = artigos.map(a => ({
+            ...a,
+            categoria: categorias.find(c => c.id === a.categoriaId)
+          }));
         }
       });
     }
+  });
+}
+
+
+ salvarArtigo(): void {
+  const artigo: Partial<Artigo> = {
+    nome: this.form.value.nome,
+    preco: parseFloat(
+      String(this.form.value.precoUnitario)
+        .replace('Kz ', '')
+        .replace(/\./g, '')
+        .replace(',', '.')
+    ),
+    categoriaId: Number(this.form.value.categoria),
+    impostoAplicado: parseFloat(this.form.value.imposto),
+    tipo: this.form.value.tipo,
+    descricao: this.form.value.descricao,
+  };
+
+  if (this.artigoSelecionadoId) {
+    this.artigoService.atualizarArtigo(this.artigoSelecionadoId, artigo).subscribe(() => {
+      this.carregarArtigos();
+      this.resetarFormulario();
+      alert('Artigo atualizado com sucesso!');
+      this.fecharModal();
+    });
+  } else {
+    this.artigoService.criarArtigo(artigo).subscribe({
+      next: (res: any) => {
+        console.log('Artigo criado!', res);
+        alert('Artigo criado com sucesso!');
+        this.fecharModal();
+      },
+      error: (err: any) => {
+        console.error('Erro:', err.error);
+      },
+      complete: () => {
+        this.carregarArtigos();
+        this.resetarFormulario();
+      }
+    });
+  }
+}
+
+fecharModal(): void {
+  const modalElement = document.getElementById('exampleModal');
+  if (modalElement) {
+    const modal = Modal.getInstance(modalElement);
+    modal?.hide();
+  }
+}
+
+
+
+  editarArtigo(artigo: Artigo): void {
+    this.artigoSelecionadoId = artigo.id ?? null;
+    this.form.patchValue({
+      nome: artigo.nome,
+      precoUnitario: artigo.preco.toString(),
+      categoria: artigo.categoriaId.toString(), // se `categoriaId` for string
+      imposto: artigo.impostoAplicado,
+      tipo: artigo.tipo,
+      descricao: artigo.descricao
+    });
+    this.modoEdicao = true;
+
+
+  const modalElement = document.getElementById('exampleModal') as HTMLElement | null;
+  if (modalElement) {
+    const modal = new Modal(modalElement);
+    modal.show();
+  }
   }
 
-  deleteArtigo(id: number | undefined): void {
-    if (id !== undefined) {
-      this.artigoService.deletarArtigo(id).subscribe(() => {
-        console.log(`Artigo with ID ${id} deleted`);
-        this.artigo$ = this.artigoService.listaArtigos();
-      });
+  excluirArtigo(id: number): void {
+    if (confirm('Deseja realmente excluir este artigo?')) {
+      this.artigoService.deletarArtigo(id).subscribe(() => this.carregarArtigos());
     }
   }
 
-  updateArtigo(id: number): void {
-    if (this.form.valid) {
-      this.artigoService.atualizarArtigo(id, this.form.value).subscribe(updatedArtigo => {
-        console.log(`Artigo with ID ${id} updated`, updatedArtigo);
-        this.form.reset();
-
-        const modal = document.getElementById('exampleModal');
-        if (modal) {
-          const bootstrapModal = Modal.getInstance(modal);
-          bootstrapModal?.hide();
-        }
-
-        this.artigo$ = this.artigoService.listaArtigos();
-      });
-    }
+  resetarFormulario(): void {
+    this.form.reset();
+    this.artigoSelecionadoId = null;
   }
 
-  filtrar(): void {
-    console.log('Filtro aplicado:', this.filtro);
-    // Aqui você pode implementar o filtro para os artigos
-  }
 
-  filteredCards(): any[] {
-    if (!this.searchTerm) return this.cards;
 
-    return this.cards.filter(card =>
-      card.title.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-  }
+
+
+
 
   onCategoriaSubmit(): void {
     if (this.categoriaForm.valid) {
@@ -190,8 +248,8 @@ toggleNovaCategoria() {
 
     this.categoriaService.criarCategoria(novaCat).subscribe({
       next: (categoriaCriada) => {
-        this.categorias.push(categoriaCriada.nome);
-        this.form.get('categoria')?.setValue(categoriaCriada.nome);
+        this.categorias.push(categoriaCriada);
+        this.form.get('categoria')?.setValue(categoriaCriada.id);
         this.novaCategoria = '';
         this.mostrarCampoNovaCategoria = false;
       },
@@ -204,11 +262,47 @@ toggleNovaCategoria() {
   carregarCategorias(): void {
     this.categoriaService.listarCategorias().subscribe({
       next: (data) => {
-        this.categorias = data.map(cat => cat.nome); // Supondo que Categoria tem campo 'nome'
+        this.categorias = data; // Agora categorias é um array de objetos com id e nome
       },
       error: (err) => {
         console.error('Erro ao carregar categorias:', err);
       }
     });
   }
+
+  descricao: string = '';
+  descricaoRestante: number = 300;
+
+  ngAfterViewInit(): void {
+    this.descricaoRestante = 300 - (this.descricao?.length || 0);
+  }
+
+
+  impostos = [
+  { valor: 0, nome: 'Nenhum imposto' },
+  { valor: 0.07, nome: 'Imposto sobre o Valor Acrescentado (IVA) – 7%' },
+  { valor: 0.14, nome: 'Imposto sobre o Valor Acrescentado (IVA) – 14%' },
+  { valor: 0.25, nome: 'Imposto Industrial – 25% (taxa geral)' },
+  { valor: 0.10, nome: 'Imposto Industrial – 10% (atividades agrícolas, aquícolas, apícolas, avícolas, piscatórias, silvícolas e pecuárias)' },
+  { valor: 0.35, nome: 'Imposto Industrial – 35% (bancos, seguros, telecomunicações e empresas petrolíferas)' },
+  { valor: 0, nome: 'Imposto sobre o Rendimento do Trabalho (IRT) – Taxas progressivas conforme tabela' },
+  { valor: 0.25, nome: 'Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo B, matéria coletável não sujeita a retenção na fonte)' },
+  { valor: 0.25, nome: 'Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo C, matéria coletável não sujeita a retenção na fonte)' },
+  { valor: 0.10, nome: 'Imposto sobre a Aplicação de Capitais (IAC) – 10%' },
+  { valor: 0.005, nome: 'Imposto Predial (IP) – 0,5% a 1% (varia conforme o valor do imóvel)' },
+  { valor: 0.02, nome: 'Sisa – 2% (transmissão onerosa de bens imóveis)' },
+  { valor: 0, nome: 'Imposto Especial de Consumo (IEC) – Taxas variáveis conforme o produto' },
+  { valor: 0, nome: 'Imposto sobre Veículos Motorizados (IVM) – Taxas variáveis conforme o tipo e cilindrada do veículo' },
+  { valor: 0, nome: 'Imposto sobre Sucessões e Doações – Taxas variáveis conforme o valor e grau de parentesco' },
+  { valor: 0, nome: 'Imposto sobre as Atividades Petrolíferas – Taxas específicas conforme a legislação aplicável' },
+  { valor: 0, nome: 'Imposto sobre as Atividades Mineiras – Taxas específicas conforme a legislação aplicável' },
+  { valor: 0, nome: 'Direitos Aduaneiros – Taxas variáveis conforme o tipo de mercadoria' }
+];
+
+getNomeImposto(valor: number): string {
+  const imposto = this.impostos.find(i => i.valor === valor);
+  return imposto ? imposto.nome : 'Desconhecido';
+}
+
+
 }
