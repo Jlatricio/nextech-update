@@ -1,8 +1,11 @@
-export interface Artigo{
-  id?: number;
+export interface Artigo {
+  id: number;
   nome: string;
-  categoria: string;
-  imposto: string;
-  precoUnitario: string;
-
+  tipo: string;
+  categoriaId: number;
+  categoria?: { id: number; nome: string };
+  impostoAplicado: number;
+  preco: number;
+  dataCriacao: string;
+  descricao: string;
 }

@@ -29,11 +29,13 @@
 
       <div class="filtro-item">
 
-        <label for="mes">Categoria</label>
-        <select id="mes" [(ngModel)]="filtro.mes">
-          <option value="">Todos</option>
-          <option *ngFor="let categoria of categorias" [value]="categoria">{{ categoria }}</option>
-        </select>
+      <label for="categoria">Categoria</label>
+<select id="categoria" [(ngModel)]="filtro.Categorias">
+  <option value="">Todos</option>
+  <option *ngFor="let categoria of categorias" [value]="categoria.id">
+    {{ categoria.nome }}
+  </option>
+</select>
       </div>
 
       <button class="btn-filtrar" (click)="filtrar()">Filtrar</button>
@@ -44,30 +46,36 @@
   <table>
     <thead>
       <tr>
-        <th>Id</th>
         <th>Nome</th>
+        <th>Tipo</th>
         <th>Categoria</th>
         <th>Imposto</th>
         <th>Preço Unitário</th>
-        <th>Acção</th>
+        <th>Data de Criação</th>
+        <th>Descrição</th>
+        <th>Acções</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let artigo of artigo$ | async">
-        <td>{{ artigo.id }}</td>
+      <tr *ngFor="let artigo of artigos" >
         <td>{{ artigo.nome }}</td>
-        <td>{{ artigo.categoria }}</td>
-        <td>{{ artigo.imposto }}</td>
-        <td>{{ artigo.precoUnitario | currency: 'Kz' }}</td>
-        <td>
-          <button type="button" class="" (click)="deleteArtigo(artigo.id)">
-            <i class="bi bi-trash"></i> Deletar
-          </button>
-          <button type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="populateForm(artigo)">
-            <i class="bi bi-pencil-square"></i> Editar
-          </button>
+        <td>{{ artigo.tipo }}</td>
+       <td>{{ artigo.categoria?.nome || 'Sem categoria' }}</td>
+     <td>{{ getNomeImposto(artigo.impostoAplicado) }}</td>
+
+        <td>{{ artigo.preco | currency: 'Kz' }}</td>
+        <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy' }}</td>
+        <td style="font-size: 0.5em; max-width: 250px; white-space: pre-line; word-break: break-word;">
+          {{ artigo.descricao || '' }}
         </td>
-          </tr>
+        <td>
+          <button class="btn btn-outline-primary" (click)="editarArtigo(artigo)">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-outline-danger" (click)="excluirArtigo(artigo.id)">
+            <i class="bi bi-trash"></i>
+          </button>
+      </tr>
     </tbody>
   </table>
 </section>
@@ -86,26 +94,35 @@
     </div>
 
     <div class="modal-body">
-      <div class="mb-3">
-        <input class="form-control" type="file" />
-        <small class="form-text text-muted">Ficheiro menos de 1MB</small>
-      </div>
 
       <form [formGroup]="form">
         <div class="mb-3">
-          <label for="nome" class="form-label">Nome do artigo <span class="text-danger">*</span></label>    <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
+          <label for="nome" class="form-label">Nome do artigo <span class="text-danger">*</span></label>
+             <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
         </div>
 
         <div class="mb-3">
   <label for="categoriaSelect" class="form-label">Categoria <span class="text-danger">*</span></label>
   <div class="d-flex align-items-center gap-2">
     <select id="categoriaSelect" name="categoria" class="form-select" formControlName="categoria" required>
-      <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+      <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</option>
+
     </select>
     <button type="button" class="btn btn-outline-primary" (click)="toggleNovaCategoria()">
       <i class="bi bi-plus-circle"></i>
     </button>
   </div>
+</div>
+
+<div class="mb-3">
+  <label for="tipo" class="form-label">Tipo <span class="text-danger">*</span></label>
+  <select id="tipo" name="tipo" class="form-select" formControlName="tipo" required>
+    <option value="PRODUTO">Produto</option>
+    <option value="SERVICO">Serviço</option>
+    <option value="SERVICO_COM_RETENCAO_6_5">Serviço com Retenção 6,5%</option>
+    <option value="ARRENDAMENTO">Arrendamento</option>
+    <option value="ARRENDAMENTO_COM_RETENCAO_15">Arrendamento com Retenção 15%</option>
+  </select>
 </div>
 
 <!-- Campo de criar nova categoria (visível só quando ativo) -->
@@ -127,27 +144,29 @@
 </div>
 
 
-        <div class="mb-3">
-          <label for="imposto" class="form-label">Imposto  <span class="text-danger">*</span></label>
-          <select name="imposto" id="imposto" class="form-select" formControlName="imposto" required>
-            <option value="iva">Imposto sobre o Valor Acrescentado (IVA) – 14%</option>
-            <option value="ii_geral">Imposto Industrial – 25% (taxa geral)</option>
-            <option value="ii_agricola">Imposto Industrial – 10% (atividades agrícolas, aquícolas, apícolas, avícolas, piscatórias, silvícolas e pecuárias)</option>
-            <option value="ii_especial">Imposto Industrial – 35% (bancos, seguros, telecomunicações e empresas petrolíferas)</option>
-            <option value="irt_grupo_a">Imposto sobre o Rendimento do Trabalho (IRT) – Taxas progressivas conforme tabela</option>
-            <option value="irt_grupo_b">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo B, matéria coletável não sujeita a retenção na fonte)</option>
-            <option value="irt_grupo_c">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo C, matéria coletável não sujeita a retenção na fonte)</option>
-            <option value="iac">Imposto sobre a Aplicação de Capitais (IAC) – 10%</option>
-            <option value="ip">Imposto Predial (IP) – 0,5% a 1% (varia conforme o valor do imóvel)</option>
-            <option value="sisa">Sisa – 2% (transmissão onerosa de bens imóveis)</option>
-            <option value="iec">Imposto Especial de Consumo (IEC) – Taxas variáveis conforme o produto</option>
-            <option value="imposto_veiculos">Imposto sobre Veículos Motorizados (IVM) – Taxas variáveis conforme o tipo e cilindrada do veículo</option>
-            <option value="imposto_sucessoes">Imposto sobre Sucessões e Doações – Taxas variáveis conforme o valor e grau de parentesco</option>
-            <option value="imposto_petrolifero">Imposto sobre as Atividades Petrolíferas – Taxas específicas conforme a legislação aplicável</option>
-            <option value="imposto_mineiro">Imposto sobre as Atividades Mineiras – Taxas específicas conforme a legislação aplicável</option>
-            <option value="direitos_aduaneiros">Direitos Aduaneiros – Taxas variáveis conforme o tipo de mercadoria</option>
-          </select>
-        </div>
+       <div class="mb-3">
+  <label for="imposto" class="form-label">Imposto <span class="text-danger">*</span></label>
+  <select name="imposto" id="imposto" class="form-select" formControlName="imposto" required>
+    <option value="0">Nenhum imposto</option>
+    <option value="0.07">Imposto sobre o Valor Acrescentado (IVA) – 7%</option>
+    <option value="0.14">Imposto sobre o Valor Acrescentado (IVA) – 14%</option>
+    <option value="0.25">Imposto Industrial – 25% (taxa geral)</option>
+    <option value="0.10">Imposto Industrial – 10% (atividades agrícolas, aquícolas, apícolas, avícolas, piscatórias, silvícolas e pecuárias)</option>
+    <option value="0.35">Imposto Industrial – 35% (bancos, seguros, telecomunicações e empresas petrolíferas)</option>
+    <option value="0">Imposto sobre o Rendimento do Trabalho (IRT) – Taxas progressivas conforme tabela</option>
+    <option value="0.25">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo B, matéria coletável não sujeita a retenção na fonte)</option>
+    <option value="0.25">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo C, matéria coletável não sujeita a retenção na fonte)</option>
+    <option value="0.10">Imposto sobre a Aplicação de Capitais (IAC) – 10%</option>
+    <option value="0.005">Imposto Predial (IP) – 0,5% a 1% (varia conforme o valor do imóvel)</option>
+    <option value="0.02">Sisa – 2% (transmissão onerosa de bens imóveis)</option>
+    <option value="0">Imposto Especial de Consumo (IEC) – Taxas variáveis conforme o produto</option>
+    <option value="0">Imposto sobre Veículos Motorizados (IVM) – Taxas variáveis conforme o tipo e cilindrada do veículo</option>
+    <option value="0">Imposto sobre Sucessões e Doações – Taxas variáveis conforme o valor e grau de parentesco</option>
+    <option value="0">Imposto sobre as Atividades Petrolíferas – Taxas específicas conforme a legislação aplicável</option>
+    <option value="0">Imposto sobre as Atividades Mineiras – Taxas específicas conforme a legislação aplicável</option>
+    <option value="0">Direitos Aduaneiros – Taxas variáveis conforme o tipo de mercadoria</option>
+  </select>
+</div>
 
         <div class="mb-3">
           <label for="precoUnitario" class="form-label">Preço Unitário  <span class="text-danger">*</span></label>
@@ -163,8 +182,24 @@
             required
           />
         </div>
+        <div class="mb-3">
+          <label for="descricao" class="form-label">Descrição</label>
+          <textarea
+            id="descricao"
+            class="form-control"
+            formControlName="descricao"
+            maxlength="300"
+            rows="3"
+            [(ngModel)]="descricao"
+            (input)="descricaoRestante = 300 - descricao.length"
+            placeholder="Digite a descrição do artigo"
+          ></textarea>
+          <small class="text-muted">
+            {{ descricaoRestante || 300 }} caracteres restantes
+          </small>
+        </div>
 
         <div class="mb-3">
-          <button type="submit" class="btn btn-success" (click)="onSubmit()">Salvar</button>
+          <button type="submit" class="btn btn-success" (click)=" salvarArtigo()">Salvar</button>
         </div>
       </form>
