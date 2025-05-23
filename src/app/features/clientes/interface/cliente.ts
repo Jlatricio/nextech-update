@@ -1,8 +1,8 @@
 export interface Cliente {
-  id?: number;
+  id: number;
   tipo: string;
   nome: string;
   email: string;
-  telefone: number;
+  telefone: string;
   endereco: string;
 }

@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
 
 import { ClienteService } from '../../service/cliente.service';
 import { Cliente } from '../../interface/cliente';
-import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 
 
@@ -20,25 +19,20 @@ import { RouterModule } from '@angular/router';
 })
 export class ClienteComponent implements OnInit {
 
-
-
   clientes$: Observable<Cliente[]>;
   form: FormGroup;
 
-  populateForm(cliente: any): void {
-    this.form.patchValue({
-      nome: cliente.nome,
-      tipo: cliente.tipo,
-      email: cliente.email,
-      telefone: cliente.telefone,
-      endereco: cliente.endereco
-    });
-  }
+  // populateForm(cliente: any): void {
+  //   this.form.patchValue({
+  //     nome: cliente.nome,
+  //     tipo: cliente.tipo,
+  //     email: cliente.email,
+  //     telefone: cliente.telefone,
+  //     endereco: cliente.endereco
+  //   });
+  // }
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private clienteService: ClienteService
-    , private titleService: TitleService
+  constructor(private formBuilder: FormBuilder,private clienteService: ClienteService
   ) {
     this.clientes$ = this.clienteService.listaCliente();
 
@@ -50,47 +44,27 @@ export class ClienteComponent implements OnInit {
       endereco: ['', Validators.required],
     });
   }
-  ngOnInit(): void {
-    this.titleService.setTitle('Clientes');
-  }
-  onSubmit() {
-    this.clienteService
-      .salvarCliente(this.form.value)
-      .subscribe((result) => console.log(result));
-  }
-
-  deleteCliente(id: number | undefined) {
-    if (id !== undefined) {
-      this.clienteService.deletarCliente(id).subscribe(() => {
-        console.log(`cliente com ID ${id} deleted`);
-        this.clientes$ = this.clienteService.listaCliente(); // Refresh the list
-      });
-    }
-  }
-
-  updateCliente(id: number) {
-    if (this.form.valid) {
-      this.clienteService
-        .atualizarCliente(id, this.form.value)
-        .subscribe(updateCliente => {
-          console.log(`Cliente com ID ${id} updated`, updateCliente);
-          this.form.reset();
-           // Clear the form
-          this.clientes$ = this.clienteService.listaCliente(); // Refresh the list
-        });
-    }
-  }
-
-  Categorias = ['Serviço','Produto'];
-
-  filtrar() {
   
-    // aqui você pode fazer um filtro real nos dados ou chamada a um serviço/backend
+  ngOnInit(): void {
+    this.clientes$ = this.clienteService.listaCliente();
+  }
+  
+  onSubmit() {
+    if (this.form.valid) {
+      this.clienteService.createCliente(this.form.value).subscribe(
+        (response) => {
+          alert('Cliente criado com sucesso' + response);
+          this.form.reset();
+        },
+        (error) => {
+          console.error('Erro ao criar cliente:', error);
+        }
+      );
+    } else {
+      alert('Formulário inválido');
+    }
   }
 
-  searchTerm: string = '';
-
-filteredCards() {
-}
+  
 
 }
