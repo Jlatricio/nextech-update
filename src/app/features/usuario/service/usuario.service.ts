@@ -2,36 +2,39 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Observable, tap } from 'rxjs';
-import { Usuario } from '../components/interface/usuario';
+import { Usuario } from '../interface/usuario';
+import { environment } from '../../../../environments/environment';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class usuarioServices {
-  private readonly apiUrl = 'http://localhost:3000/fornecedor'; // URL de la API de clientes
+ private readonly apiUrl = `${environment.apiUrl}/users`;
 
   constructor(private httpClient: HttpClient) {}
 
-  listaUsuario() {
-    return this.httpClient
-      .get<Usuario[]>(this.apiUrl)
-      .pipe(tap((usuario) => console.log(usuario)));
+  // Lista todos os usuários
+  listaUsuario(): Observable<Usuario[]> {
+    return this.httpClient.get<Usuario[]>(this.apiUrl);
   }
 
-  salvarUsuario(registro: Usuario) {
-    return this.httpClient
-      .post<Usuario>(this.apiUrl, registro)
-      .pipe(tap((usuario) => console.log(usuario)));
+  // Obtém um usuário por ID
+  obterUsuarioPorId(id: number): Observable<Usuario> {
+    return this.httpClient.get<Usuario>(`${this.apiUrl}/${id}`);
   }
 
-  deleteUsuario(id: number): Observable<void> {
-    // Replace the URL with the correct API endpoint
+  // Cria um novo usuário
+  criarUsuario(usuario: Partial<Usuario>): Observable<Usuario> {
+    return this.httpClient.post<Usuario>(this.apiUrl, usuario);
+  }
+  // Atualiza um usuário existente
+  atualizarUsuario(id: number, usuario: Partial<Usuario>): Observable<Usuario> {
+    return this.httpClient.patch<Usuario>(`${this.apiUrl}/${id}`, usuario);
+  }
+  // Deleta um usuário por ID
+  deletarUsuario(id: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  atualizarUsuario(id: number, registro: Usuario): Observable<Usuario> {
-      return this.httpClient.put<Usuario>(`${this.apiUrl}/${id}`, registro)
-      .pipe(tap((usuarioAtualizado) => console.log(usuarioAtualizado)));
-  }
 }

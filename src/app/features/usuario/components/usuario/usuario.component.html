@@ -1,109 +1,116 @@
-
-<!-- btn Usuario botão -->
+<!-- Botão de novo usuário -->
 <div class="container-fluid">
   <div>
-    <h3>Usuario</h3>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      <i class="bi bi-plus-lg me-2"></i>Novo Usuario
+    <h3>Usuários</h3>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="cancelarEdicao()">
+      <i class="bi bi-plus-lg me-2"></i>Novo Usuário
     </button>
   </div>
 </div>
-<!-- btn Usuario botão -->
 
-<!-- tabela de Usuario -->
+<!-- Tabela de usuários -->
 <main class="table" id="customers_table">
   <section class="table__header">
-    <div class="input-group">
-      <input type="search" placeholder="Search Data..." />
-    </div>
+    <!-- Filtros ou buscas podem ser adicionados aqui -->
   </section>
   <section class="table__body">
     <table>
       <thead>
         <tr>
-          <th>Id</th>
           <th>Nome</th>
-          <th>Tipo de Usuario</th>
-          <th>Telefone</th>
           <th>E-mail</th>
-          <th>Senha</th>
+          <th>Tipo de Usuário</th>
+          <th>Telefone</th>
+          <th>Data de Criação</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let usuario of usuario$ | async">
-          <td>{{ usuario.id }}</td>
+        <tr *ngFor="let usuario of usuariosFiltrados">
           <td>{{ usuario.nome }}</td>
-          <td>{{ usuario.tipo }}</td>
+          <td>{{ usuario.email }}</td>
+          <td>{{ usuario.perfil }}</td>
           <td>{{ usuario.telefone }}</td>
-          <td>{{ usuario.senha }}</td>
+          <td>{{ usuario.dataCriacao | date: 'dd/MM/yyyy' }}</td>
           <td>
-            <button type="button" class="btn btn-danger"
-            (click)="deleteUsuario(usuario.id)">
-              <i class="bi bi-trash"></i>
-            </button>
-            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
-              (click)="populateForm(usuario)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
+            <div class="bnt-action">
+              <button class="btn btn-outline-primary" (click)="editarUsuario(usuario)" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="bi bi-pencil"></i> Editar
+              </button>
+              <button class="btn btn-outline-danger" (click)="deletarUsuario(usuario.id!)">
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
     </table>
   </section>
 </main>
-<!-- tabela de Usuario -->
 
-<!-- Modal -->
+<!-- Modal de criação/edição -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-
-        <h1 class="modal-title fs-5">Criar Usuario</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h1 class="modal-title fs-5">{{ editando ? 'Editar Usuário' : 'Criar Usuário' }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancelarEdicao()"></button>
       </div>
 
       <div class="modal-body">
-        <div class="mb-3">
-          <input class="form-control" type="file" />
-          <small class="form-text text-muted">Ficheiro menos de 1MB</small>
-        </div>
-
-        <form  [formGroup]="form">
+        <form [formGroup]="form" novalidate>
           <div class="mb-3">
-            <label for="nome" class="form-label">Nome do Usuario</label>
-            <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required/>
+            <label class="form-label">Nome do Usuário</label>
+            <input type="text" class="form-control" formControlName="nome" />
+            <div *ngIf="form.get('nome')?.invalid && (form.get('nome')?.touched || form.get('nome')?.dirty)" class="text-danger">
+              Nome é obrigatório.
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="tipo" class="form-label">Tipo de Cliente</label>
-            <select id="tipo" name="tipo" class="form-select" required formControlName="tipo" required>
-              <option value="" selected>Selecione o tipo</option>
-              <option value="admin">Admin</option>
-              <option value="vendedor">vendedor</option>
+            <label class="form-label">Tipo de Usuário</label>
+            <select class="form-select" formControlName="perfil">
+              <option value="">Selecione o tipo</option>
+              <option value="ADMIN">Admin</option>
+              <option value="CLIENTE">Vendedor</option>
             </select>
+            <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
+              Tipo de usuário é obrigatório.
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" id="email" name="email" class="form-control" required formControlName='email'/>
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" formControlName="email" />
+            <div *ngIf="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty)" class="text-danger">
+              <div *ngIf="form.get('email')?.errors?.['required']">Email é obrigatório.</div>
+              <div *ngIf="form.get('email')?.errors?.['email']">Email inválido.</div>
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="telefone" class="form-label">Telefone</label>
-            <input type="number" id="telefone" name="telefone" class="form-control" required formControlName='telefone'
-             pattern="^\(?\d{2}\)?\s?(9\d{4}|\d{4})-?d{4}$"/>
+            <label class="form-label">Telefone</label>
+            <input type="text" class="form-control" formControlName="telefone" />
+            <div *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)" class="text-danger">
+              Telefone é obrigatório.
+            </div>
           </div>
 
           <div class="mb-3">
-            <label for="nome" class="form-label">Senha</label>
-            <input type="password" id="senha" name="senha" class="form-control" formControlName="senha" required/>
+            <label class="form-label">Senha</label>
+            <input type="password" class="form-control" formControlName="senha" />
+            <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
+              Senha é obrigatória e deve ter no máximo 10 caracteres.
+            </div>
           </div>
 
-          <div class="mb-3">
-            <button type="submit" class="btn btn-success"(click)="onSubmit()">Salvar</button>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-success" (click)="criarOuAtualizarUsuario()" [disabled]="form.invalid">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ editando ? 'Atualizar' : 'Salvar' }}
+            </button>
+            <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
           </div>
-
         </form>
       </div>
     </div>

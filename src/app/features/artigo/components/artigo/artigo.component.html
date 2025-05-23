@@ -41,6 +41,11 @@
       <button class="btn-filtrar" (click)="filtrar()">Filtrar</button>
     </div>
   </div>
+<div *ngIf="loading" class="loader-container">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Carregando...</span>
+  </div>
+</div>
 
 <section class="table__body">
   <table>
@@ -57,7 +62,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let artigo of artigos" >
+      <tr *ngFor="let artigo of artigosFiltrados">
+
         <td>{{ artigo.nome }}</td>
         <td>{{ artigo.tipo }}</td>
        <td>{{ artigo.categoria?.nome || 'Sem categoria' }}</td>
@@ -69,12 +75,12 @@
           {{ artigo.descricao || '' }}
         </td>
         <td>
-          <button class="btn btn-outline-primary" (click)="editarArtigo(artigo)">
-            <i class="bi bi-pencil"></i>
+         <div class="bnt-action"> <button class="btn btn-outline-primary" (click)="editarArtigo(artigo)">
+            <i class="bi bi-pencil"></i> Editar
           </button>
           <button class="btn btn-outline-danger" (click)="excluirArtigo(artigo.id)">
-            <i class="bi bi-trash"></i>
-          </button>
+            <i class="bi bi-trash"></i> Eliminar
+          </button></div> </td>
       </tr>
     </tbody>
   </table>
@@ -200,6 +206,10 @@
         </div>
 
         <div class="mb-3">
-          <button type="submit" class="btn btn-success" (click)=" salvarArtigo()">Salvar</button>
+           <button type="submit" class="btn btn-success" [disabled]="loading" (click)="salvarArtigo()">
+  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+  Salvar
+</button>
+
         </div>
       </form>
