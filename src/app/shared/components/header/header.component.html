@@ -2,10 +2,12 @@
     <div class="flex-center">
       <h1>Nextech</h1>
     </div>
-    <div class="flex-center">
+    <div class="flex-center" *ngFor="let usuario of usuarios">
       <button class="btn btn-primary">
-        <i class="bi bi-person-circle me-2"></i>
-        Perfil
+        
+        Olá,
+       {{ usuario.nome.split(' ')[0] }}
+
       </button>
     </div>
   </header>
