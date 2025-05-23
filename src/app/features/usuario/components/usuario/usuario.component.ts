@@ -1,82 +1,137 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs/internal/Observable';
-
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
 import { CommonModule } from '@angular/common';
-import { Usuario } from '../interface/usuario';
+import { Usuario } from '../../interface/usuario';
 import { usuarioServices } from '../../service/usuario.service';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 
-
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './usuario.component.html',
-  styleUrl: './usuario.component.scss',
+  styleUrls: ['./usuario.component.scss'],
 })
-export class UsuariosComponent {
-  usuario$!: Observable<[Usuario]>;
+export class UsuariosComponent implements OnInit {
+  usuarios: Usuario[] = [];
+  filtro: string = '';
   form: FormGroup;
-  populateForm(usuario: any): void {
-    this.form.patchValue({
-      nome: usuario.nome,
-      tipo: usuario.tipo,
-      telefone: usuario.telefone,
-      email: usuario.email,
-      senha: usuario.senha
-    });
-  }
+  editando = false;
+  usuarioEditandoId: number | null = null;
+  usuarioOriginal: Usuario | null = null;
+  loading: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private usuarioService: usuarioServices,
     private titleService: TitleService
   ) {
-    this.usuario$ != this.usuarioService.listaUsuario();
-
     this.form = this.formBuilder.group({
+      id: [''],
       nome: ['', Validators.required],
-      tipo: ['', Validators.required],
-      telefone: ['', Validators.required],
-      email: ['', Validators.required, Validators.email],
-      senha: ['', Validators.required, Validators.max(8)],
+      perfil: ['', Validators.required],
+     telefone: ['', [Validators.required, Validators.minLength(9)]],
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', [Validators.required, Validators.maxLength(10)]]
     });
   }
 
   ngOnInit(): void {
     this.titleService.setTitle('Usuários');
-
+    this.listarUsuarios();
   }
 
-
-  onSubmit() {
-    this.usuarioService
-      .salvarUsuario(this.form.value)
-      .subscribe((result) => console.log(result));
+  listarUsuarios(): void {
+    this.usuarioService.listaUsuario().subscribe({
+      next: (res) => this.usuarios = res,
+      error: (err) => console.error('Erro ao listar usuários', err)
+    });
   }
 
+  criarOuAtualizarUsuario(): void {
+    if (this.form.invalid) {
+      alert('Preencha todos os campos obrigatórios.');
+      return;
+    }
 
-  deleteUsuario(id: number | undefined) {
-    if (id !== undefined) {
-      this.usuarioService.deleteUsuario(id).subscribe(() => {
-        console.log(`Usuario Com ID ${id} deleted`);
-        this.usuario$ != this.usuarioService.listaUsuario();
+    this.loading = true;
+
+    const usuario = { ...this.form.value };
+
+    if (this.editando && this.usuarioEditandoId !== null) {
+      this.usuarioService.atualizarUsuario(this.usuarioEditandoId, usuario).subscribe({
+        next: () => {
+          alert('Usuário atualizado com sucesso!');
+          this.cancelarEdicao();
+          this.listarUsuarios();
+          this.fecharModal();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar usuário:', error);
+          this.loading = false;
+        }
+      });
+    } else {
+      this.usuarioService.criarUsuario(usuario).subscribe({
+        next: () => {
+          alert('Usuário criado com sucesso!');
+          this.form.reset();
+          this.listarUsuarios();
+          this.fecharModal();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Erro ao criar usuário:', error);
+          this.loading = false;
+        }
       });
     }
   }
 
-  updateUsuario(id: number) {
-    if (this.form.valid) {
-      this.usuarioService
-        .atualizarUsuario(id, this.form.value)
-        .subscribe((updatedUsuario) => {
-          console.log(`Usuario Com ID ${id} updated`, updatedUsuario);
-          this.form.reset(); // Clear the form
-          this.usuario$ != this.usuarioService.listaUsuario(); // Refresh the list
-        });
+  fecharModal(): void {
+    const modalElement = document.getElementById('exampleModal');
+    const modal = (window as any).bootstrap?.Modal.getInstance(modalElement);
+    if (modal) {
+      modal.hide();
     }
+  }
+
+  editarUsuario(usuario: Usuario): void {
+    this.form.patchValue({
+      ...usuario
+    });
+    this.editando = true;
+    this.usuarioEditandoId = usuario.id!;
+    this.usuarioOriginal = { ...usuario };
+  }
+
+  cancelarEdicao(): void {
+    this.form.reset();
+    this.editando = false;
+    this.usuarioEditandoId = null;
+    this.usuarioOriginal = null;
+  }
+
+  deletarUsuario(id: number): void {
+    if (confirm('Tem certeza que deseja excluir este usuário?')) {
+      this.usuarioService.deletarUsuario(id).subscribe({
+        next: () => {
+          alert('Usuário deletado com sucesso!');
+          this.listarUsuarios();
+        },
+        error: (error) => console.error('Erro ao deletar usuário:', error)
+      });
+    }
+  }
+
+  get usuariosFiltrados(): Usuario[] {
+    const termo = this.filtro.toLowerCase();
+    return this.usuarios.filter(usuario =>
+      usuario.nome.toLowerCase().includes(termo) ||
+      usuario.email.toLowerCase().includes(termo) ||
+      usuario.perfil.toLowerCase().includes(termo)
+    );
   }
 }

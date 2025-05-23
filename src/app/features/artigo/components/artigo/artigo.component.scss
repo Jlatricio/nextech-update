@@ -375,3 +375,54 @@ tbody tr button {
     }
   }
 }
+
+/* Loader */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.bnt-action {
+  display: flex;
+  gap: 0.3rem;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-size: 0.5rem;
+    padding: 0.20rem 0.9rem;
+    border-radius: 4px;
+    border-width: 2px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+    i {
+      font-size: 0.6rem; // Reduzi o tamanho do ícone
+      margin-right: 0.2rem;
+    }
+
+    &.btn-outline-primary {
+      color: #1d3557;
+      border-color: #1d3557;
+      background: #fff;
+
+      &:hover {
+        background: #1d3557;
+        color: #fff;
+      }
+    }
+
+    &.btn-outline-danger {
+      color: #dc3545;
+      border-color: #dc3545;
+      background: #fff;
+
+      &:hover {
+        background: #dc3545;
+        color: #fff;
+      }
+    }
+  }
+}

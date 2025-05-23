@@ -19,7 +19,7 @@ import { CategoriaService } from '../../service/categoria.service';
   styleUrls: ['./artigo.component.scss']
 })
 export class ArtigoComponent implements OnInit {
-
+loading: boolean = false;
   form: FormGroup;
   categoriaForm!: FormGroup;
 artigos: Artigo[] = [];
@@ -38,9 +38,28 @@ modoEdicao = false;
 
   searchTerm: string = '';
 
+ get artigosFiltrados(): Artigo[] {
+  let resultado = this.artigos;
+
+  const termo = this.searchTerm?.trim().toLowerCase();
+  const categoriaSelecionada = this.filtro?.Categorias;
+
+  if (termo) {
+    resultado = resultado.filter(a => a.nome?.toLowerCase().includes(termo));
+  }
+
+  if (categoriaSelecionada) {
+    resultado = resultado.filter(a => a.categoria?.id === +categoriaSelecionada);
+  }
+
+  return resultado;
+}
 
 
-  filtrar(): void {
+
+filtrar(): void {
+  this.loading = true;
+
   this.artigoService.listarArtigo().subscribe({
     next: artigos => {
       this.categoriaService.listarCategorias().subscribe({
@@ -55,10 +74,18 @@ modoEdicao = false;
               a.categoria && a.categoria.id === Number(this.filtro.Categorias)
             );
           } else {
-            this.artigos = artigosComCategoria; // mostra todos
+            this.artigos = artigosComCategoria;
           }
+
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
         }
       });
+    },
+    error: () => {
+      this.loading = false;
     }
   });
 }
@@ -134,7 +161,9 @@ carregarArtigos(): void {
 }
 
 
- salvarArtigo(): void {
+salvarArtigo(): void {
+  this.loading = true;  // começa o loading
+
   const artigo: Partial<Artigo> = {
     nome: this.form.value.nome,
     preco: parseFloat(
@@ -150,11 +179,19 @@ carregarArtigos(): void {
   };
 
   if (this.artigoSelecionadoId) {
-    this.artigoService.atualizarArtigo(this.artigoSelecionadoId, artigo).subscribe(() => {
-      this.carregarArtigos();
-      this.resetarFormulario();
-      alert('Artigo atualizado com sucesso!');
-      this.fecharModal();
+    this.artigoService.atualizarArtigo(this.artigoSelecionadoId, artigo).subscribe({
+      next: () => {
+        this.carregarArtigos();
+        this.resetarFormulario();
+        alert('Artigo atualizado com sucesso!');
+        this.fecharModal();
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar:', err);
+      },
+      complete: () => {
+        this.loading = false;  // termina o loading
+      }
     });
   } else {
     this.artigoService.criarArtigo(artigo).subscribe({
@@ -169,6 +206,7 @@ carregarArtigos(): void {
       complete: () => {
         this.carregarArtigos();
         this.resetarFormulario();
+        this.loading = false;  // termina o loading
       }
     });
   }
@@ -303,6 +341,7 @@ getNomeImposto(valor: number): string {
   const imposto = this.impostos.find(i => i.valor === valor);
   return imposto ? imposto.nome : 'Desconhecido';
 }
+
 
 
 }
