@@ -137,8 +137,6 @@ onSubmit(): void {
       this.isLoading = false;
     },
     error: (error) => {
-      console.error('🔥 Cadastro Error completo:', error);
-      console.error('💬 Mensagem do back‑end:', error.error);
       this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
       this.isLoading = false;
     }

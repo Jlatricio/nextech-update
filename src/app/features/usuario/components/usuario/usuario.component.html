@@ -90,10 +90,12 @@
 
           <div class="mb-3">
             <label class="form-label">Telefone</label>
-            <input type="text" class="form-control" formControlName="telefone" />
+            <input type="text" class="form-control" formControlName="telefone" mask="000 000 000" />
             <div *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)" class="text-danger">
-              Telefone é obrigatório.
-            </div>
+  <div *ngIf="form.get('telefone')?.errors?.['required']">Telefone é obrigatório.</div>
+  <div *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter no mínimo 10 caracteres.</div>
+</div>
+
           </div>
 
           <div class="mb-3">
@@ -109,8 +111,7 @@
               <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
               {{ editando ? 'Atualizar' : 'Salvar' }}
             </button>
-            <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
-          </div>
+              </div>
         </form>
       </div>
     </div>
