@@ -125,7 +125,6 @@ onSubmit(): void {
     senha: this.registerForm.value.senha
   };
 
-  console.log('▶️ payload de cadastro:', payload);
 
   this.isLoading = true;
   this.errorMessage = '';
@@ -145,6 +144,6 @@ onSubmit(): void {
 
 
   ngOnInit() {
-    this.titleService.setTitle('Nextech - Login');
+    this.titleService.setTitle('Login');
   }
 }

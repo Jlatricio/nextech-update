@@ -82,7 +82,6 @@ export class InicioComponent {
 
   filtrar() {
     console.log('Filtro aplicado:', this.filtro);
-    // aqui você pode fazer um filtro real nos dados ou chamada a um serviço/backend
   }
 
   searchTerm: string = '';
