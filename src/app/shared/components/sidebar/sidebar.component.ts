@@ -10,8 +10,9 @@ import { ActivatedRoute, Router, RouterModule} from '@angular/router';
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
+loading: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor( private router: Router) {}
 
  menus: { route: string; name: string; icon: string; activeIcon: string }[] = [
   {

@@ -22,6 +22,8 @@ export class UsuariosComponent implements OnInit {
   usuarioEditandoId: number | null = null;
   usuarioOriginal: Usuario | null = null;
   loading: boolean = false;
+  mostrarCampoNovaSenha: boolean = false;
+
 
   constructor(
      private toastr: ToastrService,
@@ -35,36 +37,30 @@ export class UsuariosComponent implements OnInit {
   perfil: ['', Validators.required],
   telefone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(11)]],
   email: ['', [Validators.required, Validators.email]],
-  senhaAtual: [''],
+ senhaAtual: [''],
   novaSenha: ['']
-}, { validators: this.senhaValidator });
-
-  }
-senhaValidator(group: FormGroup) {
-  const senhaAtual = group.get('senhaAtual')?.value;
-  const novaSenha = group.get('novaSenha')?.value;
-
-  if (senhaAtual && !novaSenha) {
-    return { novaSenhaObrigatoria: true };
+});
   }
 
-  return null;
+  alternarCampoNovaSenha() {
+  this.mostrarCampoNovaSenha = !this.mostrarCampoNovaSenha;
+
+  const novaSenhaControl = this.form.get('novaSenha');
+  if (this.mostrarCampoNovaSenha) {
+    novaSenhaControl?.setValidators([Validators.required, Validators.minLength(6)]);
+  } else {
+    novaSenhaControl?.clearValidators();
+    novaSenhaControl?.reset();
+  }
+  novaSenhaControl?.updateValueAndValidity();
 }
+
+
+
 
   ngOnInit(): void {
     this.titleService.setTitle('Usuários');
-     this.form = this.formBuilder.group({
-    id: [''],
-    nome: ['', Validators.required],
-    perfil: ['', Validators.required],
-    telefone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(11)]],
-    email: ['', [Validators.required, Validators.email]],
-    senha: ['', [Validators.required, Validators.maxLength(10)]]
-  });
-
-    this.listarUsuarios();
-
-
+      this.listarUsuarios();
   }
 
   listarUsuarios(): void {
@@ -82,12 +78,21 @@ criarOuAtualizarUsuario(): void {
 
   this.loading = true;
 
-  const usuario = { ...this.form.value };
+  // Declara formValues pegando os valores do formulário
+  const formValues = this.form.value;
 
-  // Se senhaAtual estiver vazia, remova os campos de senha do objeto
-  if (!usuario.senhaAtual) {
-    delete usuario.senhaAtual;
-    delete usuario.novaSenha;
+  // Monta o objeto usuario com os campos base
+  const usuario: any = {
+    nome: formValues.nome,
+    perfil: formValues.perfil,
+    telefone: formValues.telefone,
+    email: formValues.email
+  };
+
+  // Só inclui senhaAtual e novaSenha se ambos estiverem preenchidos
+  if (formValues.senhaAtual && formValues.novaSenha) {
+    usuario.senhaAtual = formValues.senhaAtual;
+    usuario.novaSenha = formValues.novaSenha;
   }
 
   if (this.editando && this.usuarioEditandoId !== null) {
@@ -133,6 +138,7 @@ criarOuAtualizarUsuario(): void {
     });
   }
 }
+
 
 fecharModal(): void {
   const modalElement = document.getElementById('exampleModal');

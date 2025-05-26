@@ -72,7 +72,7 @@
             <select class="form-select" formControlName="perfil">
               <option value="">Selecione o tipo</option>
               <option value="ADMIN">Admin</option>
-              <option value="CLIENTE">Vendedor</option>
+              <option value="VENDEDOR">Vendedor</option>
             </select>
             <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
               Tipo de usuário é obrigatório.
@@ -99,12 +99,29 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Senha</label>
-            <input type="password" class="form-control" formControlName="senha" />
-            <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
-              Senha é obrigatória e deve ter no máximo 10 caracteres.
-            </div>
-          </div>
+  <label class="form-label">Senha Atual</label>
+  <input type="password" class="form-control" formControlName="senhaAtual" />
+  <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
+    <div *ngIf="form.get('senha')?.errors?.['required']">Senha atual é obrigatória.</div>
+  </div>
+</div>
+
+<button type="button" class="btn btn-link p-0" (click)="alternarCampoNovaSenha()">
+  {{ mostrarCampoNovaSenha ? 'Cancelar alteração de senha' : 'Alterar senha' }}
+</button>
+
+
+<div class="mb-3" *ngIf="mostrarCampoNovaSenha">
+  <label class="form-label">Nova Senha</label>
+  <input type="password" class="form-control" formControlName="novaSenha" />
+  <div *ngIf="form.get('novaSenha')?.invalid && (form.get('novaSenha')?.touched || form.get('novaSenha')?.dirty)" class="text-danger">
+    Nova senha é obrigatória.
+  </div>
+</div>
+
+
+
+
 
           <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-success" (click)="criarOuAtualizarUsuario()" [disabled]="form.invalid">
