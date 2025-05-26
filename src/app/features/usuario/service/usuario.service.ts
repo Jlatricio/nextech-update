@@ -7,8 +7,9 @@ import { environment } from '../../../../environments/environment';
 
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
+
 export class usuarioServices {
  private readonly apiUrl = `${environment.apiUrl}/users`;
 

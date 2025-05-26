@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
     try {
       const decoded: any = jwtDecode(token);
       const exp = decoded.exp;
-      const now = Math.floor(Date.now() / 1000); 
+      const now = Math.floor(Date.now() / 1000);
       return exp < now;
     } catch (e) {
       return true;
@@ -22,6 +22,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const token = localStorage.getItem('token');
+    
 
     if (token && !this.isTokenExpired(token)) {
       if (state.url === '/login') {

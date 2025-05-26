@@ -1,27 +1,36 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { usuarioServices } from '../../../features/usuario/service/usuario.service';
 import { Usuario } from '../../../features/usuario/interface/usuario';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-   usuarios: Usuario[] = [];
+  usuarios: Usuario[] = [];
 
-  constructor(private route: ActivatedRoute,
-        private usuarioService: usuarioServices,
-  ) {}
+  constructor(private router: Router,
+              private usuarioService: usuarioServices) {}
 
   ngOnInit(): void {
-   this.listarUsuarios();
+    this.listarUsuarios();
+
+    // Exemplo para pegar a URL atual
+    console.log(this.router.url);
+
+    // Se quiser monitorar mudanças de rota
+    this.router.events.subscribe(event => {
+      // Tratar eventos, por exemplo NavigationEnd
+    });
   }
-listarUsuarios(): void {
+
+  listarUsuarios(): void {
     this.usuarioService.listaUsuario().subscribe({
       next: (res) => this.usuarios = res,
       error: (err) => console.error('Erro ao listar usuários', err)

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth.guard'; 
+import { AuthGuard } from './guards/auth.guard';
 import { LoginGuard } from './guards/login.guard';
 
 export const routes: Routes = [
@@ -71,5 +71,11 @@ export const routes: Routes = [
   {
     path: '**',
     redirectTo: 'inicio'
-  }
+  },
+  {
+  path: '',
+  loadComponent: () => import('./shared/startup-component/startup-component.component').then(m => m.StartupComponentComponent)
+}
+
+
 ];
