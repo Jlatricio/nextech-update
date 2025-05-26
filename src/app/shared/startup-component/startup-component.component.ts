@@ -14,7 +14,6 @@ export class StartupComponentComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Garante que o código só execute no browser
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
 
