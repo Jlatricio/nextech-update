@@ -5,7 +5,6 @@ import { Observable, tap } from 'rxjs';
 import { Usuario } from '../interface/usuario';
 import { environment } from '../../../../environments/environment';
 
-
 @Injectable({
   providedIn: 'root'
 })

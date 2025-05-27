@@ -14,91 +14,33 @@
 
     <section [ngSwitch]="aba" class="container-card">
       <div *ngSwitchCase="'configuracao'" class="configuracao-container">
-        <form class="form-container" (ngSubmit)="onSubmit()" #form="ngForm">
+     <form [formGroup]="form" (ngSubmit)="salvarEmpresa()" class="form-container">
 
-          <!-- Logotipo -->
-          <div class="form-group">
-            <label for="logo">Logotipo</label>
-            <div class="logo-preview">
-              <img src="assets/logo.png" alt="Logotipo Atual" width="100">
-              <span></span>
-            </div>
-            <input type="file" id="logo" name="logo" (change)="onFileSelected($event)" accept="image/*">
-            <button type="button">Substituir</button>
-          </div>
+    <div class="form-group" *ngFor="let field of fields">
+      <label [for]="field.id">{{ field.label }}</label>
+      <input
+        [type]="field.type"
+        [id]="field.id"
+        [formControlName]="field.name"
+        [placeholder]="field.placeholder"
+        [ngClass]="{ 'invalid': isInvalid(field.name) }"
+      />
+      <small class="error" *ngIf="isInvalid(field.name)">
+        {{ field.error }}
+      </small>
+    </div>
 
-          <!-- Nome da empresa -->
-          <div class="form-group">
-            <label for="nomeEmpresa">Nome da empresa</label>
-            <input type="text" id="nomeEmpresa" name="nomeEmpresa" ngModel required placeholder="Ex: Nextech Lda">
-          </div>
+    <button type="submit" [disabled]="form.invalid">Salvar</button>
+  </form>
 
-          <!-- NIF -->
-          <div class="form-group">
-            <label for="nif">NIF</label>
-            <input type="text" id="nif" name="nif" ngModel required placeholder="Ex: 999999999">
-          </div>
-
-          <!-- Endereço -->
-          <div class="form-group">
-            <label for="endereco">Endereço</label>
-            <input type="text" id="endereco" name="endereco" ngModel required>
-          </div>
-
-          <!-- Regime do IVA -->
-          <div class="form-group">
-            <label for="regimeIva">Regime do IVA</label>
-            <input type="text" id="regimeIva" name="regimeIva" ngModel required>
-          </div>
-
-          <!-- Telefone -->
-          <div class="form-group">
-            <label for="telefone">Nº de telefone da empresa</label>
-            <input type="tel" id="telefone" name="telefone" ngModel required placeholder="Ex: 923000000">
-          </div>
-
-          <!-- Email -->
-          <div class="form-group">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" ngModel required placeholder="seuemail@empresa.com">
-          </div>
-
-          <!-- Senha do Admin -->
-          <div class="form-group">
-            <label for="senhaAdmin">Senha do Admin</label>
-              <input type="password" id="senhaAdmin" placeholder="Digite sua senha" name="senhaAdmin" ngModel required>
-          </div>
-
-          <button type="submit">Salvar</button>
-        </form>
-
-          <div class="dados-atuais">
-            <h3>Dados atuais</h3>
-            <div class="dado">
-              <strong>Nome:</strong>
-              <span>{{ dadosEmpresa.nome }}</span>
-            </div>
-            <div class="dado">
-              <strong>NIF:</strong>
-              <span>{{ dadosEmpresa.nif }}</span>
-            </div>
-            <div class="dado">
-              <strong>Endereço:</strong>
-              <span>{{ dadosEmpresa.endereco }}</span>
-            </div>
-            <div class="dado">
-              <strong>Regime IVA:</strong>
-              <span>{{ dadosEmpresa.regimeIva }}</span>
-            </div>
-            <div class="dado">
-              <strong>Telefone:</strong>
-              <span>{{ dadosEmpresa.telefone }}</span>
-            </div>
-            <div class="dado">
-              <strong>Email:</strong>
-              <span>{{ dadosEmpresa.email }}</span>
-            </div>
-          </div>
+  <div class="dados-atuais" *ngIf="empresa">
+  <h3>Dados atuais</h3>
+  <div class="dado"><strong>Nome:</strong> <span>{{ empresa.nome }}</span></div>
+  <div class="dado"><strong>NIF:</strong> <span>{{ empresa.nif }}</span></div>
+  <div class="dado"><strong>Telefone:</strong> <span>{{ empresa.telefone }}</span></div>
+  <div class="dado"><strong>Email:</strong> <span>{{ empresa.email }}</span></div>
+  <div class="dado"><strong>Endereço:</strong> <span>{{ empresa.endereco }}</span></div>
+</div>
 
         </div>
 
