@@ -1,33 +1,134 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TitleService } from '../../core/services/title.service';
 import { RouterModule } from '@angular/router';
+import { EmpresaService } from './services/empresa.service';
+import { Observable } from 'rxjs';
+import { Empresa } from './interface/empresa';
 
 
 @Component({
   selector: 'app-configuracao',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule],
   templateUrl: './configuracao.component.html',
   styleUrl: './configuracao.component.scss',
 })
-export class ConfiguracaoComponent {
-constructor(private titleService: TitleService){}
-ngOnInit(): void {
-  this.titleService.setTitle('Configurações');
+export class ConfiguracaoComponent implements OnInit{
+  empresa!: Empresa;
+
+   form: FormGroup;
+
+     constructor(
+    private titleService: TitleService,
+    private empresaService: EmpresaService,
+    private formBuilder: FormBuilder,
+  ) {
+    this.form = this.formBuilder.group({
+      nome: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      nif: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      endereco: ['', Validators.required],
+      telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+    });
+
+
+  }
+
+  fields = [
+  {
+    id: 'nomeEmpresa',
+    name: 'nome',
+    label: 'Nome da empresa',
+    placeholder: 'Ex: Nextech Lda',
+    type: 'text',
+    error: 'Nome obrigatório (mín. 3 caracteres)'
+  },
+  {
+    id: 'nif',
+    name: 'nif',
+    label: 'NIF',
+    placeholder: 'Ex: 999999999',
+    type: 'text',
+    error: 'NIF deve ter 9 dígitos'
+  },
+  {
+    id: 'endereco',
+    name: 'endereco',
+    label: 'Endereço',
+    placeholder: 'Ex: Rua Principal, 100',
+    type: 'text',
+    error: 'Endereço é obrigatório'
+  },
+  {
+    id: 'telefone',
+    name: 'telefone',
+    label: 'Nº de telefone da empresa',
+    placeholder: 'Ex: 923000000',
+    type: 'tel',
+    error: 'Telefone deve ter 9 dígitos'
+  },
+  {
+    id: 'email',
+    name: 'email',
+    label: 'Email',
+    placeholder: 'Ex: exemplo@empresa.com',
+    type: 'email',
+    error: 'Email é obrigatório e deve ser válido'
+  }
+];
+
+isInvalid(controlName: string): boolean {
+  const control = this.form.get(controlName);
+  return (control?.invalid && control?.touched) ?? false;
 }
 
 
-  dadosEmpresa = {
-    nome: 'Nextech Lda',
-    nif: '999999999',
-    endereco: 'Luanda - Angola',
-    regimeIva: 'Regime Geral',
-    telefone: '923000000',
-    email: 'contato@nextech.com',
-    logoUrl: 'assets/logo.png'
-  };
+
+dados(): void {
+  this.empresaService.empresadados().subscribe({
+    next: (res) => {
+      if (res) {
+        this.empresa = res;
+        this.form.patchValue(this.empresa);
+      }
+    },
+    error: (err) => {
+      console.error('Erro ao buscar dados da empresa:', err);
+    }
+  });
+}
+
+
+salvarEmpresa(): void {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
+
+  const empresa: Empresa = this.form.value;
+
+  this.empresaService.atualizadados(empresa).subscribe({
+    next: (res) => {
+      console.log('Empresa salva com sucesso:', res);
+      this.dados(); // Atualiza os dados na tela após salvar
+    },
+    error: (err) => {
+      console.error('Erro ao salvar empresa:', err);
+    }
+  });
+}
+
+
+
+ngOnInit(): void {
+  this.titleService.setTitle('Configurações');
+  this.dados(); // Carrega os dados da empresa ao iniciar o componente
+}
+
+
+
 
 
 onFileSelected($event: Event) {
@@ -94,7 +195,7 @@ faqs = [
 toggleFaq(index: number) {
   this.faqs = this.faqs.map((faq, i) => ({
     ...faq,
-    open: i === index ? !faq.open : false, // só abre um por vez
+    open: i === index ? !faq.open : false,
   }));
 }
 

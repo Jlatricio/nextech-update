@@ -91,8 +91,7 @@ onSubmit(): void {
       this.router.navigate(['/inicio']);
     },
     error: (error) => {
-      console.error('Login Error:', error);
-
+      // Verifica o status do erro e define a mensagem apropriada
       if (error.status === 401) {
         this.errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
       } else {
