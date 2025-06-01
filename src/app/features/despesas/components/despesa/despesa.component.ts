@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ArtigoService } from '../../../artigo/service/artigo.service';
+
 import { Modal } from 'bootstrap';
 import { Observable } from 'rxjs';
-import { Artigo } from '../../../artigo/interface/artigo';
+
 import { CommonModule } from '@angular/common';
 import { DespesaService } from '../../service/despesa.service';
 import { Despesa } from '../../interface/despesa';

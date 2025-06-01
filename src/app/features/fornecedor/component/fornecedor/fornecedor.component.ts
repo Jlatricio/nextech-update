@@ -8,7 +8,6 @@ import { Observable } from 'rxjs/internal/Observable';
 
 import { FornecedorService} from '../../services/fornecedor.service'
 import { Fornecedor} from '../../interface/fornecedor';
-import { Alert } from 'bootstrap';
 
 @Component({
   selector: 'app-fornecedores',
@@ -55,17 +54,16 @@ export class FornecedoresComponent {
         (response) => {
 
           // Exibir mensagem de sucesso
-          alert('Fornecedor criado com sucesso' + response);
-          // Limpar o formulário
+          alert('Fornecedor criado com sucesso');
+          console.log(response)
           this.form.reset();
-
           // Atualizar a lista de fornecedores
           this.fornecedor$ = this.fornecedorService.getFornecedores();
-          this.form.reset();
         },
         (error) => {
           // Exibir mensagem de erro
-          alert('Erro ao criar fornecedor:' + error);
+          alert('Erro ao criar fornecedor');
+          console.log(error)
         }
       );
     } else {
@@ -91,13 +89,33 @@ export class FornecedoresComponent {
       (error) => {
         // Exibir mensagem de erro
         alert('Erro ao excluir fornecedor:' + error.message);
+      } 
+    );
+  }
+  updateFornecedor(fornecedor: Fornecedor) {
+    this.fornecedorService.updateFornecedor(fornecedor).subscribe(
+      (response) => {
+        // Exibir mensagem de sucesso
+        alert('Fornecedor atualizado com sucesso');
+        console.log(response);
+        // Atualizar a lista de fornecedores
+        this.fornecedor$ = this.fornecedorService.getFornecedores();
+      },
+      (error) => {
+        // Exibir mensagem de erro
+        alert('Erro ao atualizar fornecedor:' + error.message);
       }
     );
   }
-
-
-
-
-
-
+  populateForm(fornecedor: Fornecedor) {
+    this.form.patchValue({
+      id: fornecedor.id,
+      nome: fornecedor.nome,
+      nif: fornecedor.nif,
+      endereco: fornecedor.endereco,
+      telefone: fornecedor.telefone,
+      email: fornecedor.email
+    });
+  }
+ 
 }

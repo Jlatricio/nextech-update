@@ -117,12 +117,7 @@
   <div *ngIf="form.get('novaSenha')?.invalid && (form.get('novaSenha')?.touched || form.get('novaSenha')?.dirty)" class="text-danger">
     Nova senha é obrigatória.
   </div>
-</div>
-
-
-
-
-
+    </div>
           <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-success" (click)="criarOuAtualizarUsuario()" [disabled]="form.invalid">
               <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

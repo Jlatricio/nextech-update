@@ -54,12 +54,12 @@
       <tbody>
         <tr *ngFor="let despesa of despesa$ | async">
         <td>{{ despesa.id }}</td>
-        <td>{{ despesa.fornecedor }}</td>
-        <td>{{ despesa.criadopor }}</td>
-        <td>{{ despesa.data | date:'short' }}</td>    <td>{{ despesa.valor }}</td>
-        <td>{{despesa.documento}}</td>
+        <td>{{ despesa.criadoPor }}</td>
+        <td>{{ despesa.fornecedorId}}</td>
+        <td>{{ despesa.nome| date:'short' }}</td>    <td>{{ despesa.valor }}</td>
+        <td>{{despesa.valor}}</td>
 
-
+          
         <td>
           <button type="button" class="" (click)="deleteArtigo(despesa.id)">
             <i class="bi bi-trash"></i> Deletar

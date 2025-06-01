@@ -21,10 +21,6 @@
       />
     </div>
 
-
-
-
-
     <div class="filtros-selects">
 
       <div class="filtro-item">
@@ -66,8 +62,8 @@
 
         <td>{{ artigo.nome }}</td>
         <td>{{ artigo.tipo }}</td>
-       <td>{{ artigo.categoria?.nome || 'Sem categoria' }}</td>
-     <td>{{ getNomeImposto(artigo.impostoAplicado) }}</td>
+        <td>{{ artigo.categoria?.nome || 'Sem categoria' }}</td>
+        <td>{{ getNomeImposto(artigo.impostoAplicado) }}</td>
 
         <td>{{ artigo.preco | currency: 'Kz' }}</td>
         <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy' }}</td>
@@ -118,7 +114,7 @@
       <i class="bi bi-plus-circle"></i>
     </button>
   </div>
-</div>
+    </div>
 
 <div class="mb-3">
   <label for="tipo" class="form-label">Tipo <span class="text-danger">*</span></label>
