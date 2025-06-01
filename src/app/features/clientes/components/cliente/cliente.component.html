@@ -1,29 +1,27 @@
-<!-- btn cliente botão -->
-<div class="container-fluid">
-  <div>
+<!-- Botão para novo cliente -->
+<div class="container-fluid my-3">
+  
+  <div class="d-block align-items-center">
     <h3>Clientes</h3>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
       <i class="bi bi-plus-lg me-2"></i>Novo Cliente
     </button>
   </div>
 </div>
-<!-- btn cliente botão -->
 
-<!-- tabela de clientes -->
+<!-- Campo de pesquisa -->
+<div class="filtros-container mb-3">
+  <div class="search-group d-flex align-items-center">
+    <i class="bi bi-search me-2"></i>
+    <input type="text" class="form-control search-input" placeholder="Pesquisar..." aria-label="Pesquisar clientes" />
+  </div>
+</div>
+
+<!-- Tabela de clientes -->
 <main class="table" id="customers_table">
-  <div class="filtros-container">
-    <div class="search-group">
-      <i class="bi bi-search"></i>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Pesquisar..."
-
-      />
-    </div>
   <section class="table__body">
-    <table>
-      <thead>
+    <table class=" table-hover">
+      <thead >
         <tr>
           <th>Id</th>
           <th>Nome</th>
@@ -31,7 +29,7 @@
           <th>E-mail</th>
           <th>Endereço</th>
           <th>Tipo</th>
-          <th>Data de Criação</th>
+          <!-- <th>Data de Criação</th> -->
           <th>Ações</th>
         </tr>
       </thead>
@@ -41,77 +39,89 @@
           <td>{{ cliente.nome }}</td>
           <td>{{ cliente.telefone }}</td>
           <td>{{ cliente.email }}</td>
-          <td>{{ cliente.tipo }}</td>
           <td>{{ cliente.endereco }}</td>
+          <td>{{ cliente.tipo }}</td>
+          <!-- <td>{{ cliente.createdAt | date:'short' }}</td> -->
           <td>
-          <!-- <button type="button" class="" (click)="deleteCliente(cliente.id)">
-            <i class="bi bi-trash"></i>
-          </button> -->
-          <!-- <button type="button" class=" " data-bs-toggle="modal" data-bs-target="#exampleModal"
-            (click)="populateForm(cliente)">
-            <i class="bi bi-pencil-square"></i>
-          </button> -->
+            <button class="btn btn-sm btn-warning me-2" (click)="populateForm(cliente)" data-bs-toggle="modal"
+              data-bs-target="#exampleModal">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteCliente(cliente.id)">
+              <i class="bi bi-trash"></i>
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
   </section>
+</main>
 
-<!-- tabela de clientes -->
-
-<!-- Modal -->
+<!-- Modal de criação/edição -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
+      
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-        <h1 class="modal-title fs-5">Criar Cliente</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+        <div class="modal-header">
+          <h1 *ngIf="!editando" class="modal-title fs-5" id="exampleModalLabel">
+            {{ editando ? 'Editar Cliente' : 'Criar Cliente' }}
+          </h1>
 
-      <div class="modal-body">
-        <div class="mb-3">
-          <input class="form-control" type="file" />
-          <small class="form-text text-muted">Ficheiro menos de 1MB</small>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
         </div>
 
-        <form [formGroup]="form">
+        <div class="modal-body">
           <div class="mb-3">
-            <label for="nome" class="form-label">Nome do Cliente</label>
-            <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required/>
+            <label for="nome" class="form-label">Nome</label>
+            <input id="nome" class="form-control" type="text" formControlName="nome" required />
+            <small class="text-danger" *ngIf="form.controls['nome'].invalid && form.controls['nome'].touched">Nome é
+              obrigatório.</small>
           </div>
 
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" id="email" name="email" class="form-control" required formControlName='email'/>
+            <input id="email" class="form-control" type="email" formControlName="email" required />
+            <small class="text-danger" *ngIf="form.controls['email'].invalid && form.controls['email'].touched">
+              {{ form.controls['email'].errors?.['required'] ? 'Email é obrigatório.' : 'Formato de email inválido.' }}
+            </small>
           </div>
 
           <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="number" id="telefone" name="telefone" class="form-control" required formControlName='telefone'
-             pattern="^\(?\d{2}\)?\s?(9\d{4}|\d{4})-?d{4}$"
-            />
+            <input id="telefone" class="form-control" type="text" formControlName="telefone" required />
+            <small class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone
+              é obrigatório.</small>
           </div>
 
           <div class="mb-3">
             <label for="endereco" class="form-label">Endereço</label>
-            <input type="text" id="endereco" name="endereco" class="form-control" required formControlName='endereco'/>
+            <input id="endereco" class="form-control" type="text" formControlName="endereco" required />
+            <small class="text-danger" *ngIf="form.controls['endereco'].invalid && form.controls['endereco'].touched">Endereço
+              é obrigatório.</small>
           </div>
 
           <div class="mb-3">
-            <label for="tipo" class="form-label">Tipo de Cliente</label>
-            <select id="tipo" name="tipo" class="form-select" required formControlName="tipo">
-              <option value="" selected>Selecione o tipo</option>
-              <option value="pessoa-fisica">Pessoa Física</option>
-              <option value="pessoa-juridica">Pessoa Jurídica</option>
+            <label for="tipo" class="form-label">Tipo</label>
+            <select id="tipo" class="form-select" formControlName="tipo" required>
+              <option value="" disabled selected>Selecione o tipo</option>
+              <option value="PESSOA_FISICA">Pessoa Física</option>
+              <option value="PESSOA_JURIDICA">Pessoa Jurídica</option>
             </select>
+            <small class="text-danger" *ngIf="form.controls['tipo'].invalid && form.controls['tipo'].touched">Tipo é
+              obrigatório.</small>
           </div>
+        </div>
 
-          <div class="mb-3">
-            <button type="submit" class="btn btn-success"(click)="onSubmit()">Salvar</button>
-          </div>
-        </form>
-      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button *ngIf="!editando" type="submit" class="btn btn-success" [disabled]="form.invalid">
+            {{ editando ? 'Atualizar' : 'Salvar' }}
+          </button>
+        </div>
+
+      </form>
     </div>
   </div>
 </div>

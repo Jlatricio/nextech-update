@@ -26,7 +26,7 @@ export class UsuariosComponent implements OnInit {
 
 
   constructor(
-     private toastr: ToastrService,
+    private toastr: ToastrService,
     private formBuilder: FormBuilder,
     private usuarioService: usuarioServices,
     private titleService: TitleService
@@ -37,7 +37,7 @@ export class UsuariosComponent implements OnInit {
   perfil: ['', Validators.required],
   telefone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(11)]],
   email: ['', [Validators.required, Validators.email]],
- senhaAtual: [''],
+  senhaAtual: [''],
   novaSenha: ['']
 });
   }

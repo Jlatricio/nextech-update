@@ -7,7 +7,7 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class DespesaService {
-  private readonly apiUrl = 'http://localhost:3000/despesa';
+  private readonly apiUrl = '';
   http: any;
   constructor(private httpClient: HttpClient) { }
 
