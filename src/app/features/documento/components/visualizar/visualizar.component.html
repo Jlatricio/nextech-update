@@ -1,50 +1,51 @@
- <div class="containeer">
-    <div class="header">
-        <h1>Visualizar Documento</h1>
+
+  // Header and Details Section
+<div #recibo class="recibo">
+  <header>
+    <img src="assets/logo.png" alt="Logotipo">
+    <div class="info-empresa">
+      <p><strong>Armindo Oli</strong></p>
+      <p>Endereço: Rua das Palmeiras, 45, Luanda</p>
+      <p>Telefone: +244 923 456 789</p>
+      <p>NIF: 123456789</p>
+      <p>Email: armindo&#64;example.com</p>
     </div>
+  </header>
 
-    <div class="form-grid">
-        <div class="form-group">
-            <label>Cliente</label>
-            <input type="text" value="PP 2025/2" readonly class="readonly-input" disabled>
-        </div>
+  <section class="detalhes-recibo">
+    <h2>FACTURA/RECIBO FR 2025/1</h2>
+    <p><strong>Cliente:</strong> {{ dados.nome }}</p>
+    <p><strong>Endereço:</strong> {{ dados.endereco }}</p>
+    <p><strong>Telefone:</strong> {{ dados.telefone }}</p>
+    <p><strong>Data de emissão:</strong> {{ dados.data }}</p>
+  </section>
 
-        <div class="form-group">
-            <label>Nº do documento</label>
-            <input type="text" value="PP 2025/4" readonly class="readonly-input" disabled>
-        </div>
+  <table>
+    <thead>
+      <tr>
+        <th>REF</th>
+        <th>DESCRIÇÃO</th>
+        <th>QTD</th>
+        <th>PR. UNITÁRIO</th>
+        <th>TOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of dados.itens">
+        <td>{{ item.ref }}</td>
+        <td>{{ item.descricao }}</td>
+        <td>{{ item.qtd }}</td>
+        <td>{{ item.preco | currency:'AOA':'symbol':'1.2-2':'pt-AO' }}</td>
+        <td>{{ item.total | currency:'AOA':'symbol':'1.2-2':'pt-AO' }}</td>
+      </tr>
+    </tbody>
+  </table>
 
-        <div class="form-group">
-            <label>Data de criação</label>
-            <input type="text" value="31 de Jan, 2018" readonly class="readonly-input" disabled>
-        </div>
-        <div class="form-group">
-            <label>Prazo de validade</label>
-            <input type="text" value="20 de Agosto, 2018" readonly class="readonly-input" disabled>
-        </div>
-
-        <div class="form-group">
-            <label>Valor</label>
-            <input type="text" value="4.0000 " readonly class="readonly-input" disabled>
-        </div>
-
-        <div class="form-group">
-            <label>Imposto</label>
-            <input type="text" value="0" readonly class="readonly-input" disabled>
-        </div>
-
-        <div class="form-group">
-            <label>Operador</label>
-            <input type="text" value="Admin" readonly class="readonly-input" disabled>
-        </div>
-    </div>
-
-    <div class="action-buttons">
-        <button class="cancel-btn" (click)="voltar()">Voltar</button>
-        <button  (click)="gerarDocumento(1)">Imprimir </button>
-    </div>
+  <footer>
+    <p>Documento emitido para fins de Formação ou Testes. Não tem validade fiscal.</p>
+  </footer>
 </div>
 
 
 
-
+<button (click)="gerarPDF()">Visualizar Documento</button>

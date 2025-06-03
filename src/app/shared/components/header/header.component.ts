@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { usuarioServices } from '../../../features/usuario/service/usuario.service';
 import { Usuario } from '../../../features/usuario/interface/usuario';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { UsuarioService } from '../../../features/usuario/service/usuario.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -16,7 +15,7 @@ export class HeaderComponent {
   usuarios: Usuario[] = [];
 
   constructor(private router: Router,
-              private usuarioService: usuarioServices) {}
+              private usuarioService: UsuarioService) {}
 
   ngOnInit(): void {
     this.listarUsuarios();
