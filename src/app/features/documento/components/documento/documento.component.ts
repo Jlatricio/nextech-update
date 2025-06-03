@@ -12,6 +12,7 @@ import { TitleService } from '../../../../core/services/title.service';
   styleUrl: './documento.component.scss',
 })
 export class DocumentosComponent {
+  desativarBotoes = true;
   aba: string = 'facturas';
   constructor(private router: Router, private titleService: TitleService) {}
 
