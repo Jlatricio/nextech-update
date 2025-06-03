@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core'; // Update the path to the correct file
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup,ReactiveFormsModule, Validators} from '@angular/forms';
+import { FormBuilder,FormGroup,ReactiveFormsModule,Validators,} from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 import { Observable } from 'rxjs';
 
 import { ClienteService } from '../../service/cliente.service';
 import { Cliente } from '../../interface/cliente';
-import { RouterModule } from '@angular/router';
-
-
 
 @Component({
   selector: 'app-cliente',
@@ -18,25 +16,23 @@ import { RouterModule } from '@angular/router';
   styleUrl: './cliente.component.scss',
 })
 export class ClienteComponent implements OnInit {
+        clientes$: Observable<Cliente[]>;
+        form: FormGroup;
+        editando = false;
+        clienteIdEditando: number | null = null;
 
-  clientes$: Observable<Cliente[]>;
-  form: FormGroup;
+  constructor(private formBuilder: FormBuilder, private clienteService: ClienteService) 
+  {
+    this.form = this.createForm();
+    this.clientes$ = this.clienteService.getCliente();
+  }
 
-  // populateForm(cliente: any): void {
-  //   this.form.patchValue({
-  //     nome: cliente.nome,
-  //     tipo: cliente.tipo,
-  //     email: cliente.email,
-  //     telefone: cliente.telefone,
-  //     endereco: cliente.endereco
-  //   });
-  // }
+  ngOnInit(): void {
+    this.loadClientes();
+  }
 
-  constructor(private formBuilder: FormBuilder,private clienteService: ClienteService
-  ) {
-    this.clientes$ = this.clienteService.listaCliente();
-
-    this.form = this.formBuilder.group({
+  private createForm(): FormGroup {
+    return this.formBuilder.group({
       nome: ['', Validators.required],
       tipo: ['', Validators.required],
       email: ['', Validators.required, Validators.email],
@@ -44,27 +40,90 @@ export class ClienteComponent implements OnInit {
       endereco: ['', Validators.required],
     });
   }
-  
-  ngOnInit(): void {
-    this.clientes$ = this.clienteService.listaCliente();
+
+  private loadClientes(): void {
+    this.clientes$ = this.clienteService.getCliente();
   }
-  
-  onSubmit() {
-    if (this.form.valid) {
-      this.clienteService.createCliente(this.form.value).subscribe(
-        (response) => {
-          alert('Cliente criado com sucesso' + response);
-          this.form.reset();
-        },
-        (error) => {
-          console.error('Erro ao criar cliente:', error);
-        }
-      );
+  onSubmit(): void {
+    if (this.form.invalid) {
+      console.warn('Formulário inválido:', this.form.value);
+      this.logValidationErrors();
+      return;
+    }
+
+    const cliente: Cliente = {
+      id: this.editando ? this.clienteIdEditando! : 0, // Use 0 as dummy id for new
+      ...this.form.value,
+    };
+
+    if (this.editando) {
+      this.updateCliente(cliente);
     } else {
-      alert('Formulário inválido');
+      this.createCliente(cliente); // Pass Cliente with id
     }
   }
-
-  
-
+  private createCliente(cliente: Cliente): void {
+    this.clienteService.createCliente(cliente).subscribe({
+      next: () => {
+        alert('Cliente criado com sucesso!');
+        this.resetForm();
+        this.loadClientes();
+      },
+      error: (error) => {
+        alert('Erro ao criar cliente.');
+        console.error('Erro:', error);
+      },
+    });
+  }
+  private updateCliente(cliente: Cliente): void {
+    this.clienteService.updateCliente(cliente).subscribe({
+      next: () => {
+        alert('Cliente atualizado com sucesso!');
+        this.resetForm();
+        this.loadClientes();
+      },
+      error: (error) => {
+        alert('Erro ao atualizar cliente.');
+        console.error('Erro:', error);
+      },
+    });
+  }
+  populateForm(cliente: Cliente): void {
+    this.form.patchValue({
+      nome: cliente.nome,
+      email: cliente.email,
+      telefone: cliente.telefone,
+      endereco: cliente.endereco,
+      tipo: cliente.tipo,
+    });
+    this.editando = true;
+    this.clienteIdEditando = cliente.id;
+  }
+  resetForm(): void {
+    this.form.reset();
+    this.editando = false;
+    this.clienteIdEditando = null;
+  }
+  deleteCliente(id: number) {
+    // Call your service to delete the client by id
+    this.clienteService.deleteCliente(id).subscribe({
+      next: () => {
+        // Refresh the list or update the observable
+        this.loadClientes();
+      },
+      error: (err) => {
+        // Handle error (optional)
+        console.error('Erro ao deletar cliente:', err);
+      },
+    });
+  }
+  private logValidationErrors(): void {
+    Object.entries(this.form.controls).forEach(([key, control]) => {
+      console.warn(`${key}:`, {
+        valor: control.value,
+        válido: control.valid,
+        erros: control.errors,
+      });
+    });
+  }
 }

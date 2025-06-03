@@ -1,13 +1,11 @@
 export interface Despesa {
   id?: number;
   nome: string;
+  valor: number;
+  criadoPor: string;
+  dataCriacao: Date;
   motivo: string;
-  reteencaonafonte: string;
-  data: Date;
-  fornecedor: string;
-  entidade: string;
-  criadopor: string;
-  valor: string;
-  documento: string;
-
+  comprovativo?: string;
+  fornecedorId?: number;
+  retencaoFonte: boolean;
 }
