@@ -24,10 +24,16 @@ button {
     border-bottom-right-radius: 2px;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: #16324a;
   }
+
+  &:disabled {
+    background-color: #111e31;
+    cursor: auto;
+  }
 }
+
 
 
   h3 {
@@ -46,7 +52,7 @@ nav {
   height: 60px;
   z-index: 1050; // Ensure dropdown is above other elements
 
-  
+
 
   a {
     text-decoration: none;

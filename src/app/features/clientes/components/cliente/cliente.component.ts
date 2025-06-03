@@ -21,7 +21,7 @@ export class ClienteComponent implements OnInit {
         editando = false;
         clienteIdEditando: number | null = null;
 
-  constructor(private formBuilder: FormBuilder, private clienteService: ClienteService) 
+  constructor(private formBuilder: FormBuilder, private clienteService: ClienteService)
   {
     this.form = this.createForm();
     this.clientes$ = this.clienteService.getCliente();
@@ -52,7 +52,7 @@ export class ClienteComponent implements OnInit {
     }
 
     const cliente: Cliente = {
-      id: this.editando ? this.clienteIdEditando! : 0, // Use 0 as dummy id for new
+      id: this.editando ? this.clienteIdEditando! : 0, 
       ...this.form.value,
     };
 
