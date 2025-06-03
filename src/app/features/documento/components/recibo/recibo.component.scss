@@ -1,0 +1,17 @@
+.recibo {
+  max-width: 800px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Continue estilizando tabelas, títulos, rodapé etc. */

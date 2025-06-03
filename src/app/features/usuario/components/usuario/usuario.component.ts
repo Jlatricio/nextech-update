@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Usuario } from '../../interface/usuario';
-import { usuarioServices } from '../../service/usuario.service';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { UsuarioService } from '../../service/usuario.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -28,7 +28,7 @@ export class UsuariosComponent implements OnInit {
   constructor(
      private toastr: ToastrService,
     private formBuilder: FormBuilder,
-    private usuarioService: usuarioServices,
+    private usuarioService: UsuarioService,
     private titleService: TitleService
   ) {
    this.form = this.formBuilder.group({
@@ -98,7 +98,13 @@ criarOuAtualizarUsuario(): void {
   if (this.editando && this.usuarioEditandoId !== null) {
     this.usuarioService.atualizarUsuario(this.usuarioEditandoId, usuario).subscribe({
       next: () => {
-        alert('Usuário atualizado com sucesso!');
+        this.toastr.success('Usuário atualizado com sucesso!', 'Sucesso', {
+          timeOut: 3000,
+          positionClass: 'toast-top-right',
+          progressBar: true,
+          closeButton: true,
+          tapToDismiss: true,
+        });
         this.cancelarEdicao();
         this.listarUsuarios();
         this.fecharModal();

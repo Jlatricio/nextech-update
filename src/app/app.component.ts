@@ -11,9 +11,9 @@ import { StartupComponentComponent } from "./shared/startup-component/startup-co
 @Component({
   selector: 'app-root',
   imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent, RouterModule, StartupComponentComponent],
-
+   standalone: true,
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   carregando = true;
@@ -21,7 +21,7 @@ export class AppComponent {
 ngOnInit() {
   setTimeout(() => {
     this.carregando = false;
-  }, 1500); // simula verificação de token
+  }, 1500); 
 }
 
 
