@@ -1,23 +1,30 @@
 <div class="proforma-container">
   <div class="header">
     <h2>Fatura Proforma</h2>
-    <button class="save-btn">
-      <i class="bi bi-save"></i>
-      Salvar Fatura
-    </button>
+   <button class="save-btn" (click)="salvarFatura()">
+  <i class="bi bi-save"></i>
+  Salvar Fatura
+</button>
+<div *ngIf="mostrarBotaoRedirecionamento" class="mt-2">
+  <button class="btn btn-outline-primary" (click)="redirecionarParaConfiguracoes()">
+    Ir para configurações da empresa
+  </button>
+</div>
+
   </div>
 
  <div class="card shadow-sm border-0 mb-4 p-3">
 
-  <div class="mb-3">
-    <label class="form-label">Cliente</label>
-    <select class="form-select" [(ngModel)]="clienteSelecionado">
-      <option [ngValue]="null">Selecione o cliente</option>
-      <option *ngFor="let c of cliente" [ngValue]="c">
-        {{ c.nome }}
-      </option>
-    </select>
+ <div class="mb-3">
+  <label class="form-label">Cliente</label>
+  <select class="form-select" [(ngModel)]="clienteSelecionado" #clienteCtrl="ngModel" required>
+    <option [ngValue]="null">Selecione o cliente</option>
+    <option *ngFor="let c of cliente" [ngValue]="c">{{ c.nome }}</option>
+  </select>
+  <div *ngIf="clienteCtrl.invalid && clienteCtrl.touched" class="text-danger">
+    Selecione um cliente válido.
   </div>
+</div>
 
   <div class="row text-muted">
     <div class="col-md-6">
@@ -54,37 +61,45 @@
       <tr *ngFor="let item of itens; let i = index; trackBy: trackByFn" >
         <td>{{ i + 1 }}</td>
 
-        <!-- Categoria -->
-        <td>
-          <select [(ngModel)]="item.categoriaId" (change)="onCategoriaChange(item)">
-           <option [ngValue]="null">Selecione...</option>
-<option *ngFor="let categoria of categorias" [ngValue]="categoria.id">
-  {{ categoria.nome }}
-</option>
-          </select>
-        </td>
+     <!-- Categoria -->
+<td>
+  <select [(ngModel)]="item.categoriaId" (change)="onCategoriaChange(item)" #categoriaCtrl="ngModel" required>
+    <option [ngValue]="null">Selecione...</option>
+    <option *ngFor="let categoria of categorias" [ngValue]="categoria.id">{{ categoria.nome }}</option>
+  </select>
+  <div *ngIf="categoriaCtrl.invalid && categoriaCtrl.touched" class="text-danger">
+    Selecione uma categoria.
+  </div>
+</td>
 
-        <!-- Artigo -->
-        <td>
-          <select [(ngModel)]="item.artigoId" (change)="onArtigoChange(item)">
-            <option [ngValue]="null">Selecione...</option>
-<option *ngFor="let artigo of getArtigosFiltradosPorCategoria(item.categoriaId)" [ngValue]="artigo.id">
-  {{ artigo.nome }}
-</option>
+<!-- Artigo -->
+<td>
+  <select
+    [(ngModel)]="item.artigoId"
+    (change)="onArtigoChange(item)"
+    #artigoCtrl="ngModel"
+    required
+    [disabled]="!item.categoriaId"> <!-- Aqui -->
+    <option [ngValue]="null">Selecione...</option>
+    <option *ngFor="let artigo of getArtigosFiltradosPorCategoria(item.categoriaId)" [ngValue]="artigo.id">{{ artigo.nome }}</option>
+  </select>
+  <div *ngIf="artigoCtrl.invalid && artigoCtrl.touched" class="text-danger">
+    Selecione um artigo.
+  </div>
+</td>
 
-          </select>
-        </td>
 
         <!-- Preço unitário -->
      <td>{{ (item.artigoSelecionado?.preco ?? 0) | number:'1.2-2' }} Kz</td>
 
 
         <!-- Quantidade com botões + / - -->
-       <td>
-  <button (click)="atualizarQuantidade(item, -1)">−</button>
-    <span class="qty-display">{{ item.quantidade }}</span>
+   <td>
+  <button (click)="atualizarQuantidade(item, -1)" [disabled]="item.quantidade <= 1">−</button>
+  <span class="qty-display">{{ item.quantidade }}</span>
   <button (click)="atualizarQuantidade(item, 1)">+</button>
 </td>
+
 
         <!-- Total -->
         <td>{{ item.total | number:'1.2-2' }} Kz</td>

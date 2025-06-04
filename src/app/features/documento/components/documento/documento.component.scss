@@ -6,31 +6,25 @@
   gap: 1.5rem;
   padding: 1.5rem;
 
-button {
+.btn-dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   border: none;
   background-color: #1d3557;
-  font-weight: bold;
-  font-size: 0.6rem;
+  font-weight: 600;
+  font-size: 0.75rem;
   color: #fff;
-  padding: 0.7rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 
-  &:first-child {
-    border-bottom-left-radius: 2px;
-    border-top-left-radius: 2px;
-  }
 
-  &:last-child {
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-  }
 
-  &:hover:not(:disabled) {
-    background-color: #16324a;
-  }
 
-  &:disabled {
-    background-color: #111e31;
-    cursor: auto;
+
+  i {
+    font-size: 0.8rem;
   }
 }
 

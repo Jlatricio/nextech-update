@@ -2,12 +2,16 @@ import { ChangeDetectorRef, Component, OnInit, NgZone } from '@angular/core';
 import { TitleService } from '../../../../core/services/title.service';
 import { CategoriaService } from '../../../artigo/service/categoria.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { ArtigoService } from '../../../artigo/service/artigo.service';
 import { Artigo } from '../../../artigo/interface/artigo';
 import { ItemProforma } from '../../../documento/interface/ItemProforma';
 import { ClienteService } from '../../../clientes/service/cliente.service';
 import { Cliente } from '../../../clientes/interface/cliente';
+import { EmpresaService } from '../../../configuracao/services/empresa.service';
+import { Empresa } from '../../../configuracao/interface/empresa';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-proforma',
@@ -25,11 +29,12 @@ export class ProformaComponent implements OnInit {
   desconto: number = 0;
   numeroFatura: string = '';
 dataValidade: string = '';
-
+empresa!: Empresa;
   subtotal = 0;
 iva = 0;
 descontoValor = 0;
 totalGeral = 0;
+form: FormGroup;
 
   constructor(
     private ClienteService: ClienteService,
@@ -37,9 +42,108 @@ totalGeral = 0;
     private categoriaService: CategoriaService,
     private titleService: TitleService,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
-  ) {}
+    private ngZone: NgZone,
+    private empresaService: EmpresaService,
+    private toastr: ToastrService,
+     private formBuilder: FormBuilder,
+    private router: Router) {
+    this.form = this.formBuilder.group({
+      nome: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      nif: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      endereco: ['', Validators.required],
+      telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+    });
+  }
 
+  verificarDadosEmpresa(): boolean {
+  const empresa = this.empresa;
+  return !!empresa &&
+    empresa.nome !== undefined && empresa.nome !== '' &&
+    empresa.email !== undefined && empresa.email !== '' &&
+    empresa.nif !== undefined && empresa.nif !== '' &&
+    empresa.endereco !== undefined && empresa.endereco !== '' &&
+    empresa.telefone !== undefined && empresa.telefone !== '';
+}
+
+validarCliente(): boolean {
+  if (!this.clienteSelecionado) {
+    this.toastr.warning('Selecione um cliente para continuar.', 'Atenção');
+    return false;
+  }
+  return true;
+}
+
+validarItens(): boolean {
+  if (this.itens.length === 0) {
+    this.toastr.warning('Adicione pelo menos um item.', 'Atenção');
+    return false;
+  }
+
+  for (const [index, item] of this.itens.entries()) {
+    if (!item.categoriaId) {
+      this.toastr.warning(`Selecione uma categoria no item ${index + 1}.`, 'Atenção');
+      return false;
+    }
+    if (!item.artigoId) {
+      this.toastr.warning(`Selecione um artigo no item ${index + 1}.`, 'Atenção');
+      return false;
+    }
+    if (!item.quantidade || item.quantidade < 1) {
+      this.toastr.warning(`Informe uma quantidade válida no item ${index + 1}.`, 'Atenção');
+      return false;
+    }
+  }
+  return true;
+}
+
+
+salvarFatura(): void {
+  if (!this.verificarDadosEmpresa()) {
+    this.toastr.warning('Complete os dados da empresa antes de continuar.', 'Atenção');
+    this.mostrarBotaoRedirecionamento = true;
+    return;
+  }
+
+  if (!this.validarCliente()) {
+    return;
+  }
+
+  if (!this.validarItens()) {
+    return;
+  }
+
+  // Caso passe todas as validações, prossiga para salvar a fatura
+  // Aqui você pode chamar sua API, mostrar loading, etc.
+}
+
+
+mostrarBotaoRedirecionamento = false;
+
+redirecionarParaConfiguracoes(): void {
+  this.ngZone.run(() => {
+     this.router.navigate(['/configuracao']);
+  });
+}
+
+
+
+
+
+
+dados(): void {
+  this.empresaService.empresadados().subscribe({
+    next: (res: Empresa) => {
+      if (res) {
+        this.empresa = res;
+        this.form.patchValue(this.empresa);
+      }
+    },
+    error: (err: any) => {
+      console.error('Erro ao buscar dados da empresa:', err);
+    }
+  });
+}
 
 
   getArtigoById(id: number | null): any {
@@ -71,10 +175,11 @@ definirValidade(): void {
   const validade = new Date(hoje);
   validade.setDate(validade.getDate() + 30);
   const opcoes = { day: '2-digit', month: 'short', year: 'numeric' } as const;
-  this.dataValidade = validade.toLocaleDateString('pt-BR', opcoes);
+  this.dataValidade = validade.toLocaleDateString('pt-AO', opcoes);
 }
 
   ngOnInit(): void {
+  this.dados();
       this.gerarNumeroFatura();
   this.definirValidade();
       this.carregarClientes();
@@ -144,13 +249,15 @@ definirValidade(): void {
     this.cdr.detectChanges();
   }
 
-  onCategoriaChange(item: ItemProforma): void {
-    item.artigoId = null;
-    item.artigoSelecionado = null;
-    item.quantidade = 1;
-    item.total = 0;
-    this.cdr.detectChanges();
-  }
+ onCategoriaChange(item: ItemProforma): void {
+  item.artigoId = null;
+  item.artigoSelecionado = null;
+  item.quantidade = 1;
+  item.total = 0;
+  this.recalcularTotais();  
+  this.cdr.detectChanges();
+}
+
 
  onArtigoChange(item: any) {
   item.artigoSelecionado = this.getArtigoById(item.artigoId); // ou outra forma de obter o artigo

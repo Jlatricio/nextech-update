@@ -13,7 +13,11 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
-    provideToastr(),
+     provideToastr({
+      positionClass: 'toast-top-center',
+      timeOut: 4000,
+      closeButton: true
+    }),
       { provide: LOCALE_ID, useValue: 'pt-AO' },
   provideHttpClient(
   withInterceptors([
