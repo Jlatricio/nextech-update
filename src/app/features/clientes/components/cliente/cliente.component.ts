@@ -41,6 +41,24 @@ export class ClienteComponent implements OnInit {
     });
   }
 
+
+  getTipoClienteNome(tipo: string): string {
+    switch (tipo) {
+      case 'PESSOA_FISICA':
+        return 'Pessoa Física';
+      case 'PESSOA_JURIDICA':
+        return 'Pessoa Jurídica';
+      case 'EMPRESA_PUBLICA':
+        return 'Empresa Pública';
+      case 'EMPRESA_PRIVADA':
+        return 'Empresa Privada';
+      case 'ONG':
+        return 'ONG';
+      default:
+        return tipo;
+    }
+  }
+
   private loadClientes(): void {
     this.clientes$ = this.clienteService.getCliente();
   }
@@ -52,7 +70,7 @@ export class ClienteComponent implements OnInit {
     }
 
     const cliente: Cliente = {
-      id: this.editando ? this.clienteIdEditando! : 0, 
+      id: this.editando ? this.clienteIdEditando! : 0,
       ...this.form.value,
     };
 

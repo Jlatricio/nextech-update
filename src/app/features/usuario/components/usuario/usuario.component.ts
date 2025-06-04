@@ -42,6 +42,12 @@ export class UsuariosComponent implements OnInit {
 });
   }
 
+  getPerfilNome(perfil: string): string {
+  if (perfil === 'ADMIN') return 'Administrador';
+  if (perfil === 'VENDEDOR') return 'Vendedor';
+  return perfil;
+}
+
   alternarCampoNovaSenha() {
   this.mostrarCampoNovaSenha = !this.mostrarCampoNovaSenha;
 

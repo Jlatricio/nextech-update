@@ -29,7 +29,7 @@
         <tr *ngFor="let usuario of usuariosFiltrados">
           <td>{{ usuario.nome }}</td>
           <td>{{ usuario.email }}</td>
-          <td>{{ usuario.perfil }}</td>
+            <td>{{ getPerfilNome(usuario.perfil) }}</td>
           <td>{{ usuario.telefone }}</td>
           <td>{{ usuario.dataCriacao | date: 'dd/MM/yyyy' }}</td>
           <td>
