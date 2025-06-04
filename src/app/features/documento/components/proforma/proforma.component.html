@@ -123,16 +123,19 @@
 
   <!-- Desconto -->
   <div class="desconto-section">
-    <label for="desconto">Desconto (%):</label>
-    <input
-      id="desconto"
-      type="number"
-      [(ngModel)]="desconto"
-      (input)="recalcularTotais()"
-      min="0"
-      max="100"
-    />
-  </div>
+  <label for="descontoRange" class="desconto-label">Desconto (%): <span class="valor">{{ desconto }}%</span></label>
+  <input
+    type="range"
+    id="descontoRange"
+    min="0"
+    max="100"
+    [(ngModel)]="desconto"
+    (input)="recalcularTotais()"
+    class="desconto-range"
+  />
+</div>
+
+
 
 <div class="summary">
   <div><span>Subtotal:</span><span>{{ subtotal | number:'1.2-2' }} Kz</span></div>

@@ -28,7 +28,10 @@ export class ConfiguracaoComponent implements OnInit{
     this.form = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      nif: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+       nif: ['', [
+    Validators.required,
+    Validators.pattern(/^\d{9}[A-Z]{2}\d{3}$/)
+  ]],
       endereco: ['', Validators.required],
       telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
     });
@@ -49,9 +52,9 @@ export class ConfiguracaoComponent implements OnInit{
     id: 'nif',
     name: 'nif',
     label: 'NIF',
-    placeholder: 'Ex: 999999999',
+    placeholder: 'Ex: 999999999AA999',
     type: 'text',
-    error: 'NIF deve ter 9 dígitos'
+    error: 'NIF deve ter 9 dígitos, 2 letras e 3 dígitos (Ex: 999999999AA999)'
   },
   {
     id: 'endereco',
