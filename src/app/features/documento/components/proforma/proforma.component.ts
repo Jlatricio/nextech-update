@@ -249,13 +249,15 @@ definirValidade(): void {
     this.cdr.detectChanges();
   }
 
-  onCategoriaChange(item: ItemProforma): void {
-    item.artigoId = null;
-    item.artigoSelecionado = null;
-    item.quantidade = 1;
-    item.total = 0;
-    this.cdr.detectChanges();
-  }
+ onCategoriaChange(item: ItemProforma): void {
+  item.artigoId = null;
+  item.artigoSelecionado = null;
+  item.quantidade = 1;
+  item.total = 0;
+  this.recalcularTotais();  
+  this.cdr.detectChanges();
+}
+
 
  onArtigoChange(item: any) {
   item.artigoSelecionado = this.getArtigoById(item.artigoId); // ou outra forma de obter o artigo
