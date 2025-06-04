@@ -50,7 +50,10 @@ form: FormGroup;
     this.form = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      nif: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+     nif: ['', [
+    Validators.required,
+    Validators.pattern(/^\d{9}[A-Z]{2}\d{3}$/)
+  ]],
       endereco: ['', Validators.required],
       telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
     });
@@ -254,7 +257,7 @@ definirValidade(): void {
   item.artigoSelecionado = null;
   item.quantidade = 1;
   item.total = 0;
-  this.recalcularTotais();  
+  this.recalcularTotais();
   this.cdr.detectChanges();
 }
 

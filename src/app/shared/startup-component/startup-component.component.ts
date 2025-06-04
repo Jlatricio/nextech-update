@@ -13,27 +13,32 @@ import { jwtDecode } from 'jwt-decode';
 export class StartupComponentComponent implements OnInit {
   constructor(private router: Router) {}
 
-  ngOnInit(): void {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
+ ngOnInit(): void {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
 
-      if (token) {
-        try {
-          const decoded: any = jwtDecode(token);
-          const exp = decoded.exp;
-          const now = Math.floor(Date.now() / 1000);
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        const exp = decoded.exp;
+        const now = Math.floor(Date.now() / 1000);
 
-          if (exp > now) {
-            this.router.navigate(['/inicio']);
-          } else {
-            this.router.navigate(['/login']);
-          }
-        } catch (e) {
+        if (exp > now) {
+          // Token válido
+          return;
+        } else {
+          // Token expirado
           this.router.navigate(['/login']);
         }
-      } else {
+      } catch (e) {
+        // Token inválido
         this.router.navigate(['/login']);
       }
+    } else {
+      // Sem token
+      this.router.navigate(['/login']);
     }
   }
+}
+
 }
