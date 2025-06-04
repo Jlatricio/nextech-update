@@ -138,14 +138,14 @@ color: #fff;
 }
 
 thead th {
-padding: 12px;
-font-size: 14px;
-text-align: left;
-position: sticky;
-top: 0;
-left: 0;
+  font-weight: 500;
+  padding: 10px;
+  font-size: 12px;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  left: 0;
 }
-
 tbody {
 tr {
   transition: background-color 0.2s ease;
@@ -154,12 +154,13 @@ tr {
     background-color: #f1f3f5;
   }
 
-  td {
-    padding: 10px 12px;
-    font-size: 14px;
-    color: #495057;
-    border-bottom: 1px solid #dee2e6;
-  }
+ td {
+      padding: 10px 12px;
+       font-weight: 500;
+       font-size: 10px;
+      color: #495057;
+      border-bottom: 1px solid #dee2e6;
+    }
 
   a {
     color: #0d6efd;
@@ -310,3 +311,46 @@ flex-wrap: wrap;
 }
 
 
+/* Estilos para os botões de ação */
+.bnt-action {
+  display: flex;
+  gap: 0.3rem;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-size: 0.5rem;
+    padding: 0.20rem 0.9rem;
+    border-radius: 4px;
+    border-width: 2px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+    i {
+      font-size: 0.6rem; // Reduzi o tamanho do ícone
+      margin-right: 0.2rem;
+    }
+
+    &.btn-outline-primary {
+      color: #1d3557;
+      border-color: #1d3557;
+      background: #fff;
+
+      &:hover {
+        background: #1d3557;
+        color: #fff;
+      }
+    }
+
+    &.btn-outline-danger {
+      color: #dc3545;
+      border-color: #dc3545;
+      background: #fff;
+
+      &:hover {
+        background: #dc3545;
+        color: #fff;
+      }
+    }
+  }
+}

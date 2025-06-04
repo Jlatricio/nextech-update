@@ -6,4 +6,5 @@ export interface Cliente {
   telefone: string;
   endereco: string;
   nif: string;
+  dataCriacao: Date;
 }
