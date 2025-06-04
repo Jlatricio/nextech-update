@@ -2,11 +2,11 @@
   <div>
     <h3>Documentos</h3>
     <div class="btn-group"></div>
-      <button type="button" class="new-d" disabled>Novo Documento</button>
-      <button type="button" class="dd" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-caret-down-fill"></i>
-        <span class="visually-hidden">Toggle Dropdown</span>
-      </button>
+    <button type="button" class="btn-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+  Novo Documento
+  <i class="bi bi-chevron-down ms-1"></i>
+</button>
+
       <ul class="dropdown-menu">
         <li><a class="dropdown-item" [routerLink]="['/proforma']">Proforma</a></li>
         <li><a class="dropdown-item" [routerLink]="['/factura']">Factura</a></li>
