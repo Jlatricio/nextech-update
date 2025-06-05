@@ -81,6 +81,9 @@
       <div *ngSwitchCase="'contas'">
         <div class="contas-wrapper">
           <div class="contas-top">
+            <button type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <i class="bi bi-bank2"></i> Nova Conta
+  </button>
             <div class="img-box">
               <img src="assets/card.svg"/>
             </div>
@@ -181,3 +184,169 @@
       </div>
 
     </section>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg"> <!-- modal maior para melhor acomodar campos -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Criar artigo</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="salvarConta()">
+          <!-- Campos originais... -->
+
+          <!-- Novo campo: Banco -->
+          <div class="mb-3">
+            <label for="banco" class="form-label">Selecione o teu Banco <span class="text-danger">*</span></label>
+            <select
+              id="banco"
+              name="banco"
+              class="form-select"
+              formControlName="banco"
+              required
+            >
+              <option value="">Selecione...</option>
+              <option value="BAI">Banco Angolano de Investimento</option>
+              <option value="BIC">Banco BIC</option>
+              <option value="YETU">Banco Yetu</option>
+              <option value="SOL">Banco Sol</option>
+              <option value="BNI">Banco de Negócios Internacional</option>
+              <option value="BDA">Banco de Desenvolvimento de Angola</option>
+              <option value="BCA">Banco Comercial Angolano, S.A</option>
+              <option value="BCH">Banco Comercial do Huambo</option>
+              <option value="BFA">Banco de Fomento Angola</option>
+              <option value="BPC">Banco de Poupança e Crédito</option>
+              <option value="BE">Banco Económico</option>
+              <option value="BRK">Banco Regional do Keve</option>
+              <option value="BIR">Banco de Investimento Rural</option>
+              <option value="BMA">Banco Millennium Atlântico</option>
+              <option value="BCS">Banco de Crédito do Sul, S.A.</option>
+              <option value="VTB">Banco VTB África S.A.</option>
+              <option value="FNB">Finibanco Angola, S.A</option>
+              <option value="SBA">Standard Bank Angola</option>
+              <option value="BCGA">Banco Caixa Geral Angola</option>
+              <option value="BOCLB">Banco da China Lda - Sucursal de Luanda</option>
+              <option value="BVB">Banco Valor S.A</option>
+              <option value="BPG">Banco Prestígio</option>
+              <option value="BMF">Banco BAI Micro Finanças S.A.</option>
+              <option value="BCI">Banco de Comércio e Indústria</option>
+            </select>
+          </div>
+
+          <!-- Campos bancários adicionais -->
+          <div class="mb-3">
+            <label for="iban" class="form-label">IBAN</label>
+            <input
+              type="text"
+              id="iban"
+              class="form-control"
+              formControlName="iban"
+              placeholder="Digite o IBAN"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="numeroConta" class="form-label">Nº de Conta</label>
+            <input
+              type="text"
+              id="numeroConta"
+              class="form-control"
+              formControlName="numeroConta"
+              placeholder="Digite o número da conta"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="titular" class="form-label">Titular</label>
+            <input
+              type="text"
+              id="titular"
+              class="form-control"
+              formControlName="titular"
+              placeholder="Nome do titular da conta"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="gestorConta" class="form-label">Gestor de Conta</label>
+            <input
+              type="text"
+              id="gestorConta"
+              class="form-control"
+              formControlName="gestorConta"
+              placeholder="Nome do gestor da conta"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="telefone" class="form-label">Telemóvel (Contacto)</label>
+            <input
+              type="tel"
+              id="telefone"
+              class="form-control"
+              formControlName="telefone"
+              placeholder="Número de contacto"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="Email"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="dependencia" class="form-label">Dependência</label>
+            <input
+              type="text"
+              id="dependencia"
+              class="form-control"
+              formControlName="dependencia"
+              placeholder="Dependência"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="endereco" class="form-label">Endereço</label>
+            <input
+              type="text"
+              id="endereco"
+              class="form-control"
+              formControlName="endereco"
+              placeholder="Endereço"
+            />
+          </div>
+
+          <div class="mb-3 form-check">
+            <input
+              type="checkbox"
+              id="bancoPadrao"
+              class="form-check-input"
+              formControlName="bancoPadrao"
+            />
+            <label for="bancoPadrao" class="form-check-label">Banco Padrão</label>
+          </div>
+
+          <!-- Botão de salvar -->
+          <div class="mb-3">
+            <button type="submit" class="btn btn-success" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
