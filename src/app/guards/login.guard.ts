@@ -22,7 +22,8 @@ export class LoginGuard implements CanActivate {
     const token = localStorage.getItem('token');
 
     if (token && !this.isTokenExpired(token)) {
-      this.router.navigate(['/inicio']);
+      console.log('Usuário já autenticado, redirecionando para /inicio');
+      this.router.navigate(['/inicio'], { replaceUrl: true });
       return false;
     }
 

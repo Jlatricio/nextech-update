@@ -16,23 +16,26 @@ export class AuthGuard implements CanActivate {
       const now = Math.floor(Date.now() / 1000);
       return exp < now;
     } catch (e) {
+      console.warn('Token inválido:', e);
       return true;
     }
   }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const token = localStorage.getItem('token');
-    
+    const url = state.url;
 
     if (token && !this.isTokenExpired(token)) {
-      if (state.url === '/login') {
-        this.router.navigate(['/inicio']);
+      console.log(`Token válido para acessar: ${url}`);
+      if (url === '/login') {
+        this.router.navigate(['/inicio'], { replaceUrl: true });
         return false;
       }
       return true;
     } else {
-      if (state.url !== '/login') {
-        this.router.navigate(['/login']);
+      console.log(`Token ausente ou expirado para acessar: ${url}`);
+      if (url !== '/login') {
+        this.router.navigate(['/login'], { replaceUrl: true });
         return false;
       }
       return true;
