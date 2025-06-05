@@ -9,6 +9,8 @@ import { CommonModule } from '@angular/common';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 import { CategoriaService } from '../../service/categoria.service';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-artigo',
@@ -101,6 +103,7 @@ filtrar(): void {
     private artigoService: ArtigoService,
     private titleService: TitleService,
     private categoriaService: CategoriaService,
+     private toastr: ToastrService
   ) {
 
 
@@ -164,6 +167,12 @@ carregarArtigos(): void {
 salvarArtigo(): void {
   this.loading = true;  // começa o loading
 
+  // Garante que a descrição nunca seja vazia
+  let descricao = this.form.value.descricao?.trim();
+  if (!descricao) {
+    descricao = 'N/A';
+  }
+
   const artigo: Partial<Artigo> = {
     nome: this.form.value.nome,
     preco: parseFloat(
@@ -175,7 +184,7 @@ salvarArtigo(): void {
     categoriaId: Number(this.form.value.categoria),
     impostoAplicado: parseFloat(this.form.value.imposto),
     tipo: this.form.value.tipo,
-    descricao: this.form.value.descricao,
+    descricao: descricao,
   };
 
   if (this.artigoSelecionadoId) {
@@ -183,21 +192,21 @@ salvarArtigo(): void {
       next: () => {
         this.carregarArtigos();
         this.resetarFormulario();
-        alert('Artigo atualizado com sucesso!');
+
         this.fecharModal();
       },
       error: (err) => {
         console.error('Erro ao atualizar:', err);
       },
       complete: () => {
-        this.loading = false;  // termina o loading
+        this.loading = false;
       }
     });
   } else {
     this.artigoService.criarArtigo(artigo).subscribe({
       next: (res: any) => {
         console.log('Artigo criado!', res);
-        alert('Artigo criado com sucesso!');
+        this.toastr.success('Artigo criado com sucesso!');
         this.fecharModal();
       },
       error: (err: any) => {
@@ -206,7 +215,7 @@ salvarArtigo(): void {
       complete: () => {
         this.carregarArtigos();
         this.resetarFormulario();
-        this.loading = false;  // termina o loading
+        this.loading = false;
       }
     });
   }
@@ -214,11 +223,28 @@ salvarArtigo(): void {
 
 fecharModal(): void {
   const modalElement = document.getElementById('exampleModal');
+
   if (modalElement) {
-    const modal = Modal.getInstance(modalElement);
-    modal?.hide();
+    let modal = Modal.getInstance(modalElement);
+    if (!modal) {
+      modal = new Modal(modalElement);
+    }
+
+    modal.hide();
+
+    // Espera o modal terminar a animação e remove o backdrop manualmente
+    setTimeout(() => {
+      // Remove classe que trava o scroll da página
+      document.body.classList.remove('modal-open');
+
+      // Remove o backdrop (fundo escuro)
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(b => b.remove());
+    }, 300); // 300ms é o tempo padrão do fade-out no Bootstrap
   }
 }
+
+
 
 
 
@@ -242,11 +268,29 @@ fecharModal(): void {
   }
   }
 
-  excluirArtigo(id: number): void {
-    if (confirm('Deseja realmente excluir este artigo?')) {
-      this.artigoService.deletarArtigo(id).subscribe(() => this.carregarArtigos());
+excluirArtigo(id: number): void {
+  Swal.fire({
+    title: 'Tem certeza?',
+    text: 'Deseja realmente excluir este artigo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sim, excluir!',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.artigoService.deletarArtigo(id).subscribe({
+        next: () => {
+          this.carregarArtigos();
+          this.toastr.success('Artigo excluído com sucesso!');
+        },
+        error: (err) => {
+          console.error('Erro ao excluir artigo:', err);
+          this.toastr.error('Erro ao excluir artigo. Tente novamente.');
+        }
+      });
     }
-  }
+  });
+}
 
   resetarFormulario(): void {
     this.form.reset();

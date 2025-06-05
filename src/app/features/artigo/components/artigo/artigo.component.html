@@ -108,13 +108,28 @@
   <div class="d-flex align-items-center gap-2">
     <select id="categoriaSelect" name="categoria" class="form-select" formControlName="categoria" required>
       <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</option>
-
     </select>
     <button type="button" class="btn btn-outline-primary" (click)="toggleNovaCategoria()">
       <i class="bi bi-plus-circle"></i>
     </button>
   </div>
+
+  <!-- Campo de criar nova categoria (agora aparece logo abaixo do botão) -->
+  <div class="mt-2" *ngIf="mostrarCampoNovaCategoria">
+    <label for="novaCategoria" class="form-label">Nova Categoria</label>
+    <div class="input-group">
+      <input
+        type="text"
+        id="novaCategoria"
+        class="form-control"
+        formControlName="nome"
+        [(ngModel)]="novaCategoria"
+        placeholder="Digite nova categoria"
+      />
+      <button type="button" class="btn btn-success" (click)="adicionarCategoria()">Salvar</button>
     </div>
+  </div>
+</div>
 
 <div class="mb-3">
   <label for="tipo" class="form-label">Tipo <span class="text-danger">*</span></label>
@@ -127,23 +142,7 @@
   </select>
 </div>
 
-<!-- Campo de criar nova categoria (visível só quando ativo) -->
-<div class="mb-3" *ngIf="mostrarCampoNovaCategoria">
-  <label for="novaCategoria" class="form-label">Nova Categoria</label>
-  <div class="input-group">
-    <input
-      type="text"
-      id="novaCategoria"
-      class="form-control"
-      formControlName="nome"
-      [(ngModel)]="novaCategoria"
-      placeholder="Digite nova categoria"
-    />
-    <button type="button" class="btn btn-success" (click)="adicionarCategoria()">
-      Salvar
-    </button>
-  </div>
-</div>
+
 
 
        <div class="mb-3">
@@ -171,7 +170,7 @@
 </div>
 
         <div class="mb-3">
-          <label for="precoUnitario" class="form-label">Preço Unitário  <span class="text-danger">*</span></label>
+          <label for="precoUnitario" class="form-label">Preço Unitário<span class="text-danger">*</span></label>
           <input
             type="text"
             id="precoUnitario"
