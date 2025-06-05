@@ -17,7 +17,7 @@ import { Empresa } from './interface/empresa';
 })
 export class ConfiguracaoComponent implements OnInit{
   empresa!: Empresa;
-
+  loading = false;
    form: FormGroup;
 
      constructor(
@@ -34,6 +34,30 @@ export class ConfiguracaoComponent implements OnInit{
   ]],
       endereco: ['', Validators.required],
       telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+    });
+
+
+    // Inicializa o formulário com os dados da empresa
+      this.form = this.formBuilder.group({
+      // campos originais do artigo...
+      nome: ['', Validators.required],
+      categoria: ['', Validators.required],
+      tipo: ['', Validators.required],
+      imposto: ['', Validators.required],
+      precoUnitario: ['', Validators.required],
+      descricao: [''],
+
+      // novos campos bancários
+      banco: ['', Validators.required],
+      iban: [''],
+      numeroConta: [''],
+      titular: [''],
+      gestorConta: [''],
+      telefone: [''],
+      email: ['', Validators.email],
+      dependencia: [''],
+      endereco: [''],
+      bancoPadrao: [false]
     });
 
 
@@ -201,6 +225,21 @@ toggleFaq(index: number) {
     open: i === index ? !faq.open : false,
   }));
 }
+
+
+  salvarConta() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    const dados = this.form.value;
+
+    // seu código para salvar o artigo com dados bancários aqui...
+
+    this.loading = false;
+  }
 
 
 }
