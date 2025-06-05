@@ -26,7 +26,6 @@ export class AuthGuard implements CanActivate {
     const url = state.url;
 
     if (token && !this.isTokenExpired(token)) {
-      console.log(`Token válido para acessar: ${url}`);
       if (url === '/login') {
         this.router.navigate(['/inicio'], { replaceUrl: true });
         return false;

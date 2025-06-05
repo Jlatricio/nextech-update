@@ -88,36 +88,41 @@
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Telefone</label>
-            <input type="text" class="form-control" formControlName="telefone" mask="000 000 000" />
-            <div *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)" class="text-danger">
-  <div *ngIf="form.get('telefone')?.errors?.['required']">Telefone é obrigatório.</div>
-  <div *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter no mínimo 10 caracteres.</div>
+         <div class="mb-3">
+  <label class="form-label">Telefone</label>
+  <div class="input-group">
+    <span class="input-group-text">
+      <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+      &nbsp;+244
+    </span>
+    <input
+      type="text"
+      class="form-control"
+      formControlName="telefone"
+      mask="000 000 000"
+      placeholder="000 000 000"
+      maxlength="9"
+    />
+  </div>
+  <div *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)" class="text-danger">
+    <div *ngIf="form.get('telefone')?.errors?.['required']">Telefone é obrigatório.</div>
+    <div *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter no mínimo 9 caracteres.</div>
+  </div>
 </div>
 
-          </div>
 
           <div class="mb-3">
-  <label class="form-label">Senha Atual</label>
-  <input type="password" class="form-control" formControlName="senhaAtual" />
+  <label class="form-label">Senha</label>
+  <input type="password" class="form-control" formControlName="senha" />
   <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
     <div *ngIf="form.get('senha')?.errors?.['required']">Senha atual é obrigatória.</div>
   </div>
 </div>
 
-<button type="button" class="btn btn-link p-0" (click)="alternarCampoNovaSenha()">
-  {{ mostrarCampoNovaSenha ? 'Cancelar alteração de senha' : 'Alterar senha' }}
-</button>
 
 
-<div class="mb-3" *ngIf="mostrarCampoNovaSenha">
-  <label class="form-label">Nova Senha</label>
-  <input type="password" class="form-control" formControlName="novaSenha" />
-  <div *ngIf="form.get('novaSenha')?.invalid && (form.get('novaSenha')?.touched || form.get('novaSenha')?.dirty)" class="text-danger">
-    Nova senha é obrigatória.
-  </div>
-    </div>
+
+
           <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-success" (click)="criarOuAtualizarUsuario()" [disabled]="form.invalid">
               <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

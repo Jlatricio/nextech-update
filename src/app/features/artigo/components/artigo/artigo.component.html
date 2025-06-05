@@ -63,7 +63,13 @@
         <td>{{ artigo.nome }}</td>
         <td>{{ artigo.tipo }}</td>
         <td>{{ artigo.categoria?.nome || 'Sem categoria' }}</td>
-        <td>{{ getNomeImposto(artigo.impostoAplicado) }}</td>
+       <td>
+  <ul>
+    <li *ngFor="let nome of getNomesImpostos(artigo.impostoAplicado)">
+      {{ nome }}
+    </li>
+  </ul>
+</td>
 
         <td>{{ artigo.preco | currency: 'Kz' }}</td>
         <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy' }}</td>
@@ -148,25 +154,49 @@
        <div class="mb-3">
   <label for="imposto" class="form-label">Imposto <span class="text-danger">*</span></label>
   <select name="imposto" id="imposto" class="form-select" formControlName="imposto" required>
-    <option value="0">Nenhum imposto</option>
-    <option value="0.07">Imposto sobre o Valor Acrescentado (IVA) – 7%</option>
-    <option value="0.14">Imposto sobre o Valor Acrescentado (IVA) – 14%</option>
-    <option value="0.25">Imposto Industrial – 25% (taxa geral)</option>
-    <option value="0.10">Imposto Industrial – 10% (atividades agrícolas, aquícolas, apícolas, avícolas, piscatórias, silvícolas e pecuárias)</option>
-    <option value="0.35">Imposto Industrial – 35% (bancos, seguros, telecomunicações e empresas petrolíferas)</option>
-    <option value="0">Imposto sobre o Rendimento do Trabalho (IRT) – Taxas progressivas conforme tabela</option>
-    <option value="0.25">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo B, matéria coletável não sujeita a retenção na fonte)</option>
-    <option value="0.25">Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo C, matéria coletável não sujeita a retenção na fonte)</option>
-    <option value="0.10">Imposto sobre a Aplicação de Capitais (IAC) – 10%</option>
-    <option value="0.005">Imposto Predial (IP) – 0,5% a 1% (varia conforme o valor do imóvel)</option>
-    <option value="0.02">Sisa – 2% (transmissão onerosa de bens imóveis)</option>
-    <option value="0">Imposto Especial de Consumo (IEC) – Taxas variáveis conforme o produto</option>
-    <option value="0">Imposto sobre Veículos Motorizados (IVM) – Taxas variáveis conforme o tipo e cilindrada do veículo</option>
-    <option value="0">Imposto sobre Sucessões e Doações – Taxas variáveis conforme o valor e grau de parentesco</option>
-    <option value="0">Imposto sobre as Atividades Petrolíferas – Taxas específicas conforme a legislação aplicável</option>
-    <option value="0">Imposto sobre as Atividades Mineiras – Taxas específicas conforme a legislação aplicável</option>
-    <option value="0">Direitos Aduaneiros – Taxas variáveis conforme o tipo de mercadoria</option>
-  </select>
+  <option value="0" title="Nenhum imposto será aplicado">Nenhum imposto</option>
+
+  <optgroup label="IVA (Imposto sobre o Valor Acrescentado)">
+    <option value="0.14" title="Taxa geral do IVA sobre bens e serviços">💰 14% (taxa geral)</option>
+    <option value="0.07" title="Taxa reduzida de IVA aplicável a determinados bens/serviços">💰 7% (reduzida)</option>
+    <option value="0.05" title="Taxa reduzida aplicável a bens da cesta básica">🛒 5% (cesta básica)</option>
+    <option value="0.01" title="Taxa especial aplicada na Província de Cabinda">📍 1% (Cabinda)</option>
+  </optgroup>
+
+  <optgroup label="Imposto Industrial">
+    <option value="0.25" title="Taxa geral para empresas">🏢 25% (geral)</option>
+    <option value="0.10" title="Atividades agrícolas e similares">🌾 10% (agropecuária)</option>
+    <option value="0.35" title="Bancos, seguros, petróleo, telecomunicações">🏦 35% (setores especiais)</option>
+  </optgroup>
+
+  <optgroup label="IRT (Rendimento do Trabalho)">
+    <option value="0" title="Taxas progressivas conforme faixa salarial">💼 Taxas progressivas</option>
+    <option value="0.25" title="Grupos B e C sem retenção na fonte">📄 25% (Grupos B e C)</option>
+  </optgroup>
+
+  <optgroup label="Imposto sobre Aplicação de Capitais (IAC)">
+    <option value="0.15" title="Juros de crédito">💳 15% (juros)</option>
+    <option value="0.10" title="Dividendos e royalties">📈 10% (dividendos)</option>
+    <option value="0.05" title="Indemnizações, mercado regulamentado">🔒 5%</option>
+  </optgroup>
+
+  <optgroup label="Imposto Predial (IP)">
+    <option value="0.005" title="Imóveis acima de 6 milhões de AKZ">🏠 0,5% (padrão)</option>
+    <option value="0.001" title="Imóveis até 5 milhões de AKZ">🏚️ 0,1% (residencial)</option>
+    <option value="0.006" title="Terrenos urbanos">🏗️ 0,6% (terrenos)</option>
+    <option value="0.25" title="Rendimentos de imóveis alugados">💸 25% (renda)</option>
+  </optgroup>
+
+  <optgroup label="Outros Impostos">
+    <option value="0.02" title="Compra e venda de imóveis">📑 Sisa – 2%</option>
+    <option value="0" title="Taxas variam conforme produto">🍷 IEC – Taxas variáveis</option>
+    <option value="0" title="Taxas conforme tipo e cilindrada do veículo">🚗 IVM – Taxas variáveis</option>
+    <option value="0" title="Dependente do valor e grau de parentesco">👨‍👩‍👧 Sucessões e Doações</option>
+    <option value="0" title="Setor petrolífero, conforme legislação">🛢️ Atividades Petrolíferas</option>
+    <option value="0" title="Setor mineiro, conforme legislação">⛏️ Atividades Mineiras</option>
+    <option value="0" title="Taxas variáveis sobre importações">📦 Direitos Aduaneiros</option>
+  </optgroup>
+</select>
 </div>
 
         <div class="mb-3">

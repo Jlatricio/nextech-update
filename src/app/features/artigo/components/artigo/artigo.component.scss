@@ -430,3 +430,20 @@ tbody tr button {
     }
   }
 }
+
+ .form-select {
+    font-size: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+  }
+
+  optgroup {
+    font-weight: bold;
+    color: #444;
+  }
+
+  option::before {
+    content: "💼 ";
+  }

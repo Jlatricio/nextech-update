@@ -192,7 +192,13 @@ salvarArtigo(): void {
       next: () => {
         this.carregarArtigos();
         this.resetarFormulario();
-
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Artigo atualizado com sucesso!',
+          timer: 2000,
+          showConfirmButton: false
+        });
         this.fecharModal();
       },
       error: (err) => {
@@ -206,7 +212,13 @@ salvarArtigo(): void {
     this.artigoService.criarArtigo(artigo).subscribe({
       next: (res: any) => {
         console.log('Artigo criado!', res);
-        this.toastr.success('Artigo criado com sucesso!');
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Artigo criado com sucesso!',
+          timer: 2000,
+          showConfirmButton: false
+        });
         this.fecharModal();
       },
       error: (err: any) => {
@@ -253,7 +265,7 @@ fecharModal(): void {
     this.form.patchValue({
       nome: artigo.nome,
       precoUnitario: artigo.preco.toString(),
-      categoria: artigo.categoriaId.toString(), // se `categoriaId` for string
+      categoria: artigo.categoriaId.toString(),
       imposto: artigo.impostoAplicado,
       tipo: artigo.tipo,
       descricao: artigo.descricao
@@ -284,8 +296,14 @@ excluirArtigo(id: number): void {
           this.toastr.success('Artigo excluído com sucesso!');
         },
         error: (err) => {
-          console.error('Erro ao excluir artigo:', err);
-          this.toastr.error('Erro ao excluir artigo. Tente novamente.');
+            console.error('Erro ao excluir artigo:', err);
+            Swal.fire({
+            icon: 'error',
+            title: 'Erro!',
+            text: 'Erro ao excluir artigo. Tente novamente.',
+            timer: 2000,
+            showConfirmButton: false
+            });
         }
       });
     }
@@ -362,28 +380,48 @@ toggleNovaCategoria() {
 
   impostos = [
   { valor: 0, nome: 'Nenhum imposto' },
-  { valor: 0.07, nome: 'Imposto sobre o Valor Acrescentado (IVA) – 7%' },
-  { valor: 0.14, nome: 'Imposto sobre o Valor Acrescentado (IVA) – 14%' },
-  { valor: 0.25, nome: 'Imposto Industrial – 25% (taxa geral)' },
-  { valor: 0.10, nome: 'Imposto Industrial – 10% (atividades agrícolas, aquícolas, apícolas, avícolas, piscatórias, silvícolas e pecuárias)' },
-  { valor: 0.35, nome: 'Imposto Industrial – 35% (bancos, seguros, telecomunicações e empresas petrolíferas)' },
-  { valor: 0, nome: 'Imposto sobre o Rendimento do Trabalho (IRT) – Taxas progressivas conforme tabela' },
-  { valor: 0.25, nome: 'Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo B, matéria coletável não sujeita a retenção na fonte)' },
-  { valor: 0.25, nome: 'Imposto sobre o Rendimento do Trabalho (IRT) – 25% (Grupo C, matéria coletável não sujeita a retenção na fonte)' },
-  { valor: 0.10, nome: 'Imposto sobre a Aplicação de Capitais (IAC) – 10%' },
-  { valor: 0.005, nome: 'Imposto Predial (IP) – 0,5% a 1% (varia conforme o valor do imóvel)' },
-  { valor: 0.02, nome: 'Sisa – 2% (transmissão onerosa de bens imóveis)' },
-  { valor: 0, nome: 'Imposto Especial de Consumo (IEC) – Taxas variáveis conforme o produto' },
-  { valor: 0, nome: 'Imposto sobre Veículos Motorizados (IVM) – Taxas variáveis conforme o tipo e cilindrada do veículo' },
-  { valor: 0, nome: 'Imposto sobre Sucessões e Doações – Taxas variáveis conforme o valor e grau de parentesco' },
-  { valor: 0, nome: 'Imposto sobre as Atividades Petrolíferas – Taxas específicas conforme a legislação aplicável' },
-  { valor: 0, nome: 'Imposto sobre as Atividades Mineiras – Taxas específicas conforme a legislação aplicável' },
-  { valor: 0, nome: 'Direitos Aduaneiros – Taxas variáveis conforme o tipo de mercadoria' }
+
+  // IVA
+  { valor: 0.14, nome: ' 14% (taxa geral)' },
+  { valor: 0.07, nome: ' 7% (reduzida)' },
+  { valor: 0.05, nome: ' 5% (cesta básica)' },
+  { valor: 0.01, nome: ' 1% (Cabinda)' },
+
+  // Imposto Industrial
+  { valor: 0.25, nome: ' 25% (geral)' },
+  { valor: 0.10, nome: ' 10% (agropecuária)' },
+  { valor: 0.35, nome: ' 35% (setores especiais)' },
+
+  // IRT
+  { valor: 0, nome: ' Taxas progressivas' },
+  { valor: 0.25, nome: ' 25% (Grupos B e C)' },
+
+  // IAC
+  { valor: 0.15, nome: ' 15% (juros)' },
+  { valor: 0.10, nome: ' 10% (dividendos)' },
+  { valor: 0.05, nome: ' 5%' },
+
+  // IP
+  { valor: 0.005, nome: ' 0,5% (padrão)' },
+  { valor: 0.001, nome: ' 0,1% (residencial)' },
+  { valor: 0.006, nome: ' 0,6% (terrenos)' },
+  { valor: 0.25, nome: ' 25% (renda)' },
+
+  // Outros
+  { valor: 0.02, nome: ' Sisa – 2%' },
+  { valor: 0, nome: ' IEC – Taxas variáveis' },
+  { valor: 0, nome: ' IVM – Taxas variáveis' },
+  { valor: 0, nome: '👨‍👩 Sucessões e Doações' },
+  { valor: 0, nome: ' Atividades Petrolíferas' },
+  { valor: 0, nome: ' Atividades Mineiras' },
+  { valor: 0, nome: ' Direitos Aduaneiros' }
 ];
 
-getNomeImposto(valor: number): string {
-  const imposto = this.impostos.find(i => i.valor === valor);
-  return imposto ? imposto.nome : 'Desconhecido';
+
+getNomesImpostos(valor: number): string[] {
+  return this.impostos
+    .filter(i => i.valor === valor)
+    .map(i => i.nome);
 }
 
 
