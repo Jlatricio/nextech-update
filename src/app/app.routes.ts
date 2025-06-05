@@ -69,13 +69,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard]  // Protege a rota de configuracao
   },
   {
+    path: '',
+    loadComponent: () => import('./shared/startup-component/startup-component.component').then(m => m.StartupComponentComponent)
+  },
+  {
     path: '**',
     redirectTo: 'inicio'
   },
-  {
-  path: '',
-  loadComponent: () => import('./shared/startup-component/startup-component.component').then(m => m.StartupComponentComponent)
-}
-
 
 ];

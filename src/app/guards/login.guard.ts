@@ -1,27 +1,31 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
+import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginGuard implements CanActivate {
-
   constructor(private router: Router) {}
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
+  isTokenExpired(token: string): boolean {
+    try {
+      const decoded: any = jwtDecode(token);
+      const now = Math.floor(Date.now() / 1000);
+      return decoded.exp < now;
+    } catch {
+      return true;
+    }
+  }
+
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const token = localStorage.getItem('token');
 
-    if (token) {
-      // Se já estiver logado → não pode ir para login
+    if (token && !this.isTokenExpired(token)) {
       this.router.navigate(['/inicio']);
       return false;
     }
 
-    // Se não estiver logado → pode acessar login
     return true;
   }
-
 }

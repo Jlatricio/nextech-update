@@ -25,6 +25,7 @@ export class StartupComponentComponent implements OnInit {
 
         if (exp > now) {
           // Token válido
+          this.router.navigate(['/inicio']);
           return;
         } else {
           // Token expirado
@@ -40,5 +41,6 @@ export class StartupComponentComponent implements OnInit {
     }
   }
 }
+
 
 }
