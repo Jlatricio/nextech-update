@@ -6,6 +6,8 @@ import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { UsuarioService } from '../../service/usuario.service';
+import Swal from 'sweetalert2';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-usuarios',
@@ -22,7 +24,6 @@ export class UsuariosComponent implements OnInit {
   usuarioEditandoId: number | null = null;
   usuarioOriginal: Usuario | null = null;
   loading: boolean = false;
-  mostrarCampoNovaSenha: boolean = false;
 
 
   constructor(
@@ -37,28 +38,16 @@ export class UsuariosComponent implements OnInit {
   perfil: ['', Validators.required],
   telefone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(11)]],
   email: ['', [Validators.required, Validators.email]],
-  senhaAtual: [''],
-  novaSenha: ['']
+  senha: [''],
 });
   }
+
+
 
   getPerfilNome(perfil: string): string {
   if (perfil === 'ADMIN') return 'Administrador';
   if (perfil === 'VENDEDOR') return 'Vendedor';
   return perfil;
-}
-
-  alternarCampoNovaSenha() {
-  this.mostrarCampoNovaSenha = !this.mostrarCampoNovaSenha;
-
-  const novaSenhaControl = this.form.get('novaSenha');
-  if (this.mostrarCampoNovaSenha) {
-    novaSenhaControl?.setValidators([Validators.required, Validators.minLength(6)]);
-  } else {
-    novaSenhaControl?.clearValidators();
-    novaSenhaControl?.reset();
-  }
-  novaSenhaControl?.updateValueAndValidity();
 }
 
 
@@ -77,39 +66,59 @@ export class UsuariosComponent implements OnInit {
   }
 
 criarOuAtualizarUsuario(): void {
+  // Ajusta validação da senha dinamicamente
+  if (this.editando) {
+    this.form.get('senha')?.clearValidators();
+  } else {
+    this.form.get('senha')?.setValidators([Validators.required]);
+  }
+  this.form.get('senha')?.updateValueAndValidity();
+
   if (this.form.invalid) {
-    alert('Preencha todos os campos obrigatórios.');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atenção!',
+      text: 'Preencha todos os campos obrigatórios.',
+      timer: 2000,
+      showConfirmButton: false
+    });
     return;
   }
 
   this.loading = true;
 
-  // Declara formValues pegando os valores do formulário
+  const telefoneRaw: string = this.form.get('telefone')?.value || '';
+  const telefoneLimpo = telefoneRaw.replace(/\s+/g, '');
+  const telefoneCompleto = telefoneLimpo.startsWith('+244') ? telefoneLimpo : '+244' + telefoneLimpo;
+
   const formValues = this.form.value;
 
-  // Monta o objeto usuario com os campos base
   const usuario: any = {
     nome: formValues.nome,
     perfil: formValues.perfil,
-    telefone: formValues.telefone,
-    email: formValues.email
+    telefone: telefoneCompleto,
+    email: formValues.email,
   };
 
-  // Só inclui senhaAtual e novaSenha se ambos estiverem preenchidos
-  if (formValues.senhaAtual && formValues.novaSenha) {
-    usuario.senhaAtual = formValues.senhaAtual;
-    usuario.novaSenha = formValues.novaSenha;
+  // Envia senha obrigatória na criação
+  if (!this.editando) {
+    usuario.senha = formValues.senha;
+  }
+
+  // Se editar e senha preenchida, atualiza senha
+  if (this.editando && formValues.senha) {
+    usuario.senha = formValues.senha;
   }
 
   if (this.editando && this.usuarioEditandoId !== null) {
     this.usuarioService.atualizarUsuario(this.usuarioEditandoId, usuario).subscribe({
       next: () => {
-        this.toastr.success('Usuário atualizado com sucesso!', 'Sucesso', {
-          timeOut: 3000,
-          positionClass: 'toast-top-right',
-          progressBar: true,
-          closeButton: true,
-          tapToDismiss: true,
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Usuário atualizado com sucesso!',
+          timer: 3000,
+          showConfirmButton: false
         });
         this.cancelarEdicao();
         this.listarUsuarios();
@@ -124,12 +133,12 @@ criarOuAtualizarUsuario(): void {
   } else {
     this.usuarioService.criarUsuario(usuario).subscribe({
       next: () => {
-        this.toastr.success('Usuário criado com sucesso!', 'Sucesso', {
-          timeOut: 3000,
-          positionClass: 'toast-top-right',
-          progressBar: true,
-          closeButton: true,
-          tapToDismiss: true,
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Usuário criado com sucesso!',
+          timer: 2000,
+          showConfirmButton: false
         });
         this.form.reset();
         this.listarUsuarios();
@@ -137,12 +146,12 @@ criarOuAtualizarUsuario(): void {
         this.loading = false;
       },
       error: (error) => {
-        this.toastr.error(error.error?.message || 'Erro ao criar usuário.', 'Erro', {
-          timeOut: 4000,
-          positionClass: 'toast-top-right',
-          progressBar: true,
-          closeButton: true,
-          tapToDismiss: true,
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro!',
+          text: error.error?.message || 'Erro ao criar usuário.',
+          timer: 3000,
+          showConfirmButton: false
         });
         console.error('Erro ao criar usuário:', error);
         this.loading = false;
@@ -152,13 +161,28 @@ criarOuAtualizarUsuario(): void {
 }
 
 
+
+
 fecharModal(): void {
   const modalElement = document.getElementById('exampleModal');
+
   if (modalElement) {
-    const modalInstance = (window as any).bootstrap.Modal.getInstance(modalElement);
-    if (modalInstance) {
-      modalInstance.hide();
+    let modal = Modal.getInstance(modalElement);
+    if (!modal) {
+      modal = new Modal(modalElement);
     }
+
+    modal.hide();
+
+    // Espera o modal terminar a animação e remove o backdrop manualmente
+    setTimeout(() => {
+      // Remove classe que trava o scroll da página
+      document.body.classList.remove('modal-open');
+
+      // Remove o backdrop (fundo escuro)
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(b => b.remove());
+    }, 300); // 300ms é o tempo padrão do fade-out no Bootstrap
   }
 }
 
@@ -181,15 +205,27 @@ fecharModal(): void {
   }
 
   deletarUsuario(id: number): void {
-    if (confirm('Tem certeza que deseja excluir este usuário?')) {
+    Swal.fire({
+      title: 'Tem certeza?',
+      text: 'Deseja realmente excluir este usuário?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir!',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
       this.usuarioService.deletarUsuario(id).subscribe({
         next: () => {
-          alert('Usuário deletado com sucesso!');
-          this.listarUsuarios();
+        this.listarUsuarios();
+        this.toastr.success('Usuário excluído com sucesso!');
         },
-        error: (error) => console.error('Erro ao deletar usuário:', error)
+        error: (error) => {
+        this.toastr.error('Erro ao deletar usuário.');
+        console.error('Erro ao deletar usuário:', error);
+        }
       });
-    }
+      }
+    });
   }
 
   get usuariosFiltrados(): Usuario[] {
