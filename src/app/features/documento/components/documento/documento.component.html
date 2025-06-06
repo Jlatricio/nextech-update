@@ -2,25 +2,37 @@
   <div>
     <h3>Documentos</h3>
     <div class="btn-group"></div>
-    <button type="button" class="btn-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+   <button type="button" class="btn-custom-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
   Novo Documento
   <i class="bi bi-chevron-down ms-1"></i>
 </button>
 
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" [routerLink]="['/proforma']">Proforma</a></li>
-        <li><a class="dropdown-item" [routerLink]="['/factura']">Factura</a></li>
-        <li><a class="dropdown-item" [routerLink]="['/factura-recibo']">Factura/Recibo</a></li>
-        <li><a class="dropdown-item" [routerLink]="['/recibo']">Recibo</a></li>
-      </ul>
+     <ul class="dropdown-menu custom-dropdown shadow-lg p-2 border-0">
+  <li>
+    <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/proforma']">
+      <i class="bi bi-file-earmark-text"></i> Proforma
+    </a>
+  </li>
+  <li>
+    <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura']">
+      <i class="bi bi-receipt"></i> Factura
+    </a>
+  </li>
+  <li>
+    <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura-recibo']">
+      <i class="bi bi-cash-stack"></i> Factura/Recibo
+    </a>
+  </li>
+</ul>
+
     </div>
   </div>
-  <nav class="tabs">
-    <a [class.active]="aba =='facturas'" (click)="aba='facturas'">Factura</a>
-    <a [class.active]="aba =='fr'" (click)="aba='fr'">F/R</a>
-    <a [class.active]="aba =='recibo'" (click)="aba='recibo'">Recibo</a>
-    <a [class.active]="aba =='proformas'" (click)="aba='proformas'">Proforma</a>
-  </nav>
+<nav class="tabs">
+  <a [class.active]="aba === 'facturas'" (click)="aba = 'facturas'">Factura</a>
+  <a [class.active]="aba === 'fr'" (click)="aba = 'fr'">F/R</a>
+  <a [class.active]="aba === 'recibo'" (click)="aba = 'recibo'">Recibo</a>
+  <a [class.active]="aba === 'proformas'" (click)="aba = 'proformas'">Proforma</a>
+</nav>
 
   <!-- tabela de clientes -->
   <main class="table" id="customers_table">

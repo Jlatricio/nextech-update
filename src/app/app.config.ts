@@ -6,8 +6,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, switchMap } from 'rxjs/operators';
-import { throwError, from, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 import Swal from 'sweetalert2';
 
@@ -38,25 +38,19 @@ export const appConfig: ApplicationConfig = {
                 localStorage.removeItem('token');
 
                 if (router.url !== '/login') {
-                  // Converte a Promise do Swal em Observable com 'from'
-                  return from(
                   Swal.fire({
-    icon: 'warning',
-    title: 'Sessão Expirada',
-    text: 'Sua sessão expirou. Por favor, faça login novamente.',
-    confirmButtonText: 'OK'
-  }).then(() => {
-    router.navigate(['/login']);
-  })
-                  ).pipe(
-                    switchMap(() => {
-                      router.navigate(['/login']);
-                      // Retorna um observable vazio ou erro
-                      return throwError(() => error);
-                    })
-                  );
+                    icon: 'warning',
+                    title: 'Sessão Expirada',
+                    text: 'Sua sessão expirou. Por favor, faça login novamente.',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,
+                    timer: 4000
+                  });
+
+                  router.navigate(['/login']);
                 }
               }
+
               return throwError(() => error);
             })
           );
