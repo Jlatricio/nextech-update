@@ -13,7 +13,6 @@ import { provideNgxMask } from 'ngx-mask';
   selector: 'app-configuracao',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule],
-  providers: [provideNgxMask()],
   templateUrl: './configuracao.component.html',
   styleUrl: './configuracao.component.scss',
 })
