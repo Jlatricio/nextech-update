@@ -16,19 +16,42 @@
       <div *ngSwitchCase="'configuracao'" class="configuracao-container">
      <form [formGroup]="form" (ngSubmit)="salvarEmpresa()" class="form-container">
 
-    <div class="form-group" *ngFor="let field of fields">
-      <label [for]="field.id">{{ field.label }}</label>
-      <input
-        [type]="field.type"
-        [id]="field.id"
-        [formControlName]="field.name"
-        [placeholder]="field.placeholder"
-        [ngClass]="{ 'invalid': isInvalid(field.name) }"
-      />
-      <small class="error" *ngIf="isInvalid(field.name)">
-        {{ field.error }}
-      </small>
-    </div>
+    <div *ngFor="let field of fields" class="mb-3">
+  <label [for]="field.id" class="form-label">{{ field.label }}</label>
+
+  <!-- Input especial para telefone com bandeira +244 -->
+  <div *ngIf="field.name === 'telefone'; else inputNormal" class="input-group">
+    <span class="input-group-text">
+      <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+      &nbsp;+244
+    </span>
+    <input
+      [id]="field.id"
+      [type]="field.type"
+      class="form-control"
+      [formControlName]="field.name"
+      [placeholder]="field.placeholder"
+      maxlength="9"
+    />
+  </div>
+
+  <!-- Inputs normais para os demais campos -->
+  <ng-template #inputNormal>
+    <input
+      [id]="field.id"
+      [type]="field.type"
+      class="form-control"
+      [formControlName]="field.name"
+      [placeholder]="field.placeholder"
+    />
+  </ng-template>
+
+  <!-- Mensagem de erro -->
+  <div *ngIf="isInvalid(field.name)" class="invalid-feedback d-block">
+    {{ field.error }}
+  </div>
+</div>
+
 
     <button type="submit" [disabled]="form.invalid">Salvar</button>
   </form>
@@ -193,160 +216,203 @@
   <div class="modal-dialog modal-lg"> <!-- modal maior para melhor acomodar campos -->
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5">Criar artigo</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h1 class="modal-title fs-5">Criar Conta</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position: static; background: none; box-shadow: none;"></button>
       </div>
 
       <div class="modal-body">
-        <form [formGroup]="form" (ngSubmit)="salvarConta()">
-          <!-- Campos originais... -->
-
-          <!-- Novo campo: Banco -->
-          <div class="mb-3">
-            <label for="banco" class="form-label">Selecione o teu Banco <span class="text-danger">*</span></label>
-            <select
-              id="banco"
-              name="banco"
-              class="form-select"
-              formControlName="banco"
-              required
-            >
-              <option value="">Selecione...</option>
-              <option value="BAI">Banco Angolano de Investimento</option>
-              <option value="BIC">Banco BIC</option>
-              <option value="YETU">Banco Yetu</option>
-              <option value="SOL">Banco Sol</option>
-              <option value="BNI">Banco de Negócios Internacional</option>
-              <option value="BDA">Banco de Desenvolvimento de Angola</option>
-              <option value="BCA">Banco Comercial Angolano, S.A</option>
-              <option value="BCH">Banco Comercial do Huambo</option>
-              <option value="BFA">Banco de Fomento Angola</option>
-              <option value="BPC">Banco de Poupança e Crédito</option>
-              <option value="BE">Banco Económico</option>
-              <option value="BRK">Banco Regional do Keve</option>
-              <option value="BIR">Banco de Investimento Rural</option>
-              <option value="BMA">Banco Millennium Atlântico</option>
-              <option value="BCS">Banco de Crédito do Sul, S.A.</option>
-              <option value="VTB">Banco VTB África S.A.</option>
-              <option value="FNB">Finibanco Angola, S.A</option>
-              <option value="SBA">Standard Bank Angola</option>
-              <option value="BCGA">Banco Caixa Geral Angola</option>
-              <option value="BOCLB">Banco da China Lda - Sucursal de Luanda</option>
-              <option value="BVB">Banco Valor S.A</option>
-              <option value="BPG">Banco Prestígio</option>
-              <option value="BMF">Banco BAI Micro Finanças S.A.</option>
-              <option value="BCI">Banco de Comércio e Indústria</option>
-            </select>
+        <form [formGroup]="formConta" (ngSubmit)="salvarConta()">
+        <!-- Campo Banco (select) -->
+        <div class="mb-3">
+          <label for="banco" class="form-label">Selecione o teu Banco <span class="text-danger">*</span></label>
+          <select
+            id="banco"
+            name="banco"
+            class="form-select"
+            formControlName="banco"
+            required
+          >
+            <option value="">Selecione...</option>
+            <option value="BAI">Banco Angolano de Investimento</option>
+            <option value="BIC">Banco BIC</option>
+            <option value="YETU">Banco Yetu</option>
+            <option value="SOL">Banco Sol</option>
+            <option value="BNI">Banco de Negócios Internacional</option>
+            <option value="BDA">Banco de Desenvolvimento de Angola</option>
+            <option value="BCA">Banco Comercial Angolano, S.A</option>
+            <option value="BCH">Banco Comercial do Huambo</option>
+            <option value="BFA">Banco de Fomento Angola</option>
+            <option value="BPC">Banco de Poupança e Crédito</option>
+            <option value="BE">Banco Económico</option>
+            <option value="BRK">Banco Regional do Keve</option>
+            <option value="BIR">Banco de Investimento Rural</option>
+            <option value="BMA">Banco Millennium Atlântico</option>
+            <option value="BCS">Banco de Crédito do Sul, S.A.</option>
+            <option value="VTB">Banco VTB África S.A.</option>
+            <option value="FNB">Finibanco Angola, S.A</option>
+            <option value="SBA">Standard Bank Angola</option>
+            <option value="BCGA">Banco Caixa Geral Angola</option>
+            <option value="BOCLB">Banco da China Lda - Sucursal de Luanda</option>
+            <option value="BVB">Banco Valor S.A</option>
+            <option value="BPG">Banco Prestígio</option>
+            <option value="BMF">Banco BAI Micro Finanças S.A.</option>
+            <option value="BCI">Banco de Comércio e Indústria</option>
+          </select>
+          <div class="text-danger" *ngIf="formConta.get('banco')?.touched && formConta.get('banco')?.invalid">
+            O banco é obrigatório.
           </div>
+        </div>
 
-          <!-- Campos bancários adicionais -->
-          <div class="mb-3">
-            <label for="iban" class="form-label">IBAN</label>
-            <input
-              type="text"
-              id="iban"
-              class="form-control"
-              formControlName="iban"
-              placeholder="Digite o IBAN"
-            />
-          </div>
+      <div class="mb-3">
+  <label for="iban" class="form-label">IBAN</label>
+  <div class="input-group">
+    <span class="input-group-text">AO06</span>
+    <input
+      type="text"
+      id="iban"
+      class="form-control"
+      formControlName="iban"
+      placeholder="1234 5678 9012 3456 7890 1234"
+      mask="0000 0000 0000 0000 0000 0000"
+      maxlength="24"
+      required
+    />
+  </div>
+  <div class="text-danger" *ngIf="formConta.get('iban')?.touched && formConta.get('iban')?.invalid">
+    O IBAN é obrigatório.
+  </div>
+</div>
 
-          <div class="mb-3">
-            <label for="numeroConta" class="form-label">Nº de Conta</label>
-            <input
-              type="text"
-              id="numeroConta"
-              class="form-control"
-              formControlName="numeroConta"
-              placeholder="Digite o número da conta"
-            />
+        <!-- Número da conta com máscara numérica (exemplo: até 12 dígitos) -->
+        <div class="mb-3">
+          <label for="numeroConta" class="form-label">Nº de Conta</label>
+          <input
+            type="text"
+            id="numeroConta"
+            class="form-control"
+            formControlName="numeroConta"
+            placeholder="Digite o número da conta"
+            mask="000000000000"
+            maxlength="12"
+            required
+          />
+          <div class="text-danger" *ngIf="formConta.get('numeroConta')?.touched && formConta.get('numeroConta')?.invalid">
+            O número da conta é obrigatório.
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="titular" class="form-label">Titular</label>
-            <input
-              type="text"
-              id="titular"
-              class="form-control"
-              formControlName="titular"
-              placeholder="Nome do titular da conta"
-            />
+        <div class="mb-3">
+          <label for="titular" class="form-label">Titular</label>
+          <input
+            type="text"
+            id="titular"
+            class="form-control"
+            formControlName="titular"
+            placeholder="Nome do titular da conta"
+            required
+          />
+          <div class="text-danger" *ngIf="formConta.get('titular')?.touched && formConta.get('titular')?.invalid">
+            O titular é obrigatório.
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="gestorConta" class="form-label">Gestor de Conta</label>
-            <input
-              type="text"
-              id="gestorConta"
-              class="form-control"
-              formControlName="gestorConta"
-              placeholder="Nome do gestor da conta"
-            />
+        <div class="mb-3">
+          <label for="gestorConta" class="form-label">Gestor de Conta</label>
+          <input
+            type="text"
+            id="gestorConta"
+            class="form-control"
+            formControlName="gestorConta"
+            placeholder="Nome do gestor da conta"
+            required
+          />
+          <div class="text-danger" *ngIf="formConta.get('gestorConta')?.touched && formConta.get('gestorConta')?.invalid">
+            O gestor de conta é obrigatório.
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="telefone" class="form-label">Telemóvel (Contacto)</label>
-            <input
-              type="tel"
-              id="telefone"
-              class="form-control"
-              formControlName="telefone"
-              placeholder="Número de contacto"
-            />
+        <!-- Telefone com máscara para número angolano (9 dígitos) -->
+        <div class="mb-3">
+          <label for="telefone" class="form-label">Telemóvel (Contacto)</label>
+          <input
+            type="tel"
+            id="telefone"
+            class="form-control"
+            formControlName="telefone"
+            placeholder="923000000"
+            mask="000000000"
+            maxlength="9"
+            required
+          />
+          <div class="text-danger" *ngIf="formConta.get('telefone')?.touched && formConta.get('telefone')?.invalid">
+            O telemóvel é obrigatório.
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input
-              type="email"
-              id="email"
-              class="form-control"
-              formControlName="email"
-              placeholder="Email"
-            />
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="Email"
+            required
+          />
+          <div class="text-danger" *ngIf="formConta.get('email')?.touched && formConta.get('email')?.invalid">
+            O email é obrigatório.
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="dependencia" class="form-label">Dependência</label>
-            <input
-              type="text"
-              id="dependencia"
-              class="form-control"
-              formControlName="dependencia"
-              placeholder="Dependência"
-            />
+        <div class="mb-3">
+          <label for="dependencia" class="form-label">Dependência</label>
+          <input
+            type="text"
+            id="dependencia"
+            class="form-control"
+            formControlName="dependencia"
+            placeholder="Dependência"
+            required
+          />
+          <div class="text-danger" *ngIf="formConta.get('dependencia')?.touched && formConta.get('dependencia')?.invalid">
+            A dependência é obrigatória.
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="endereco" class="form-label">Endereço</label>
-            <input
-              type="text"
-              id="endereco"
-              class="form-control"
-              formControlName="endereco"
-              placeholder="Endereço"
-            />
+        <div class="mb-3">
+          <label for="endereco" class="form-label">Endereço</label>
+          <input
+            type="text"
+            id="endereco"
+            class="form-control"
+            formControlName="endereco"
+            placeholder="Endereço"
+            required
+          />
+          <div class="text-danger" *ngIf="formConta.get('endereco')?.touched && formConta.get('endereco')?.invalid">
+            O endereço é obrigatório.
           </div>
+        </div>
 
-          <div class="mb-3 form-check">
-            <input
-              type="checkbox"
-              id="bancoPadrao"
-              class="form-check-input"
-              formControlName="bancoPadrao"
-            />
-            <label for="bancoPadrao" class="form-check-label">Banco Padrão</label>
-          </div>
+        <div class="mb-3 form-check">
+          <input
+            type="checkbox"
+            id="bancoPadrao"
+            class="form-check-input"
+            formControlName="bancoPadrao"
+          />
+          <label for="bancoPadrao" class="form-check-label">Banco Padrão</label>
+        </div>
 
-          <!-- Botão de salvar -->
-          <div class="mb-3">
-            <button type="submit" class="btn btn-success" [disabled]="loading">
-              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              Salvar
-            </button>
-          </div>
-        </form>
-      </div>
+        <!-- Botão de salvar -->
+        <div class="mb-3">
+          <button type="submit" class="btn btn-success" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Salvar
+          </button>
+        </div>
+      </form>
+      </div>  </div>
     </div>
   </div>
 </div>

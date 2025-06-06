@@ -6,12 +6,14 @@ import { RouterModule } from '@angular/router';
 import { EmpresaService } from './services/empresa.service';
 import { Observable } from 'rxjs';
 import { Empresa } from './interface/empresa';
+import { provideNgxMask } from 'ngx-mask';
 
 
 @Component({
   selector: 'app-configuracao',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule],
+  providers: [provideNgxMask()],
   templateUrl: './configuracao.component.html',
   styleUrl: './configuracao.component.scss',
 })
@@ -19,6 +21,7 @@ export class ConfiguracaoComponent implements OnInit{
   empresa!: Empresa;
   loading = false;
    form: FormGroup;
+   formConta: FormGroup;
 
      constructor(
     private titleService: TitleService,
@@ -38,11 +41,12 @@ export class ConfiguracaoComponent implements OnInit{
 
 
     // Inicializa o formulário com os dados da empresa
-      this.form = this.formBuilder.group({
+      this.formConta = this.formBuilder.group({
       // campos originais do artigo...
       nome: ['', Validators.required],
       categoria: ['', Validators.required],
       tipo: ['', Validators.required],
+
       imposto: ['', Validators.required],
       precoUnitario: ['', Validators.required],
       descricao: [''],
@@ -108,7 +112,7 @@ export class ConfiguracaoComponent implements OnInit{
 
 isInvalid(controlName: string): boolean {
   const control = this.form.get(controlName);
-  return (control?.invalid && control?.touched) ?? false;
+  return !!(control && control.invalid && (control.touched || control.dirty));
 }
 
 
@@ -134,7 +138,13 @@ salvarEmpresa(): void {
     return;
   }
 
-  const empresa: Empresa = this.form.value;
+  // Clona o valor do formulário para evitar modificar o original
+  const empresa: Empresa = { ...this.form.value };
+
+  // Adiciona o prefixo +244 ao telefone
+  if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
+    empresa.telefone = `+244${empresa.telefone}`;
+  }
 
   this.empresaService.atualizadados(empresa).subscribe({
     next: (res) => {
@@ -146,6 +156,7 @@ salvarEmpresa(): void {
     }
   });
 }
+
 
 
 
