@@ -40,12 +40,14 @@ export const appConfig: ApplicationConfig = {
                 if (router.url !== '/login') {
                   // Converte a Promise do Swal em Observable com 'from'
                   return from(
-                    Swal.fire({
-                      icon: 'warning',
-                      title: 'Sessão Expirada',
-                      text: 'Sua sessão expirou. Por favor, faça login novamente.',
-                      confirmButtonText: 'OK'
-                    })
+                  Swal.fire({
+    icon: 'warning',
+    title: 'Sessão Expirada',
+    text: 'Sua sessão expirou. Por favor, faça login novamente.',
+    confirmButtonText: 'OK'
+  }).then(() => {
+    router.navigate(['/login']);
+  })
                   ).pipe(
                     switchMap(() => {
                       router.navigate(['/login']);
