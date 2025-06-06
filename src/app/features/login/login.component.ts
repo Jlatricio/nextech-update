@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from './Auth/auth.service';
 import { TitleService } from '../../core/services/title.service';
 import { CadastroService } from '../../core/services/cadastro.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -33,12 +34,12 @@ export class LoginComponent {
       senha: ['', Validators.required]
     });
 
-   this.registerForm = this.fb.group({
-  nome: ['', Validators.required],
-  email: ['', [Validators.required, Validators.email]],
-  telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
-  senha: ['', Validators.required]
-});
+    this.registerForm = this.fb.group({
+      nome: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      senha: ['', Validators.required]
+    });
   }
 
   toggleSignUpMode(): void {
@@ -53,11 +54,7 @@ export class LoginComponent {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phonePattern = /^\d{9}$/;
 
-    if (emailPattern.test(value) || phonePattern.test(value)) {
-      return null;
-    }
-
-    return { invalidInput: true };
+    return emailPattern.test(value) || phonePattern.test(value) ? null : { invalidInput: true };
   }
 
   get loginemail() { return this.loginForm.get('email'); }
@@ -79,68 +76,93 @@ export class LoginComponent {
       this.loginemail?.setValue(value, { emitEvent: false });
     }
   }
-onSubmit(): void {
-  const emailLogin = this.loginForm.value.email;
-  const senhaLogin = this.loginForm.value.senha;
 
-  this.isLoading = true;
-  this.errorMessage = '';
+  onSubmit(): void {
+    const emailLogin = this.loginForm.value.email;
+    const senhaLogin = this.loginForm.value.senha;
 
-  this.authService.login(emailLogin, senhaLogin).subscribe({
-    next: (response) => {
-      this.router.navigate(['/inicio']);
-    },
-    error: (error) => {
-      // Verifica o status do erro e define a mensagem apropriada
-      if (error.status === 401) {
-        this.errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
-      } else {
-        this.errorMessage = error.error?.message || 'Erro ao fazer login.';
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.authService.login(emailLogin, senhaLogin).subscribe({
+      next: () => {
+        Swal.fire({
+          title: 'Entrando...',
+          didOpen: () => Swal.showLoading(),
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          timer: 1200
+        }).then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Login bem-sucedido!',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => {
+            this.router.navigate(['/inicio']);
+          });
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        if (error.status === 401) {
+          this.errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
+        } else {
+          this.errorMessage = error.error?.message || 'Erro ao fazer login.';
+        }
+      },
+      complete: () => {
+        this.isLoading = false;
       }
-
-      this.isLoading = false;
-    },
-    complete: () => {
-      this.isLoading = false;
-    }
-  });
-}
-
-
- onRegister(): void {
-  if (!this.signUpMode) return;
-
-  if (this.registerForm.invalid) {
-    this.registerForm.markAllAsTouched();
-    this.errorMessage = 'Preencha todos os campos do cadastro corretamente.';
-    return;
+    });
   }
 
-  // EXTRA: monte manualmente o payload (evita surpresas com nomes)
-  const payload = {
-    nome: this.registerForm.value.nome,
-    email: this.registerForm.value.email,
-    telefone: this.registerForm.value.telefone,
-    senha: this.registerForm.value.senha
-  };
+  onRegister(): void {
+    if (!this.signUpMode) return;
 
-
-  this.isLoading = true;
-  this.errorMessage = '';
-
-  this.cadastroService.cadastrarUsuario(payload).subscribe({
-    next: (response) => {
-      alert('Cadastro realizado com sucesso!');
-      this.toggleSignUpMode();
-      this.isLoading = false;
-    },
-    error: (error) => {
-      this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
-      this.isLoading = false;
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      this.errorMessage = 'Preencha todos os campos do cadastro corretamente.';
+      return;
     }
-  });
-}
 
+    const payload = {
+      nome: this.registerForm.value.nome,
+      email: this.registerForm.value.email,
+      telefone: this.registerForm.value.telefone,
+      senha: this.registerForm.value.senha
+    };
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.cadastroService.cadastrarUsuario(payload).subscribe({
+      next: () => {
+        Swal.fire({
+          title: 'Criando conta...',
+          didOpen: () => Swal.showLoading(),
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          timer: 1200
+        }).then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Cadastro realizado!',
+            text: 'Sua conta foi criada com sucesso.',
+            timer: 1800,
+            showConfirmButton: false
+          }).then(() => {
+            this.toggleSignUpMode();
+            this.isLoading = false;
+          });
+        });
+      },
+      error: (error) => {
+        this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
+        this.isLoading = false;
+      }
+    });
+  }
 
   ngOnInit() {
     this.titleService.setTitle('Login');
