@@ -644,3 +644,12 @@ button:hover {
     }
   }
 }
+
+input.invalid {
+  border: 1px solid red;
+}
+
+small.error {
+  color: red;
+  font-size: 0.75rem;
+}

@@ -12,6 +12,7 @@ import { EmpresaService } from '../../../configuracao/services/empresa.service';
 import { Empresa } from '../../../configuracao/interface/empresa';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-proforma',
@@ -71,7 +72,11 @@ form: FormGroup;
 
 validarCliente(): boolean {
   if (!this.clienteSelecionado) {
-    this.toastr.warning('Selecione um cliente para continuar.', 'Atenção');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atenção',
+      text: 'Selecione um cliente para continuar.'
+    });
     return false;
   }
   return true;
@@ -79,17 +84,29 @@ validarCliente(): boolean {
 
 validarItens(): boolean {
   if (this.itens.length === 0) {
-    this.toastr.warning('Adicione pelo menos um item.', 'Atenção');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atenção',
+      text: 'Adicione pelo menos um item.'
+    });
     return false;
   }
 
   for (const [index, item] of this.itens.entries()) {
     if (!item.categoriaId) {
-      this.toastr.warning(`Selecione uma categoria no item ${index + 1}.`, 'Atenção');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Atenção',
+        text: `Selecione uma categoria no item ${index + 1}.`
+      });
       return false;
     }
     if (!item.artigoId) {
-      this.toastr.warning(`Selecione um artigo no item ${index + 1}.`, 'Atenção');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Atenção',
+        text: `Selecione um artigo no item ${index + 1}.`
+      });
       return false;
     }
     if (!item.quantidade || item.quantidade < 1) {
@@ -103,8 +120,18 @@ validarItens(): boolean {
 
 salvarFatura(): void {
   if (!this.verificarDadosEmpresa()) {
-    this.toastr.warning('Complete os dados da empresa antes de continuar.', 'Atenção');
-    this.mostrarBotaoRedirecionamento = true;
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atenção',
+      text: 'Complete os dados da empresa antes de continuar.',
+      showCancelButton: true,
+      confirmButtonText: 'Configurar agora',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.redirecionarParaConfiguracoes();
+      }
+    });
     return;
   }
 

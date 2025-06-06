@@ -1,4 +1,4 @@
-import { ApplicationConfig, Injector, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, Injector, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideToastr } from 'ngx-toastr';
@@ -8,18 +8,22 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
 import { throwError, from, of } from 'rxjs';
+import { provideNgxMask } from 'ngx-mask';
+
 
 import Swal from 'sweetalert2';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
+       provideNgxMask(),
     provideAnimations(),
     provideToastr({
       positionClass: 'toast-top-center',
       timeOut: 4000,
       closeButton: true,
     }),
+
     { provide: LOCALE_ID, useValue: 'pt-AO' },
     provideHttpClient(
       withInterceptors([
