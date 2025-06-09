@@ -11,10 +11,20 @@ export class UsuarioService {
   private readonly apiUrl = `${environment.apiUrl}/users`;
 
     constructor(private httpClient: HttpClient) {}
+
      listaUsuario(): Observable<Usuario[]> {
   return this.httpClient.get<Usuario[]>(this.apiUrl).pipe(
     catchError(error => {
       console.error('Erro ao listar usuários', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+obterNomeUsuario(): Observable<{ nome: string }> {
+  return this.httpClient.get<{ nome: string }>(`${this.apiUrl}/nome`).pipe(
+    catchError(error => {
+      console.error('Erro ao obter nome do usuário', error);
       return throwError(() => error);
     })
   );

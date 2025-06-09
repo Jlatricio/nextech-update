@@ -6,12 +6,19 @@
   gap: 1.5rem;
   padding: 1.5rem;
 
+  .section-title {
+  font-size: 1.0rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
 .btn-dropdown {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  border-radius: 10%;
   border: none;
-  background-color: #1d3557;
+  background: linear-gradient(90deg, #1d3557 0%, #2778fa 100%);
   font-weight: 600;
   font-size: 0.75rem;
   color: #fff;
@@ -133,11 +140,13 @@ min-width: 800px;
 }
 
 thead {
+
 background-color: #1d3557;
 color: #fff;
 }
 
 thead th {
+
   font-weight: 500;
   padding: 10px;
   font-size: 12px;
@@ -381,10 +390,11 @@ flex-wrap: wrap;
 }
 
 .btn-custom-dropdown {
-  background: #1d3557;
+    background: linear-gradient(90deg, #1d3557 0%, #114395 100%);
   color: white;
   border: none;
-  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  padding: 0.9rem 1.2rem;
   font-weight: 600;
   font-size: 1rem;
   display: flex;
@@ -398,7 +408,7 @@ flex-wrap: wrap;
   }
 
   &:hover {
-    background: #16324a;
+    background: linear-gradient(90deg, #1d3557 0%, #0a2755 100%);
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
   }
 
@@ -410,3 +420,18 @@ flex-wrap: wrap;
     transform: rotate(180deg);
   }
 }
+
+
+.action-item {
+  cursor: pointer;
+  width: 80px;
+}
+.action-item:hover {
+  opacity: 0.8;
+}
+
+.pointer{
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+

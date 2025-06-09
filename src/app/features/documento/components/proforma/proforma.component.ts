@@ -13,6 +13,8 @@ import { Empresa } from '../../../configuracao/interface/empresa';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Proforma } from './interface/proforma';
+import { ProformaService } from './service/proforma.service';
 
 @Component({
   selector: 'app-proforma',
@@ -35,9 +37,14 @@ empresa!: Empresa;
 iva = 0;
 descontoValor = 0;
 totalGeral = 0;
+dataValidadeISO: string = '';
+dataValidadeFormatada: string = '';
+
 form: FormGroup;
+  isLoading: boolean = false;
 
   constructor(
+    private proformaService: ProformaService,
     private ClienteService: ClienteService,
     private artigoService: ArtigoService,
     private categoriaService: CategoriaService,
@@ -119,6 +126,7 @@ validarItens(): boolean {
 
 
 salvarFatura(): void {
+    this.isLoading = true;
   if (!this.verificarDadosEmpresa()) {
     Swal.fire({
       icon: 'warning',
@@ -135,17 +143,77 @@ salvarFatura(): void {
     return;
   }
 
-  if (!this.validarCliente()) {
+  // Valida cliente
+  if (!this.clienteSelecionado || !this.clienteSelecionado.id) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Cliente não selecionado',
+      text: 'Por favor, selecione um cliente antes de salvar.'
+    });
     return;
   }
 
-  if (!this.validarItens()) {
+  // Valida itens
+  if (!this.itens.length) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Sem itens',
+      text: 'Adicione ao menos um item à fatura.'
+    });
     return;
   }
 
-  // Caso passe todas as validações, prossiga para salvar a fatura
-  // Aqui você pode chamar sua API, mostrar loading, etc.
+  // Recalcula totais
+  this.recalcularTotais();
+
+  // Monta objeto Proforma
+const proforma: Proforma = {
+  tipo: 'FACTURA_PROFORMA',
+  numero: this.numeroFatura,
+  clienteId: this.clienteSelecionado.id,
+  dataValidade: this.dataValidadeISO, // <-- corrigido aqui
+  subTotal: this.subtotal,
+  totalDescontos: this.descontoValor,
+  totalImpostos: this.iva,
+  total: this.totalGeral,
+  descontoPercentual: this.desconto,
+  criadoPor: 'Usuário Atual',
+  itensFactura: this.itens.map(item => ({
+    artigoId: item.artigoId!,
+    quantidade: item.quantidade,
+    total: item.total
+  }))
+};
+
+
+  console.log('Proforma montada:', proforma);
+
+  // Envia para API (exemplo com serviço)
+  this.proformaService.criarProforma(proforma).subscribe({
+
+    next: (res) => {
+           this.isLoading = false;
+      Swal.fire({
+        icon: 'success',
+        title: 'Proforma salva com sucesso!',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      // Aqui você pode redirecionar ou limpar formulário
+    },
+    error: (err) => {
+           this.isLoading = false;
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao salvar',
+        text: 'Não foi possível salvar a proforma. Tente novamente.'
+      });
+      console.error(err);
+    }
+  });
 }
+
+
 
 
 mostrarBotaoRedirecionamento = false;
@@ -204,9 +272,16 @@ definirValidade(): void {
   const hoje = new Date();
   const validade = new Date(hoje);
   validade.setDate(validade.getDate() + 30);
-  const opcoes = { day: '2-digit', month: 'short', year: 'numeric' } as const;
-  this.dataValidade = validade.toLocaleDateString('pt-AO', opcoes);
+
+  // Armazena no formato ISO (aceito pela API)
+ this.dataValidadeISO = validade.toISOString();
+this.dataValidadeFormatada = validade.toLocaleDateString('pt-AO', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric'
+});
 }
+
 
   ngOnInit(): void {
   this.dados();
@@ -349,4 +424,10 @@ recalcularTotais() {
   trackByFn(index: number, item: ItemProforma): any {
     return item.artigoId ?? index;
   }
+
+
+
+
+
+
 }

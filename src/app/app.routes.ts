@@ -68,13 +68,24 @@ export const routes: Routes = [
     loadComponent: () => import('./features/configuracao/configuracao.component').then(m => m.ConfiguracaoComponent),
     canActivate: [AuthGuard]  // Protege a rota de configuracao
   },
+
+    {
+      path: 'vizualizar/:id',
+      loadComponent: () => import('./features/documento/components/visualizar/visualizar.component').then(m => m.VisualizarComponent),
+      canActivate: [AuthGuard]
+    },
+
   {
     path: '',
     loadComponent: () => import('./shared/startup-component/startup-component.component').then(m => m.StartupComponentComponent)
   },
+
+
+
   {
     path: '**',
     redirectTo: 'inicio'
   },
+
 
 ];
