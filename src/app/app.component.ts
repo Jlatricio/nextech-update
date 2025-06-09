@@ -5,12 +5,13 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
 import { HeaderComponent } from './shared/components/header/header.component';
 import { filter } from 'rxjs';
 import { StartupComponentComponent } from "./shared/startup-component/startup-component.component";
+import { LoadingBarModule, LoadingBarService } from '@ngx-loading-bar/core';
 
 
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent, RouterModule, StartupComponentComponent],
+  imports: [CommonModule, LoadingBarModule, RouterOutlet, SidebarComponent, HeaderComponent, RouterModule, StartupComponentComponent],
    standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
@@ -21,7 +22,7 @@ export class AppComponent {
 ngOnInit() {
   setTimeout(() => {
     this.carregando = false;
-  }, 1500); 
+  }, 1500);
 }
 
 
@@ -29,7 +30,9 @@ ngOnInit() {
 
   mostrarLayout = true;
 
-  constructor(private router: Router) {
+  constructor(private router: Router,
+              public loadingBar: LoadingBarService
+  ) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {

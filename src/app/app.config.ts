@@ -8,11 +8,19 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { provideLoadingBar } from '@ngx-loading-bar/core';
 
 import Swal from 'sweetalert2';
-
+import { registerLocaleData } from '@angular/common';
+import pt from '@angular/common/locales/pt';
+registerLocaleData(pt);
 export const appConfig: ApplicationConfig = {
+
   providers: [
+provideLoadingBar({
+  latencyThreshold: 100
+}),
+
     provideRouter(routes),
     provideAnimations(),
     provideToastr({

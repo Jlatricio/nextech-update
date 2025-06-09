@@ -14,18 +14,22 @@ $cor-fundo-th: #ffffff;
 
 
 button {
+    background: linear-gradient(90deg, #1d3557 0%, #114395 100%);
+    color: white;
     border: none;
-    background-color: #1d3557;
-    border:none;
-    font-weight: bold;
-  font-size: 0.6rem;
-    color: #fff;
-    border-radius: 2px;
-    padding: 0.7rem;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
     &:hover {
-      background-color: #16324a;
-      border: none;
+       background: linear-gradient(90deg, #1d3557 0%, #0a2755 100%);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
     }
 }
 

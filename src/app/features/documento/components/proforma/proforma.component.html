@@ -1,15 +1,12 @@
 <div class="proforma-container">
   <div class="header">
     <h2>Fatura Proforma</h2>
-   <button class="save-btn" (click)="salvarFatura()">
-  <i class="bi bi-save"></i>
-  Salvar Fatura
+  <button class="save-btn" (click)="salvarFatura()" [disabled]="isLoading">
+  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+  {{ isLoading ? 'Salvando...' : 'Salvar Fatura' }}
 </button>
-<div *ngIf="mostrarBotaoRedirecionamento" class="mt-2">
-  <button class="btn btn-outline-primary" (click)="redirecionarParaConfiguracoes()">
-    Ir para configurações da empresa
-  </button>
-</div>
+
+
 
   </div>
 
@@ -31,7 +28,8 @@
       <p class="mb-1"><strong>Nº da Fatura:</strong> {{ numeroFatura }}</p>
     </div>
     <div class="col-md-6">
-      <p class="mb-1"><strong>Data de Validade:</strong> {{ dataValidade }}</p>
+      <p class="mb-1"><strong>Data de Validade:</strong> {{ dataValidadeFormatada }} </p>
+
     </div>
   </div>
 </div>

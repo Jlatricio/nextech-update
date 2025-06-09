@@ -1,37 +1,40 @@
 <div class="container-fluid">
-  <div>
-    <h3>Documentos</h3>
-    <div class="btn-group"></div>
-   <button type="button" class="btn-custom-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-  Novo Documento
-  <i class="bi bi-chevron-down ms-1"></i>
-</button>
+  <div class="dropdown">
+  <button
+    type="button"
+    class="btn-custom-dropdown "
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    Novo Documento
+    <i class="bi bi-chevron-down ms-1"></i>
+  </button>
 
-     <ul class="dropdown-menu custom-dropdown shadow-lg p-2 border-0">
-  <li>
-    <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/proforma']">
-      <i class="bi bi-file-earmark-text"></i> Proforma
-    </a>
-  </li>
-  <li>
-    <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura']">
-      <i class="bi bi-receipt"></i> Factura
-    </a>
-  </li>
-  <li>
-    <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura-recibo']">
-      <i class="bi bi-cash-stack"></i> Factura/Recibo
-    </a>
-  </li>
-</ul>
+  <ul class="dropdown-menu custom-dropdown shadow-lg p-2 border-0">
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/proforma']">
+        <i class="bi bi-file-earmark-text"></i> Proforma
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura']">
+        <i class="bi bi-receipt"></i> Factura
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura-recibo']">
+        <i class="bi bi-cash-stack"></i> Factura/Recibo
+      </a>
+    </li>
+  </ul>
+</div>
 
-    </div>
   </div>
 <nav class="tabs">
-  <a [class.active]="aba === 'facturas'" (click)="aba = 'facturas'">Factura</a>
-  <a [class.active]="aba === 'fr'" (click)="aba = 'fr'">F/R</a>
-  <a [class.active]="aba === 'recibo'" (click)="aba = 'recibo'">Recibo</a>
   <a [class.active]="aba === 'proformas'" (click)="aba = 'proformas'">Proforma</a>
+  <a [class.active]="aba === 'facturas'" (click)="aba = 'facturas'">Factura</a>
+  <a [class.active]="aba === 'fr'" (click)="aba = 'fr'">Factura/Recibo</a>
+
 </nav>
 
   <!-- tabela de clientes -->
@@ -43,31 +46,32 @@
             <table>
               <thead>
                 <tr>
-                  <th>Id</th>
-                  <th>Entidade</th>
+                  <th>Ref.</th>
+                  <th>Cliente</th>
                   <th>Criado Por</th>
                   <th>Valor</th>
-                  <th>Documento</th>
+                  <th>Criado em</th>
+                  <th>Impostos</th>
                   <th>Acção</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                    <td>
-            <div class="bnt-action">
-              <button class="btn btn-outline-primary"  data-bs-toggle="modal" data-bs-target="#exampleModal">
-              <i class="bi bi-pencil"></i> Editar
-              </button>
-              <button class="btn btn-outline-danger" >
-              <i class="bi bi-trash"></i> Eliminar
-              </button>
-            </div>
-            </td>
+                <tr *ngFor="let proforma of DadosDocumento">
+                  <td>{{ proforma.numero }}</td>
+                  <td>{{ proforma.cliente.nome }}</td>
+                  <td>{{ proforma.criadoPor }}</td>
+                  <td>{{ proforma.total | currency:'Kz':'symbol':'1.2-2' }}</td>
+                  <td>{{ proforma.dataEmissao | date:'short' }}</td>
+                  <td>
+                  {{ proforma.totalImpostos | currency:'Kz':'symbol':'1.2-2' }}
+                  </td>
+                  <td>
+                  <div class="bnt-action dropdown">
+                   <button type="button" class="btn" (click)="openModal(proforma.id)">
+                    <i class="bi bi-three-dots"></i></button>
+                    </div>
+
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -190,3 +194,37 @@
       </div>
     </section>
   </main>
+
+
+  <div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100" id="menuModalLabel">Ações</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-around flex-wrap gap-3">
+          <div (click)="acaoAnular(documentoSelecionadoId!)" class="text-center pointer">
+            <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
+            <div>Anulação</div>
+          </div>
+          <div (click)="acaoRectificar(documentoSelecionadoId!)" class="text-center pointer">
+            <i class="bi bi-pencil-square fs-2 text-primary"></i>
+            <div>Retificação</div>
+          </div>
+          <div (click)="acaoImprimir(documentoSelecionadoId!)" class="text-center pointer">
+            <i class="bi bi-printer-fill fs-2 text-secondary"></i>
+            <div>Imprimir</div>
+          </div>
+           <div (click)="acaoDownload(documentoSelecionadoId!)" class="text-center pointer">
+
+    <i class="bi bi-download fs-2 text-success"></i>
+    <div>Download</div>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
