@@ -7,6 +7,7 @@ import { DocumentoService } from '../documento/service/documento.service'
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { DadosDocumento } from '../documento/interface/dadosdocumentos';
+import { FaturaService } from '../documento/components/factura/service/fatura.service';
 
 
 @Component({
@@ -20,20 +21,74 @@ export class InicioComponent {
  DadosDocumentos: DadosDocumento[] = [];
 
   constructor(private titleService: TitleService,
-              private DocumentoService: DocumentoService
+              private DocumentoService: DocumentoService,
+              private FaturaService: FaturaService,
 
   ) {}
 
-  visualizarTodosDocumentos() {
-    this.DocumentoService.listarDocumentos().subscribe({
-      next: (documentos: DadosDocumento[]) => {
-        this.DadosDocumentos = documentos;
+  listarFacturas() {
+    this.FaturaService.listarFacturas().subscribe({
+      next: (facturas: DadosDocumento[]) => {
+        this.DadosDocumentos = facturas;
       },
       error: (err) => {
-        console.error('Erro ao listar documentos:', err);
+        console.error('Erro ao listar facturas:', err);
       }
     });
   }
+
+visualizarTodosDocumentos() {
+  this.DocumentoService.listarDocumentos().subscribe({
+    next: (documentos: DadosDocumento[]) => {
+      this.DadosDocumentos = documentos;
+      this.atualizarEstatisticas(documentos);
+    },
+    error: (err) => {
+      console.error('Erro ao listar documentos:', err);
+    }
+  });
+}
+
+atualizarEstatisticas(documentos: DadosDocumento[]) {
+  const facturas = documentos.filter(doc => doc.tipo === 'FACTURA');
+  const facturasRecibo = documentos.filter(doc => doc.tipo === 'FACTURA_RECIBO');
+
+  const totalFacturado = facturas.reduce((soma, doc) => soma + (doc.total || 0), 0);
+
+  const transacoes = facturas.length;
+
+  // Exemplo fixo de comparação com um período anterior (você pode ajustar)
+  const totalAnterior = 100000; // valor do período anterior
+  const crescimento = totalAnterior > 0
+    ? ((totalFacturado - totalAnterior) / totalAnterior) * 100
+    : 0;
+
+  this.cards[0] = {
+    title: 'Facturado',
+    value: `Kz ${totalFacturado.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+    info: `${transacoes} transações`,
+    percentage: `${crescimento.toFixed(2)}%`,
+    icon: 'fas fa-file-invoice-dollar',
+    style: crescimento >= 0 ? 'positivo' : 'negativo'
+  };
+
+  const totalFacturadoRecibo = facturasRecibo.reduce((soma, doc) => soma + (doc.total || 0), 0);
+  const transacoesRecibo = facturasRecibo.length;
+  const totalAnteriorRecibo = 50000; // valor do período anterior para recibos (ajuste conforme necessário)
+  const crescimentoRecibo = totalAnteriorRecibo > 0
+    ? ((totalFacturadoRecibo - totalAnteriorRecibo) / totalAnteriorRecibo) * 100
+    : 0;
+
+  this.cards[2] = {
+    title: 'Recibos',
+    value: `Kz ${totalFacturadoRecibo.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+    info: `${transacoesRecibo} emitidos`,
+    percentage: `${crescimentoRecibo.toFixed(2)}%`,
+    icon: 'fas fa-receipt',
+    style: crescimentoRecibo >= 0 ? 'positivo' : 'negativo'
+  };
+}
+
 
   ngOnInit(): void {
     this.titleService.setTitle('Dashboard');
