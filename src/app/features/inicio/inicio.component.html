@@ -95,28 +95,33 @@
   <table class="tabela-movimentos">
     <thead>
       <tr>
+         <th>Nº</th>
         <th>Ano</th>
         <th>Mês</th>
         <th>Tipo</th>
-        <th>Nº</th>
+
         <th>Entidade</th>
         <th>Criado por</th>
-        <th>Data</th>
+        <th>Emitido em</th>
         <th>Valor</th>
-        <th>Documento</th>
+
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let movimento of movimentos">
-        <td>{{ movimento.ano }}</td>
-        <td>{{ movimento.mes }}</td>
-        <td>{{ movimento.tipo }}</td>
-        <td>{{ movimento.numero }}</td>
-        <td>{{ movimento.entidade }}</td>
-        <td>{{ movimento.criadoPor }}</td>
-        <td>{{ movimento.data | date: 'dd/MM/yyyy' }}</td>
-        <td>{{ movimento.valor | currency:'AOA':'symbol' }}</td>
-        <td><a [href]="movimento.documento" target="_blank">Ver</a></td>
+      <tr *ngFor="let doc of DadosDocumentos">
+          <td>{{ doc.numero }}</td>
+        <td>{{ doc.dataEmissao | date:'yyyy' }}</td>
+        <td>{{ doc.dataEmissao | date:'MMMM' }}</td>
+       <td class="tipo" [ngClass]="getTipoClass(doc.tipo)">
+  {{ formatTipo(doc.tipo) }}
+</td>
+
+
+        <td>{{ doc.cliente.nome }}</td>
+        <td>{{ doc.criadoPor }}</td>
+        <td>{{ doc.dataEmissao | date:'dd/MM/yyyy' }}</td>
+        <td>{{ doc.total | currency:'Kz':'symbol':'1.2-2' }}</td>
+
       </tr>
     </tbody>
   </table>

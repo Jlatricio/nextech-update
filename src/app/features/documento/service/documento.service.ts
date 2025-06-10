@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { DadosDocumento } from '../interface/dadosdocumentos';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +14,10 @@ export class DocumentoService {
   constructor(private httpClient: HttpClient) {}
 
   // Lista todos os documentos
-  listarDocumentos() {
-    return this.httpClient.get(`${this.apiUrl}/documents`);
-  }
+ listarDocumentos(): Observable<DadosDocumento[]> {
+  return this.httpClient.get<{ data: DadosDocumento[] }>(`${this.apiUrl}/documents`)
+    .pipe(map(response => response.data));
+}
 
   //documento por ID
 visualizarDocumento(id: number): Observable<DadosDocumento> {
