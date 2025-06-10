@@ -11,11 +11,12 @@ import { RouterModule } from '@angular/router';
 import { CategoriaService } from '../../service/categoria.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @Component({
   selector: 'app-artigo',
   standalone: true,
-  imports: [NgxMaskDirective, ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
+  imports: [NgxMaskDirective, ReactiveFormsModule, CommonModule, FormsModule, RouterModule, BsDropdownModule],
   providers: [provideNgxMask()],
   templateUrl:'./artigo.component.html',
   styleUrls: ['./artigo.component.scss']
@@ -32,11 +33,20 @@ artigos: Artigo[] = [];
 modoEdicao = false;
 
 
+
   filtro = {
     Categorias: '',
     mes: '',
     tipo: ''
   };
+
+
+filtroNomeCategoriaSelecionada = 'Todos';
+
+selecionarCategoria(id: string, nome: string) {
+  this.filtro.Categorias = id;
+  this.filtroNomeCategoriaSelecionada = nome;
+}
 
   searchTerm: string = '';
 

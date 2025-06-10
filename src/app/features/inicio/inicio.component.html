@@ -4,7 +4,20 @@
     <h4>{{ card.title }}</h4>
     <div class="value">{{ card.value }}</div>
     <div class="info">{{ card.info }}</div>
-    <div class="percentage">{{ card.percentage }}</div>
+    <div class="percentage" [ngClass]="{
+  'up': isPositive(card.percentage),
+  'down': !isPositive(card.percentage)
+}">
+  <i class="fas" [ngClass]="{
+    'fa-arrow-up': isPositive(card.percentage),
+    'fa-arrow-down': !isPositive(card.percentage)
+  }"></i>
+  {{ card.percentage }}
+</div>
+<div class="progress-bar">
+  <div class="fill" [style.width]="getPercentage(card.percentage)"></div>
+</div>
+
   </div>
 </div>
 
@@ -12,32 +25,65 @@
   <h2 class="titulo-tabela">Últimos movimentos</h2>
 
   <div class="filtros-container">
-    <div class="search-group">
-      <i class="bi bi-search"></i>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Pesquisar..."
-        [(ngModel)]="searchTerm"
-      />
-    </div>
+<div class="search-group">
+  <i class="bi bi-search search-icon"></i>
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Pesquisar..."
+    [(ngModel)]="searchTerm"
+  />
+  <i
+    *ngIf="searchTerm"
+    class="bi bi-x-lg clear-icon"
+    (click)="searchTerm = ''"
+  ></i>
+</div>
+
+
+
 
     <div class="filtros-selects">
-      <div class="filtro-item">
-        <label for="mes">Mês</label>
-        <select id="mes" [(ngModel)]="filtro.mes">
-          <option value="">Todos</option>
-          <option *ngFor="let mes of meses" [value]="mes">{{ mes }}</option>
-        </select>
+      <div class="dropdown filtro-item" dropdown>
+        <label>Mês</label>
+        <button
+          dropdownToggle
+          type="button"
+          class="btn btn-light d-flex justify-between w-100 align-items-center"
+        >
+          {{ filtro.mes || 'Todos' }}
+          <i class="bi bi-chevron-down ms-auto"></i>
+        </button>
+        <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
+          <li>
+            <a class="dropdown-item" (click)="filtro.mes = ''">Todos</a>
+          </li>
+          <li *ngFor="let mes of meses">
+            <a class="dropdown-item" (click)="filtro.mes = mes">{{ mes }}</a>
+          </li>
+        </ul>
       </div>
 
-      <div class="filtro-item">
-        <label for="tipo">Tipo</label>
-        <select id="tipo" [(ngModel)]="filtro.tipo">
-          <option value="">Todos</option>
-          <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
-        </select>
+      <div class="dropdown filtro-item" dropdown>
+        <label>Ano</label>
+        <button
+          dropdownToggle
+          type="button"
+          class="btn btn-light d-flex justify-between w-100 align-items-center"
+        >
+          {{ filtro.ano || 'Todos' }}
+          <i class="bi bi-chevron-down ms-auto"></i>
+        </button>
+        <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
+          <li>
+            <a class="dropdown-item" (click)="filtro.ano = ''">Todos</a>
+          </li>
+          <li *ngFor="let ano of anos">
+            <a class="dropdown-item" (click)="filtro.ano = ano.toString()">{{ ano }}</a>
+          </li>
+        </ul>
       </div>
+
 
       <button class="btn-filtrar" (click)="filtrar()">Filtrar</button>
     </div>

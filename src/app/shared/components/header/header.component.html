@@ -1,13 +1,15 @@
- <header class="header">
-    <div class="flex-center">
-     <img src="assets/logo.png" alt="">
-    </div>
-    <div class="flex-center" *ngFor="let usuario of usuarios">
-      <button class="btn btn-primary">
+<header class="header">
+  <div class="flex-center logo-area">
+    <img src="assets/logo.png" alt="Logo">
+  </div>
 
-        Olá,
-       {{ nome.split(' ')[0] }}
+  <div class="flex-center user-area" *ngFor="let usuario of usuarios">
+    <button class="btn-welcome">
+      Olá, {{ nome.split(' ')[0] }}
+    </button>
 
-      </button>
-    </div>
-  </header>
+    <a (click)="logout()" class="logout-btn" title="Terminar Sessão">
+      <i class="bi bi-box-arrow-right"></i>
+    </a>
+  </div>
+</header>

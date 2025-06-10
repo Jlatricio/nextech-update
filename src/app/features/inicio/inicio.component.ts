@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { TitleService } from '../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule,  BsDropdownModule],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.scss',
 })
@@ -19,13 +21,15 @@ export class InicioComponent {
     this.titleService.setTitle('Dashboard');
   }
 
+  
+
   cards = [
     {
       title: 'Facturado',
       value: 'Kz 0,00',
       info: '8 transações',
       percentage: '0,00%',
-      icon: 'fas fa-file-invoice',
+      icon: 'fas fa-file-invoice-dollar', // ícone de fatura
       style: ''
     },
     {
@@ -33,7 +37,7 @@ export class InicioComponent {
       value: 'Kz 0,00',
       info: '8 registos',
       percentage: '0,00%',
-      icon: 'fas fa-money-bill-wave',
+      icon: 'fas fa-money-bill-wave', // ícone de dinheiro/despesa
       style: 'warning'
     },
     {
@@ -41,7 +45,7 @@ export class InicioComponent {
       value: 'Kz 0,00',
       info: '8 emitidos',
       percentage: '0,00%',
-      icon: 'fas fa-receipt',
+      icon: 'fas fa-receipt', // ícone de recibo
       style: ''
     },
     {
@@ -49,10 +53,17 @@ export class InicioComponent {
       value: 'Kz 0,00',
       info: '8 pedidos',
       percentage: '0,00%',
-      icon: 'fas fa-undo',
+      icon: 'fas fa-undo-alt', // ícone de reembolso
       style: 'danger'
     }
   ];
+
+  isPositive(percentage: string): boolean {
+  return parseFloat(percentage.replace('%', '').replace(',', '.')) >= 0;
+}
+getPercentage(percent: string): string {
+  return percent.replace(',', '.');
+}
 
 
   movimentos = [
