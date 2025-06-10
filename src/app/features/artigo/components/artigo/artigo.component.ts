@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Artigo } from '../../interface/artigo';
-import { Observable } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { ArtigoService } from '../../service/artigo.service';
 import bootstrap, { Modal } from 'bootstrap';
 import { CommonModule } from '@angular/common';
@@ -31,6 +31,8 @@ artigos: Artigo[] = [];
   mostrarCampoNovaCategoria = false;
   novaCategoria = '';
 modoEdicao = false;
+modalModo: 'criar' | 'editar' = 'criar';
+
 
 
 
@@ -173,10 +175,15 @@ carregarArtigos(): void {
   });
 }
 
+artigoSelecionado: any = null;
+abrirCriarModal() {
+  this.modalModo = 'criar';
+  this.artigoSelecionado = {}; // ou zere o form como preferir
+}
 
 salvarArtigo(): void {
-  this.loading = true;  // começa o loading
-
+  this.loading = true;
+  this.modalModo = 'criar';
   // Garante que a descrição nunca seja vazia
   let descricao = this.form.value.descricao?.trim();
   if (!descricao) {
@@ -271,7 +278,12 @@ fecharModal(): void {
 
 
   editarArtigo(artigo: Artigo): void {
-    this.artigoSelecionadoId = artigo.id ?? null;
+
+      this.modalModo = 'editar';
+     this.modalModo = 'editar';
+  this.artigoSelecionado = artigo;
+  this.artigoSelecionadoId = artigo.id;
+
     this.form.patchValue({
       nome: artigo.nome,
       precoUnitario: artigo.preco.toString(),
@@ -289,6 +301,45 @@ fecharModal(): void {
     modal.show();
   }
   }
+
+   atualizarArtigo(): void {
+    if (!this.artigoSelecionadoId) return;
+
+    const payload: Partial<Artigo> = {
+      nome: this.form.value.nome,
+      preco: parseFloat(
+        String(this.form.value.precoUnitario)
+          .replace('Kz ', '')
+          .replace(/\./g, '')
+          .replace(',', '.')
+      ),
+      categoriaId: Number(this.form.value.categoria),
+      impostoAplicado: parseFloat(this.form.value.imposto),
+      tipo: this.form.value.tipo,
+      descricao: this.form.value.descricao || 'N/A'
+    };
+
+    this.loading = true;
+    this.artigoService.atualizarArtigo(this.artigoSelecionadoId, payload)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Atualizado!',
+            text: 'Artigo atualizado com sucesso!',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          this.fecharModal();
+          this.carregarArtigos();
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar artigo:', err);
+        }
+      });
+  }
+
 
 excluirArtigo(id: number): void {
   Swal.fire({
@@ -403,7 +454,6 @@ toggleNovaCategoria() {
   { valor: 0.35, nome: ' 35% (setores especiais)' },
 
   // IRT
-  { valor: 0, nome: ' Taxas progressivas' },
   { valor: 0.25, nome: ' 25% (Grupos B e C)' },
 
   // IAC
@@ -419,12 +469,6 @@ toggleNovaCategoria() {
 
   // Outros
   { valor: 0.02, nome: ' Sisa – 2%' },
-  { valor: 0, nome: ' IEC – Taxas variáveis' },
-  { valor: 0, nome: ' IVM – Taxas variáveis' },
-  { valor: 0, nome: '👨‍👩 Sucessões e Doações' },
-  { valor: 0, nome: ' Atividades Petrolíferas' },
-  { valor: 0, nome: ' Atividades Mineiras' },
-  { valor: 0, nome: ' Direitos Aduaneiros' }
 ];
 
 
