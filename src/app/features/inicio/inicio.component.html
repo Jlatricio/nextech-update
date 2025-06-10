@@ -31,23 +31,51 @@
   <div class="filtros-container">
 <div class="search-group">
   <i class="bi bi-search search-icon"></i>
-  <input
-    type="text"
-    class="search-input"
-    placeholder="Pesquisar..."
-    [(ngModel)]="searchTerm"
-  />
-  <i
-    *ngIf="searchTerm"
-    class="bi bi-x-lg clear-icon"
-    (click)="searchTerm = ''"
-  ></i>
+ <input
+  type="text"
+  class="search-input"
+  placeholder="Pesquisar por cliente..."
+  [(ngModel)]="searchTerm"
+  (ngModelChange)="filtrar()"
+/>
+ <i
+  *ngIf="searchTerm"
+  class="bi bi-x-lg clear-icon"
+  (click)="searchTerm = ''; filtrar()"
+></i>
+
 </div>
 
 
 
 
     <div class="filtros-selects">
+
+
+      <div class="dropdown filtro-item" dropdown>
+        <label>Tipo</label>
+        <button
+          dropdownToggle
+          type="button"
+          class="btn btn-light d-flex justify-between w-100 align-items-center"
+        >
+            {{ filtro.tipo ? getTipoLabel(filtro.tipo) : 'Todos' }}
+          <i class="bi bi-chevron-down ms-auto"></i>
+        </button>
+        <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
+          <li>
+             <a class="dropdown-item" (click)="filtro.tipo = ''; filtrar()">Todos</a>
+          </li>
+          <li *ngFor="let tipo of tipos">
+         <a class="dropdown-item" (click)="filtro.tipo = tipo.toString(); filtrar()">
+  {{ getTipoLabel(tipo) }}
+</a>
+ </li>
+        </ul>
+      </div>
+
+
+
       <div class="dropdown filtro-item" dropdown>
         <label>Mês</label>
         <button
@@ -60,10 +88,13 @@
         </button>
         <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
           <li>
-            <a class="dropdown-item" (click)="filtro.mes = ''">Todos</a>
+            <a class="dropdown-item" (click)="filtro.mes = ''; filtrar()">Todos</a>
           </li>
           <li *ngFor="let mes of meses">
-            <a class="dropdown-item" (click)="filtro.mes = mes">{{ mes }}</a>
+    <a class="dropdown-item" (click)="filtro.mes = mes.toString(); filtrar()">
+  {{ ('2023-' + mes + '-01') | date:'MMMM' : undefined : 'pt' }}
+</a>
+
           </li>
         </ul>
       </div>
@@ -78,18 +109,19 @@
           {{ filtro.ano || 'Todos' }}
           <i class="bi bi-chevron-down ms-auto"></i>
         </button>
-        <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
-          <li>
-            <a class="dropdown-item" (click)="filtro.ano = ''">Todos</a>
-          </li>
-          <li *ngFor="let ano of anos">
-            <a class="dropdown-item" (click)="filtro.ano = ano.toString()">{{ ano }}</a>
-          </li>
-        </ul>
+       <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
+  <li>
+    <a class="dropdown-item" (click)="filtro.ano = ''; filtrar()">Todos</a>
+  </li>
+  <li *ngFor="let ano of anos">
+    <a class="dropdown-item" (click)="filtro.ano = ano.toString(); filtrar()">{{ ano }}</a>
+  </li>
+</ul>
+
       </div>
 
 
-      <button class="btn-filtrar" (click)="filtrar()">Filtrar</button>
+
     </div>
   </div>
 
@@ -99,7 +131,7 @@
   <table class="tabela-movimentos">
     <thead>
       <tr>
-         <th>Nº</th>
+         <th>Ref.</th>
         <th>Ano</th>
         <th>Mês</th>
         <th>Tipo</th>
@@ -111,22 +143,32 @@
 
       </tr>
     </thead>
-    <tbody>
-      <tr *ngFor="let doc of DadosDocumentos">
-          <td>{{ doc.numero }}</td>
-        <td>{{ doc.dataEmissao | date:'yyyy' }}</td>
-        <td>{{ doc.dataEmissao | date:'MMMM' }}</td>
-       <td class="tipo" [ngClass]="getTipoClass(doc.tipo)">
-  {{ formatTipo(doc.tipo) }}
-</td>
+<tbody>
+  <tr *ngFor="let doc of documentosPaginados">
+    <td>{{ doc.numero }}</td>
+    <td>{{ doc.dataEmissao | date:'yyyy' }}</td>
+    <td>{{ doc.dataEmissao | date:'MMMM' }}</td>
+    <td class="tipo" [ngClass]="getTipoClass(doc.tipo)">
+      {{ formatTipo(doc.tipo) }}
+    </td>
+    <td>{{ doc.cliente.nome }}</td>
+    <td>{{ doc.criadoPor }}</td>
+    <td>{{ doc.dataEmissao | date:'dd/MM/yyyy' }}</td>
+    <td>{{ doc.total | currency:'Kz':'symbol':'1.2-2' }}</td>
+  </tr>
+</tbody>
 
-
-        <td>{{ doc.cliente.nome }}</td>
-        <td>{{ doc.criadoPor }}</td>
-        <td>{{ doc.dataEmissao | date:'dd/MM/yyyy' }}</td>
-        <td>{{ doc.total | currency:'Kz':'symbol':'1.2-2' }}</td>
-
-      </tr>
-    </tbody>
   </table>
+  <div class="pagination-controls">
+  <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+
+  <button *ngFor="let page of [].constructor(totalPages); let i = index"
+          (click)="goToPage(i + 1)"
+          [class.active]="currentPage === i + 1">
+    {{ i + 1 }}
+  </button>
+
+  <button (click)="nextPage()" [disabled]="currentPage === totalPages">Próximo</button>
+</div>
+
 </div>
