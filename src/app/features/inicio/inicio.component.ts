@@ -3,8 +3,10 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TitleService } from '../../core/services/title.service';
 import { RouterModule } from '@angular/router';
+import { DocumentoService } from '../documento/service/documento.service'
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { DadosDocumento } from '../documento/interface/dadosdocumentos';
 
 
 @Component({
@@ -15,13 +17,30 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
   styleUrl: './inicio.component.scss',
 })
 export class InicioComponent {
-  constructor(private titleService: TitleService) {}
+ DadosDocumentos: DadosDocumento[] = [];
+
+  constructor(private titleService: TitleService,
+              private DocumentoService: DocumentoService
+
+  ) {}
+
+  visualizarTodosDocumentos() {
+    this.DocumentoService.listarDocumentos().subscribe({
+      next: (documentos: DadosDocumento[]) => {
+        this.DadosDocumentos = documentos;
+      },
+      error: (err) => {
+        console.error('Erro ao listar documentos:', err);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Dashboard');
+      this.visualizarTodosDocumentos();
   }
 
-  
+
 
   cards = [
     {
@@ -66,20 +85,7 @@ getPercentage(percent: string): string {
 }
 
 
-  movimentos = [
-    {
-      ano: 2025,
-      mes: 'Abril',
-      tipo: 'Despesa',
-      numero: '0012',
-      entidade: 'Empresa X',
-      criadoPor: 'Juvenal',
-      data: new Date(),
-      valor: 120000,
-      documento: '/docs/movimento0012.pdf',
-    },
 
-  ];
 
   filtro = {
     ano: '',
@@ -104,5 +110,23 @@ filteredCards() {
     card.title.toLowerCase().includes(this.searchTerm.toLowerCase())
   );
 }
+
+formatTipo(tipo: string): string {
+  return tipo.replace(/_/g, ' ').toUpperCase();
+}
+
+getTipoClass(tipo: string): string {
+  switch (tipo) {
+    case 'FACTURA':
+      return 'tipo-factura';
+    case 'FACTURA_RECIBO':
+      return 'tipo-factura-recibo';
+    case 'FACTURA_PROFORMA':
+      return 'tipo-factura-proforma';
+    default:
+      return '';
+  }
+}
+
 
 }
