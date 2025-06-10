@@ -1,60 +1,104 @@
-  <div class="container-fluid">
-    <div>
-      <h3>Configurações</h3>
-    </div>
+<div class="artigos-header text-center my-4">
+  <div class="icon-circle mx-auto">
+    <i class="bi bi-gear"></i>
+  </div>
+   <h3>Configurações Gerais</h3>
 
-    <nav>
-      <a [class.active]="aba =='configuracao'" (click)="aba='configuracao'">Configuracões Gerais</a>
-      <a [class.active]="aba =='subscribe'" (click)="aba='subscribe'">Subscrição</a>
-      <a [class.active]="aba =='contas'" (click)="aba='contas'">Contas</a>
-      <a [class.active]="aba =='ajuda'" (click)="aba='ajuda'">Como usar o Nextech</a>
-      <a [class.active]="aba =='tutoriais'" (click)="aba='tutoriais'">Tutoriais</a>
-      <a [class.active]="aba =='termos'" (click)="aba='termos'">Termos de uso</a>
-    </nav>
+</div>
+ <div class="container-fluid">
+
+
+    <!-- Abas -->
+<nav class="tabs mb-3">
+  <div class="tabs-wrapper">
+    <div class="tab-background" [ngStyle]="{ left: indicatorLeft, width: indicatorWidth }"></div>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'configuracao'"
+       (click)="selecionarAba('configuracao', $event)">
+      <i class="bi bi-buildings"></i> Configuracões Gerais
+    </a>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'subscribe'"
+       (click)="selecionarAba('subscribe', $event)">
+      <i class="bi bi-box-arrow-in-right"></i> Subscrição
+    </a>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'contas'"
+       (click)="selecionarAba('contas', $event)">
+      <i class="bi bi-bank2"></i> Contas
+    </a>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'ajuda'"
+       (click)="selecionarAba('ajuda', $event)">
+      <i class="bi bi-question-circle"></i> Como usar o Nextech
+    </a>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'tutoriais'"
+       (click)="selecionarAba('tutoriais', $event)">
+      <i class="bi bi-play-circle"></i> Tutoriais
+    </a>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'termos'"
+       (click)="selecionarAba('termos', $event)">
+      <i class="bi bi-file-earmark-text"></i> Termos de uso
+    </a>
+  </div>
+</nav>
+
+
 
     <section [ngSwitch]="aba" class="container-card">
       <div *ngSwitchCase="'configuracao'" class="configuracao-container">
-     <form [formGroup]="form" (ngSubmit)="salvarEmpresa()" class="form-container">
+    <form [formGroup]="form" (ngSubmit)="salvarEmpresa()" class="form-wrapper">
 
-    <div *ngFor="let field of fields" class="mb-3">
-  <label [for]="field.id" class="form-label">{{ field.label }}</label>
+  <div *ngFor="let field of fields" class="form-field">
+    <label [for]="field.id" class="form-label-custom">{{ field.label }}</label>
 
-  <!-- Input especial para telefone com bandeira +244 -->
-  <div *ngIf="field.name === 'telefone'; else inputNormal" class="input-group">
-    <span class="input-group-text">
-      <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
-      &nbsp;+244
-    </span>
-    <input
-      [id]="field.id"
-      [type]="field.type"
-      class="form-control"
-      [formControlName]="field.name"
-      [placeholder]="field.placeholder"
-      maxlength="9"
-    />
+    <div *ngIf="field.name === 'telefone'; else inputNormal" class="input-wrapper">
+      <span class="prefix">
+        <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+        &nbsp;+244
+      </span>
+      <input
+        [id]="field.id"
+        [type]="field.type"
+        class="form-input"
+        [formControlName]="field.name"
+        [placeholder]="field.placeholder"
+        maxlength="9"
+      />
+    </div>
+
+    <ng-template #inputNormal>
+      <input
+        [id]="field.id"
+        [type]="field.type"
+        class="form-input"
+        [formControlName]="field.name"
+        [placeholder]="field.placeholder"
+      />
+    </ng-template>
+
+    <div *ngIf="isInvalid(field.name)" class="error-message">
+      {{ field.error }}
+    </div>
   </div>
 
-  <!-- Inputs normais para os demais campos -->
-  <ng-template #inputNormal>
-    <input
-      [id]="field.id"
-      [type]="field.type"
-      class="form-control"
-      [formControlName]="field.name"
-      [placeholder]="field.placeholder"
-    />
-  </ng-template>
+  <button type="submit" class="submit-btn" [disabled]="form.invalid">Salvar</button>
+</form>
 
-  <!-- Mensagem de erro -->
-  <div *ngIf="isInvalid(field.name)" class="invalid-feedback d-block">
-    {{ field.error }}
-  </div>
-</div>
-
-
-    <button type="submit" [disabled]="form.invalid">Salvar</button>
-  </form>
 
   <div class="dados-atuais" *ngIf="empresa">
   <h3>Dados atuais</h3>
@@ -71,34 +115,38 @@
 
 
       <div *ngSwitchCase="'subscribe'">
-        <div class="subscription-container">
-          <h2>Subscrição</h2>
-          <p class="description">
-            Para ativar sua subscrição, selecione um pacote
-            e realize o pagamento via referência bancária no
-            ATM ou plataformas digitais como Multicaixa Express.
-          </p>
+      <div class="subscription-container">
+  <h2>Subscrição</h2>
+  <p class="description">
+    Para ativar sua subscrição, selecione um pacote
+    e realize o pagamento via referência bancária no
+    ATM ou plataformas digitais como Multicaixa Express.
+  </p>
 
-          <div class="packages">
-            <div class="package-card">
-              <h3>1 mês</h3>
-              <p class="price">4.000,00KZ</p>
-              <button>Assinar por 1 mês</button>
-            </div>
+  <div class="packages">
+    <div class="package-card">
+      <h3>1 mês</h3>
+      <p class="price">4.000,00KZ</p>
+      <p class="plan-note">Plano Mensal</p>
+      <button>Assinar por 1 mês</button>
+    </div>
 
-            <div class="package-card">
-              <h3>7 meses</h3>
-              <p class="price">25.000,00KZ</p>
-              <button>Assinar por 6 meses</button>
-            </div>
+    <div class="package-card destaque">
+      <h3>7 meses</h3>
+      <p class="price">25.000,00KZ</p>
+      <p class="plan-note">Plano Semestral</p>
+      <button>Assinar por 7 meses</button>
+    </div>
 
-            <div class="package-card">
-              <h3>12 meses</h3>
-              <p class="price">45.000,00KZ</p>
-              <button>Assinar por 12 meses</button>
-            </div>
-          </div>
-        </div>
+    <div class="package-card">
+      <h3>12 meses</h3>
+      <p class="price">45.000,00KZ</p>
+      <p class="plan-note">Plano Anual</p>
+      <button>Assinar por 12 meses</button>
+    </div>
+  </div>
+</div>
+
       </div>
 
       <div *ngSwitchCase="'contas'">

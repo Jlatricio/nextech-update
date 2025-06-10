@@ -41,6 +41,7 @@ export class InicioComponent {
 
   searchTerm: string = '';
 
+
   cards = [
     {
       title: 'Facturado',
@@ -121,39 +122,57 @@ export class InicioComponent {
   }
 
   atualizarEstatisticas(documentos: DadosDocumento[]) {
-    const facturas = documentos.filter(doc => doc.tipo === 'FACTURA');
-    const facturasRecibo = documentos.filter(doc => doc.tipo === 'FACTURA_RECIBO');
+  const facturas = documentos.filter(doc => doc.tipo === 'FACTURA');
+  const facturasRecibo = documentos.filter(doc => doc.tipo === 'FACTURA_RECIBO');
 
-    const totalFacturado = facturas.reduce((soma, doc) => soma + (doc.total || 0), 0);
-    const transacoes = facturas.length;
-    const totalAnterior = 100000;
-    const crescimento = totalAnterior > 0 ? ((totalFacturado - totalAnterior) / totalAnterior) * 100 : 0;
+  const totalFacturado = facturas.reduce((soma, doc) => soma + (doc.total || 0), 0);
+  const transacoes = facturas.length;
+  const totalAnterior = 100000;
+  const crescimento = totalAnterior > 0 ? ((totalFacturado - totalAnterior) / totalAnterior) * 100 : 0;
 
-    this.cards[0] = {
-      title: 'Facturado',
-      value: `Kz ${totalFacturado.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
-      info: `${transacoes} transações`,
-      percentage: `${crescimento.toFixed(2)}%`,
-      icon: 'fas fa-file-invoice-dollar',
-      style: crescimento >= 0 ? 'positivo' : 'negativo'
-    };
-
-    const totalFacturadoRecibo = facturasRecibo.reduce((soma, doc) => soma + (doc.total || 0), 0);
-    const transacoesRecibo = facturasRecibo.length;
-    const totalAnteriorRecibo = 50000;
-    const crescimentoRecibo = totalAnteriorRecibo > 0
-      ? ((totalFacturadoRecibo - totalAnteriorRecibo) / totalAnteriorRecibo) * 100
-      : 0;
-
-    this.cards[2] = {
-      title: 'Recibos',
-      value: `Kz ${totalFacturadoRecibo.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
-      info: `${transacoesRecibo} emitidos`,
-      percentage: `${crescimentoRecibo.toFixed(2)}%`,
-      icon: 'fas fa-receipt',
-      style: crescimentoRecibo >= 0 ? 'positivo' : 'negativo'
-    };
+  let styleFacturado = '';
+  if (crescimento > 5) {
+    styleFacturado = 'positivo';
+  } else if (crescimento < -5) {
+    styleFacturado = 'negativo';
+  } else {
+    styleFacturado = 'warning';
   }
+
+  this.cards[0] = {
+    title: 'Facturado',
+    value: `Kz ${totalFacturado.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+    info: `${transacoes} transações`,
+    percentage: `${crescimento.toFixed(2)}%`,
+    icon: 'fas fa-file-invoice-dollar',
+    style: styleFacturado
+  };
+
+  const totalFacturadoRecibo = facturasRecibo.reduce((soma, doc) => soma + (doc.total || 0), 0);
+  const transacoesRecibo = facturasRecibo.length;
+  const totalAnteriorRecibo = 50000;
+  const crescimentoRecibo = totalAnteriorRecibo > 0
+    ? ((totalFacturadoRecibo - totalAnteriorRecibo) / totalAnteriorRecibo) * 100
+    : 0;
+
+  let styleRecibo = '';
+  if (crescimentoRecibo > 5) {
+    styleRecibo = 'positivo';
+  } else if (crescimentoRecibo < -5) {
+    styleRecibo = 'negativo';
+  } else {
+    styleRecibo = 'warning';
+  }
+
+  this.cards[2] = {
+    title: 'Recibos',
+    value: `Kz ${totalFacturadoRecibo.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+    info: `${transacoesRecibo} emitidos`,
+    percentage: `${crescimentoRecibo.toFixed(2)}%`,
+    icon: 'fas fa-receipt',
+    style: styleRecibo
+  };
+}
 
   filtrar() {
     this.DadosDocumentos = this.documentosOriginais.filter(doc => {
@@ -242,9 +261,12 @@ goToPage(page: number) {
     }
   }
 
-  isPositive(percentage: string): boolean {
-    return parseFloat(percentage.replace('%', '').replace(',', '.')) >= 0;
-  }
+isPositive(percentage: string): boolean {
+  if (!percentage) return true;
+  const clean = percentage.replace('%', '').replace(',', '.').trim();
+  const value = parseFloat(clean);
+  return !isNaN(value) && value >= 0;
+}
 
   getPercentage(percent: string): string {
     return percent.replace(',', '.');
