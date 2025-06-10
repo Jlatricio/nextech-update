@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TitleService } from '../../core/services/title.service';
 import { RouterModule } from '@angular/router';
@@ -21,6 +21,7 @@ export class ConfiguracaoComponent implements OnInit{
   loading = false;
    form: FormGroup;
    formConta: FormGroup;
+     aba: 'configuracao' | 'subscribe' | 'contas' | 'ajuda' | 'tutoriais' | 'termos' = 'configuracao';
 
      constructor(
     private titleService: TitleService,
@@ -174,7 +175,7 @@ throw new Error('Method not implemented.');
 onSubmit() {
 throw new Error('Method not implemented.');
 }
-aba: string = 'configuracao';
+
 
 faqs = [
 
@@ -245,11 +246,41 @@ toggleFaq(index: number) {
 
     this.loading = true;
     const dados = this.form.value;
-
-    // seu código para salvar o artigo com dados bancários aqui...
-
     this.loading = false;
   }
 
+  ngAfterViewInit() {
+      setTimeout(() => this.updateIndicator(), 0);
+    }
+
+    @ViewChildren('tab', { read: ElementRef }) tabs!: QueryList<ElementRef>;
+
+indicatorLeft = '0px';
+indicatorWidth = '0px';
+
+
+
+
+selecionarAba( aba: 'configuracao' | 'subscribe' | 'contas' | 'ajuda' | 'tutoriais' | 'termos' = 'configuracao', event: Event) {
+  this.aba = aba;
+
+  // Aguarda DOM atualizar para então calcular posição do background
+  setTimeout(() => this.updateIndicator(), 0);
+}
+
+
+updateIndicator() {
+  const activeIndex = ['proformas', 'facturas', 'fr'].indexOf(this.aba);
+  const tabElements = this.tabs.toArray();
+  const activeTab = tabElements[activeIndex]?.nativeElement;
+
+  if (activeTab) {
+    const parentRect = activeTab.parentElement.getBoundingClientRect();
+    const rect = activeTab.getBoundingClientRect();
+    this.indicatorLeft = `${rect.left - parentRect.left}px`;
+    this.indicatorWidth = `${rect.width}px`;
+  }
+
+}
 
 }

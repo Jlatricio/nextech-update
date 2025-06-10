@@ -6,16 +6,13 @@
     <h4>{{ card.title }}</h4>
     <div class="value">{{ card.value }}</div>
     <div class="info">{{ card.info }}</div>
-    <div class="percentage" [ngClass]="{
-  'up': isPositive(card.percentage),
-  'down': !isPositive(card.percentage)
-}">
-  <i class="fas" [ngClass]="{
-    'fa-arrow-up': isPositive(card.percentage),
-    'fa-arrow-down': !isPositive(card.percentage)
-  }"></i>
-  {{ card.percentage }}
-</div>
+    <div class="percentage" [class.up]="isPositive(card.percentage)" [class.down]="!isPositive(card.percentage)">
+      <i class="fas" [ngClass]="{
+      'fa-arrow-up': isPositive(card.percentage),
+      'fa-arrow-down': !isPositive(card.percentage)
+      }"></i>
+      {{ card.percentage }}
+    </div>
 <div class="progress-bar">
   <div class="fill" [ngClass]="card.style" [style.width]="getPercentage(card.percentage)"></div>
 </div>
@@ -26,7 +23,12 @@
 </div>
 
 <div class="tabela-container">
-  <h2 class="titulo-tabela">Últimos movimentos</h2>
+  <div class="artigos-header text-center my-4">
+  <div class="icon-circle mx-auto">
+    <i class="bi bi-grid-3x3-gap-fill"></i>
+  </div>
+  <h3 class="mt-3">Últimos movimentos</h3>
+</div>
 
   <div class="filtros-container">
 <div class="search-group">

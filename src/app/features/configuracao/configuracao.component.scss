@@ -1,38 +1,69 @@
-nav {
+.artigos-header {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 0 20px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  height: 60px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  position: sticky;
+}
 
-  a {
+.icon-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: #333;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+
+  .tabs-wrapper {
+    position: relative;
+    display: flex;
+    background: #f1f1f1;
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 0.5rem;
+  }
+
+  .tab-link {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.8rem;
+    color: #333;
     text-decoration: none;
-    text-transform: uppercase;
-    font-weight: bold;
-  font-size: 0.6rem;
-    padding: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    color: #6c757d; // Cor normal
-    transition: color 0.3s ease, transform 0.3s ease;
+    transition: color 0.3s ease;
 
     &.active {
-      font-weight: 600;
-      transform: scale(1.1);
-      color: #274460; // Azul da aba ativa
+      color: #0d6efd;
     }
 
-    &:hover {
-      color: #495057;
-      transform: scale(1.05);
+    i {
+      font-size: 1.2rem;
     }
   }
+
+  .tab-background {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(13, 110, 253, 0.15);
+    border-radius: 8px;
+    transition: left 0.4s ease, width 0.4s ease;
+    z-index: 1;
+  }
 }
+
 
 .container-card{
   display: flex;
@@ -42,7 +73,6 @@ nav {
   padding: 20px;
   margin-top: 20px;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
  height: 400px;
   margin: 20px auto;
@@ -58,89 +88,87 @@ nav {
   height: 100%;
 }
 
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.form-wrapper {
   max-width: 600px;
   margin: 0 auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', sans-serif;
+}
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.form-field {
+  margin-bottom: 1.5rem;
+}
 
-    label {
-      font-size: 14px;
-      font-weight: 600;
-      color: #495057;
-    }
+.form-label-custom {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95rem;
+}
 
-    input {
-      padding: 10px;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      font-size: 14px;
-      color: #495057;
-      transition: border-color 0.3s ease;
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f9f9f9;
+  gap: 0.5rem;
 
-      &:focus {
-        border-color: #274460;
-        outline: none;
-      }
-    }
+  img {
+    border-radius: 3px;
+  }
+}
 
-    .logo-preview {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+.prefix {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #555;
+}
 
-      img {
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-      }
+.form-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+}
 
-      span {
-        font-size: 12px;
-        color: #6c757d;
-      }
-    }
+.form-input::placeholder {
+  color: #aaa;
+}
 
-    button {
-      padding: 8px 12px;
-      background-color: #274460;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.3s ease;
+.error-message {
+  margin-top: 0.3rem;
+  color: #e74c3c;
+  font-size: 0.85rem;
+}
 
-      &:hover {
-        background-color: #1d3557;
-      }
-    }
+.submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover:enabled {
+    background-color: #555;
   }
 
-  button[type="submit"] {
-    align-self: flex-end;
-    padding: 10px 20px;
-    background-color: #274460;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: #1d3557;
-    }
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
 }
 
@@ -152,7 +180,6 @@ nav {
   padding: 20px;
   margin-top: 20px;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   height: auto;                  // Altura ajustável ao conteúdo
   margin: 20px auto;
@@ -248,104 +275,142 @@ nav {
 }
 
  .dados-atuais {
-    flex: 1;
-    background: #f5f5f5;
-    border-radius: 8px;
-    padding: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fdfdfd;
+  border: 1px solid #e0e0e0;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  font-family: 'Inter', sans-serif;
+  color: #333;
 
-    h3 {
-      margin-bottom: 1rem;
-    }
-
-    .dado {
-      margin-bottom: 0.5rem;
-
-      strong {
-        display: inline-block;
-        width: 100px;
-      }
-
-      span {
-        color: #333;
-      }
-    }
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #222;
+    font-weight: 600;
   }
 
-
-
-.subscription-container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
-  text-align: center;
-  font-family: 'Segoe UI', sans-serif;
-
-  h2 {
-    font-size: 28px;
-    color: #274460;
-    margin-bottom: 10px;
-  }
-
-  .description {
-    font-size: 16px;
-    color: #6c757d;
-    margin-bottom: 30px;
-  }
-
-  .packages {
+  .dado {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+    gap: 0.5rem;
 
-    .package-card {
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      padding: 30px 20px;
-      width: 260px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    strong {
+      font-weight: 600;
+      color: #555;
+      min-width: 90px;
+    }
 
-      &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-      }
-
-      h3 {
-        font-size: 22px;
-        color: #1d3557;
-        margin-bottom: 10px;
-      }
-
-      .price {
-        font-size: 18px;
-        color: #495057;
-        margin-bottom: 20px;
-        font-weight: 600;
-      }
-
-      button {
-        padding: 10px 20px;
-        background-color: #274460;
-        color: white;
-        border: none;
-        border-radius: 3px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.3s ease;
-
-        &:hover {
-          background-color: #1d3557;
-        }
-      }
+    span {
+      color: #444;
     }
   }
 }
 
+
+
+.subscription-container {
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+  margin: 0;
+  padding: 0;
+  max-width: 1200px;
+  margin: auto;
+  padding: 60px 20px;
+  text-align: center;
+  border-radius: 12px;
+}
+
+.subscription-container h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.subscription-container .description {
+  font-size: 1.0rem;
+  color: #252525;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.packages {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.package-card {
+  background-color: #1c1c1c;
+  padding: 30px 20px;
+  width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px #333;
+  transition: transform 0.3s ease;
+}
+
+.package-card:hover {
+  transform: translateY(-5px);
+}
+
+.package-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+h2{
+   color: rgb(26, 19, 19);
+}
+
+.package-card .price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.package-card .plan-note {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+.package-card button {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.package-card button:hover {
+  background-color: white;
+  color: #1c1c1c;
+}
+
+
+.package-card.destaque {
+  background-color: white;
+  color: black;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.package-card.destaque .plan-note {
+  color: #444;
+}
+
+.package-card.destaque button {
+  border: 1px solid black;
+  color: black;
+}
+
+.package-card.destaque button:hover {
+  background-color: black;
+  color: white;
+}
 
 .form-container {
   display: flex;
@@ -479,12 +544,11 @@ button:hover {
 }
 
 .faq-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 40px auto;
   padding: 30px;
-  background: #fff;
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -538,7 +602,7 @@ button:hover {
 }
 
 .faq-item.open .answer-wrapper {
-  max-height: 300px; /* pode ajustar se a resposta for longa */
+  max-height: 300px;
   opacity: 1;
 }
 
@@ -588,7 +652,7 @@ button:hover {
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+
 
   .form-group {
     margin-bottom: 1.5rem;
