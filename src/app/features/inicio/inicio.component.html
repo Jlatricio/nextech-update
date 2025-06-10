@@ -1,7 +1,7 @@
 <div class="dashboard-cards">
 
   <div class="card" *ngFor="let card of cards" [ngClass]="card.style">
-    
+
     <i class="{{ card.icon }} icon"></i>
     <h4>{{ card.title }}</h4>
     <div class="value">{{ card.value }}</div>
@@ -17,8 +17,10 @@
   {{ card.percentage }}
 </div>
 <div class="progress-bar">
-  <div class="fill" [style.width]="getPercentage(card.percentage)"></div>
+  <div class="fill" [ngClass]="card.style" [style.width]="getPercentage(card.percentage)"></div>
 </div>
+
+
 
   </div>
 </div>
