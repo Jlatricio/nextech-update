@@ -3,6 +3,16 @@
     <i class="bi bi-file-earmark-text"></i>
   </div>
   <h3 class="mt-3">Artigos</h3>
+  <button
+  type="button"
+  class="btn-hover-gradient"
+  data-bs-toggle="modal"
+  data-bs-target="#exampleModal"
+>
+  Criar Artigo
+  <i class="bi bi-plus-lg ms-2"></i>
+</button>
+
 </div>
 
 
@@ -100,9 +110,11 @@
           {{ artigo.descricao || '' }}
         </td>
         <td>
-         <div class="bnt-action"> <button class="btn btn-outline-primary" (click)="editarArtigo(artigo)">
-            <i class="bi bi-pencil"></i> Editar
-          </button>
+         <div class="bnt-action"> <button class="btn btn-outline-primary"
+        (click)="editarArtigo(artigo)">
+  <i class="bi bi-pencil"></i> Editar
+</button>
+
           <button class="btn btn-outline-danger" (click)="excluirArtigo(artigo.id)">
             <i class="bi bi-trash"></i> Eliminar
           </button></div> </td>
@@ -120,7 +132,9 @@
   <div class="modal-content">
     <div class="modal-header">
 
-      <h1 class="modal-title fs-5">Criar artigo</h1>
+      <h1 class="modal-title fs-5">
+  {{ modalModo === 'criar' ? 'Criar Artigo' : 'Atualizar Artigo' }}
+</h1>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
@@ -182,14 +196,14 @@
   <optgroup label="IVA (Imposto sobre o Valor Acrescentado)">
     <option value="0.14" title="Taxa geral do IVA sobre bens e serviços">14% (taxa geral)</option>
     <option value="0.07" title="Taxa reduzida de IVA aplicável a determinados bens/serviços"> 7% (reduzida)</option>
-    <option value="0.05" title="Taxa reduzida aplicável a bens da cesta básica">🛒 5% (cesta básica)</option>
-    <option value="0.01" title="Taxa especial aplicada na Província de Cabinda">📍 1% (Cabinda)</option>
+    <option value="0.05" title="Taxa reduzida aplicável a bens da cesta básica"> 5% (cesta básica)</option>
+    <option value="0.01" title="Taxa especial aplicada na Província de Cabinda"> 1% (Cabinda)</option>
   </optgroup>
 
   <optgroup label="Imposto Industrial">
-    <option value="0.25" title="Taxa geral para empresas">🏢 25% (geral)</option>
+    <option value="0.25" title="Taxa geral para empresas"> 25% (geral)</option>
     <option value="0.10" title="Atividades agrícolas e similares"> 10% (agropecuária)</option>
-    <option value="0.35" title="Bancos, seguros, petróleo, telecomunicações">🏦 35% (setores especiais)</option>
+    <option value="0.35" title="Bancos, seguros, petróleo, telecomunicações"> 35% (setores especiais)</option>
   </optgroup>
 
   <optgroup label="IRT (Rendimento do Trabalho)">
@@ -253,11 +267,14 @@
           </small>
         </div>
 
-        <div class="mb-3">
-           <button type="submit" class="btn btn-success" [disabled]="loading" (click)="salvarArtigo()">
-  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-  Salvar
+       <div class="mb-3">
+  <button type="submit" class="btn btn-success"
+        [disabled]="loading"
+        (click)="modalModo === 'criar' ? salvarArtigo() : atualizarArtigo()">
+  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+  {{ modalModo === 'criar' ? 'Salvar' : 'Atualizar' }}
 </button>
+</div>
 
-        </div>
+
       </form>
