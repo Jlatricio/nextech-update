@@ -1,5 +1,7 @@
 <div class="dashboard-cards">
+
   <div class="card" *ngFor="let card of cards" [ngClass]="card.style">
+    
     <i class="{{ card.icon }} icon"></i>
     <h4>{{ card.title }}</h4>
     <div class="value">{{ card.value }}</div>
