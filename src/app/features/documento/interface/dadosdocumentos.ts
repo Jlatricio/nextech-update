@@ -85,4 +85,5 @@ export interface DadosDocumento {
   anexo: Anexo;
   empresa: Empresa;
   itensFactura: ItemFactura[];
+    categoria?: string;
 }

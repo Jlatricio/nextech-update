@@ -13,20 +13,31 @@ import { FaturaService } from '../documento/components/factura/service/fatura.se
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, BsDropdownModule],
   templateUrl: './inicio.component.html',
-  styleUrl: './inicio.component.scss',
+  styleUrls: ['./inicio.component.scss'],  // Corrigido aqui
 })
 export class InicioComponent {
   DadosDocumentos: DadosDocumento[] = [];
+  documentosOriginais: DadosDocumento[] = [];
+
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 0;
+
+  get documentosPaginados(): DadosDocumento[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.DadosDocumentos.slice(startIndex, startIndex + this.itemsPerPage);
+  }
 
   filtro = {
-    ano: '',
+    Categorias: '',
     mes: '',
+    ano: '',
     tipo: ''
   };
 
-  anos = [2025, 2024, 2023];
-  meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  tipos = ['Receita', 'Despesa', 'Reembolso'];
+  anos: number[] = [];
+  meses: number[] = [];
+  tipos: string[] = [];
 
   searchTerm: string = '';
 
@@ -80,6 +91,7 @@ export class InicioComponent {
     this.FaturaService.listarFacturas().subscribe({
       next: (facturas: DadosDocumento[]) => {
         this.DadosDocumentos = facturas;
+        this.atualizarTotalPages();
       },
       error: (err) => {
         console.error('Erro ao listar facturas:', err);
@@ -90,13 +102,22 @@ export class InicioComponent {
   visualizarTodosDocumentos() {
     this.DocumentoService.listarDocumentos().subscribe({
       next: (documentos: DadosDocumento[]) => {
+        this.documentosOriginais = documentos;
         this.DadosDocumentos = documentos;
         this.atualizarEstatisticas(documentos);
+        this.inicializarFiltros(documentos);
+        this.atualizarTotalPages();
       },
       error: (err) => {
         console.error('Erro ao listar documentos:', err);
       }
     });
+  }
+
+  inicializarFiltros(documentos: DadosDocumento[]) {
+    this.anos = [...new Set(documentos.map(doc => new Date(doc.dataEmissao).getFullYear()))];
+    this.meses = [...new Set(documentos.map(doc => new Date(doc.dataEmissao).getMonth() + 1))];
+    this.tipos = [...new Set(documentos.map(doc => doc.tipo))];
   }
 
   atualizarEstatisticas(documentos: DadosDocumento[]) {
@@ -135,8 +156,62 @@ export class InicioComponent {
   }
 
   filtrar() {
-    console.log('Filtro aplicado:', this.filtro);
+    this.DadosDocumentos = this.documentosOriginais.filter(doc => {
+      const ano = new Date(doc.dataEmissao).getFullYear();
+      const mes = new Date(doc.dataEmissao).getMonth() + 1;
+      const tipo = doc.tipo;
+      const categoria = doc.categoria;
+      const nomeCliente = doc.cliente?.nome?.toLowerCase() || '';
+      const criadoPor = doc.criadoPor?.toLowerCase() || '';
+      const termo = this.searchTerm.toLowerCase();
+
+      const correspondeBusca = !this.searchTerm ||
+        nomeCliente.includes(termo) ||
+        criadoPor.includes(termo) ||
+        tipo.toLowerCase().includes(termo);
+
+      return (!this.filtro.ano || ano === +this.filtro.ano) &&
+             (!this.filtro.mes || mes === +this.filtro.mes) &&
+             (!this.filtro.tipo || tipo === this.filtro.tipo) &&
+             (!this.filtro.Categorias || categoria === this.filtro.Categorias) &&
+             correspondeBusca;
+    });
+
+    this.atualizarEstatisticas(this.DadosDocumentos);
+    this.atualizarTotalPages();
+    this.currentPage = 1; // Resetar página ao filtrar
   }
+
+
+
+  changePage(page: number) {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+    this.currentPage = page;
+  }
+
+atualizarTotalPages() {
+  this.totalPages = Math.ceil(this.DadosDocumentos.length / this.itemsPerPage) || 1;
+}
+
+previousPage() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
+goToPage(page: number) {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+}
 
   filteredCards() {
     if (!this.searchTerm) return this.cards;
@@ -155,6 +230,15 @@ export class InicioComponent {
       case 'FACTURA_RECIBO': return 'tipo-factura-recibo';
       case 'FACTURA_PROFORMA': return 'tipo-factura-proforma';
       default: return '';
+    }
+  }
+
+  getTipoLabel(tipo: string): string {
+    switch (tipo) {
+      case 'FACTURA': return 'Factura';
+      case 'FACTURA_RECIBO': return 'Factura Recibo';
+      case 'FACTURA_PROFORMA': return 'Factura Proforma';
+      default: return tipo;
     }
   }
 
