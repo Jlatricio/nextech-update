@@ -1,21 +1,10 @@
-<aside>
-  <ul>
+<footer class="dock-menu">
+  <ul class="dock-list">
     <li *ngFor="let menu of menus" [class.active]="isActive(menu.route)">
       <a [routerLink]="menu.route" class="menu-link">
-        <div class="menu-icon-wrapper">
-          <i [class]="isActive(menu.route) ? menu.activeIcon : menu.icon" class="menu-icon"></i>
-          <div class="tooltip-custom">{{ menu.title }}</div>
-        </div>
-        <span class="menu-label" *ngIf="isActive(menu.route)">{{ menu.name }}</span>
-      </a>
-    </li>
-    <li>
-      <a (click)="logout()" class="menu-link">
-        <div class="menu-icon-wrapper">
-          <i class="bi bi-box-arrow-in-left menu-icon"></i>
-          <div class="tooltip-custom">Sair</div>
-        </div>
+        <i [class]="isActive(menu.route) ? menu.activeIcon : menu.icon" class="menu-icon"></i>
+        <div class="tooltip-custom">{{ menu.title }}</div>
       </a>
     </li>
   </ul>
-</aside>
+</footer>

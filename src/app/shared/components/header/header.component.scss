@@ -1,5 +1,8 @@
 
 header {
+  position: fixed;
+  z-index: 1000;
+   top: 0;
   width: 100vw;
   height: 70px;
   display: grid;
@@ -34,3 +37,52 @@ img {
   object-fit: contain;
   margin-right: 1rem;
 }
+
+.header {
+  position: fixed;
+  width: 100%;
+  height: 70px;
+  background: #fcfcfc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  z-index: 1000;
+}
+
+.logo-area img {
+  height: 40px;
+  object-fit: contain;
+}
+
+.user-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-welcome {
+  background-color: #ffffff;
+    border: none;
+  padding: 0.4rem 1rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  border-radius: 4px;
+  cursor: default;
+}
+
+.logout-btn {
+  font-size: 1.4rem;
+  color: #dc3545;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.logout-btn:hover {
+  transform: scale(1.2);
+}
+

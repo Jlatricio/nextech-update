@@ -4,6 +4,7 @@ import { Usuario } from '../../../features/usuario/interface/usuario';
 import { CommonModule } from '@angular/common';
 import { UsuarioService } from '../../../features/usuario/service/usuario.service';
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-header',
@@ -63,4 +64,34 @@ export class HeaderComponent {
       }
     });
   }
+
+  logout(): void {
+  // Exibe loading pequeno
+  Swal.fire({
+    title: 'Saindo...',
+    didOpen: () => {
+      Swal.showLoading();
+    },
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    timer: 1000 // tempo do loading
+  }).then(() => {
+    // Remove o token após o loading
+    localStorage.removeItem('token');
+
+    // Exibe mensagem de logout bem-sucedido
+    Swal.fire({
+      icon: 'success',
+      title: 'Logout realizado',
+      text: 'Você foi desconectado com sucesso.',
+      timer: 2000,
+      showConfirmButton: false,
+      allowOutsideClick: false
+    }).then(() => {
+      // Redireciona para tela de login
+      this.router.navigate(['/login']);
+    });
+  });
+}
+
 }
