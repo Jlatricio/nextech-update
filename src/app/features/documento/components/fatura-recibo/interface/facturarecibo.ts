@@ -4,7 +4,7 @@ export interface ItemFactura {
   total: number;
 }
 
-export interface Proforma {
+export interface FacturaRecibo {
   tipo: string;
   numero: string;
   clienteId: number;

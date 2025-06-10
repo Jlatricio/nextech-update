@@ -4,11 +4,11 @@ export interface ItemFactura {
   total: number;
 }
 
-export interface Proforma {
+export interface factura {
   tipo: string;
   numero: string;
   clienteId: number;
-  dataValidade: string | null;
+   dataValidade: string | null;
   subTotal: number;
   totalDescontos: number;
   totalImpostos: number;

@@ -86,7 +86,7 @@
         <th>Imposto</th>
         <th>Preço Unitário</th>
         <th>Data de Criação</th>
-        <th>Descrição</th>
+        <th>CriadoPor</th>
         <th>Acções</th>
       </tr>
     </thead>
@@ -106,8 +106,8 @@
 
         <td>{{ artigo.preco | currency: 'Kz' }}</td>
         <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy' }}</td>
-        <td style="font-size: 0.5em; max-width: 250px; white-space: pre-line; word-break: break-word;">
-          {{ artigo.descricao || '' }}
+        <td>
+          {{ artigo.criadoPor }}
         </td>
         <td>
          <div class="bnt-action"> <button class="btn btn-outline-primary"

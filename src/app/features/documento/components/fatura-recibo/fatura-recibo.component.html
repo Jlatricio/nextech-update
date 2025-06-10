@@ -1,118 +1,142 @@
-<div class="container">
+<div class="proforma-container">
   <div class="header">
-      <h1>Criar Factura/Recibo</h1>
+    <h2>Factura/Recibo</h2>
+  <button class="save-btn" (click)="salvarFatura()" [disabled]="isLoading">
+  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+  {{ isLoading ? 'Salvando...' : 'Salvar Fatura' }}
+</button>
+
+
+
   </div>
 
-  <div class="form-grid">
-      <div class="form-group">
-          <label>Cliente</label>
-          <div class="fbtnTop">
-              <div class="bank-selectbtnTop">
-                  <select>
-                      <option>Seleciona</option>
-                      <option>Caixa</option>
-                  </select>
-              </div>
-          </div>
-          <div class="form-group">
-              <label>Nº da fatura</label>
-              <input type="text" value="PP 2025/1" readonly class="readonly-input">
-          </div>
-          <div class="form-group">
-              <label>Data de validade</label>
-              <input type="text" value="31 de Jan, 2018">
-          </div>
-      </div>
+ <div class="card shadow-sm border-0 mb-4 p-3">
 
-      <table>
-          <thead>
-              <tr>
-                  <th>#</th>
-                  <th>Categoria</th>
-                  <th>Produto/Serviço</th>
-                  <th>Preço un.</th>
-                  <th>Qtd.</th>
-                  <th>Total líquido</th>
-                  <th></th>
-              </tr>
-          </thead>
-          <tbody>
-              <tr>
-                  <td>1</td>
-                  <td>
-                      <select>
-                          <option>Selecione...</option>
-                      </select>
-                  </td>
-                  <td>
-                      <select>
-                          <option>Selecione...</option>
-                      </select>
-                  </td>
-                  <td>Kz 0,00</td>
-                  <td>
-                      <div class="quantity-control">
-                          <button>-</button>
-                          <input type="text" value="0">
-                          <button>+</button>
-                      </div>
-                  </td>
-                  <td>Kz 0,00</td>
-                  <td>
-                      <button class="delete-btn">
-                          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                      </button>
-                  </td>
-              </tr>
-          </tbody>
-      </table>
+ <div class="mb-3">
+  <label class="form-label">Cliente</label>
+  <select class="form-select" [(ngModel)]="clienteSelecionado" #clienteCtrl="ngModel" required>
+    <option [ngValue]="null">Selecione o cliente</option>
+    <option *ngFor="let c of cliente" [ngValue]="c">{{ c.nome }}</option>
+  </select>
+  <div *ngIf="clienteCtrl.invalid && clienteCtrl.touched" class="text-danger">
+    Selecione um cliente válido.
+  </div>
+</div>
 
-      <button class="discount-btn">+ Desconto</button>
+  <div class="row text-muted">
+    <div class="col-md-6">
+      <p class="mb-1"><strong>Nº da Fatura:</strong> {{ numeroFatura }}</p>
+    </div>
+    <div class="col-md-6">
+      <p class="mb-1"><strong>Data de Validade:</strong> {{ dataValidadeFormatada }} </p>
 
-      <div class="bottom-grid">
-          <div class="observations">
-              <label>Observações</label>
-              <textarea rows="4"></textarea>
-          </div>
-          <div class="summary">
-              <div class="summary-item">
-                  <span>Total líquido</span>
-                  <span>Kz 0,00</span>
-              </div>
-              <div class="summary-item">
-                  <span>Desconto Financeiro</span>
-                  <span>Kz 0,00</span>
-              </div>
-              <div class="summary-item">
-                  <span>Total de Impostos</span>
-                  <span>Kz 0,00</span>
-              </div>
-              <div class="summary-item">
-                  <span>Impostos Retidos</span>
-                  <span>Kz 0,00</span>
-              </div>
-              <div class="summary-item total">
-                  <span>Total</span>
-                  <span>Kz 0,00</span>
-              </div>
-          </div>
-      </div>
+    </div>
+  </div>
+</div>
 
-      <div class="footer">
-          <div class="bank-select">
-              <label>Banco</label>
-              <select>
-                  <option>Seleciona</option>
-                  <option>Caixa</option>
-              </select>
-          </div>
-          <div class="action-buttons">
-              <button class="cancel-btn">Cancelar</button>
-              <button class="save-btn">Salvar</button>
-          </div>
-      </div>
+  <div *ngIf="clienteSelecionado" class="card-info">
+  <h4>Dados do Cliente</h4>
+  <p><strong>Nome:</strong> {{ clienteSelecionado.nome }}</p>
+  <p><strong>Email:</strong> {{ clienteSelecionado.email }}</p>
+  <p><strong>Telefone:</strong> {{ clienteSelecionado.telefone }}</p>
+  <p><strong>Endereço:</strong> {{ clienteSelecionado.endereco }}</p>
+
+</div>
+
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Categoria</th>
+        <th>Produto/Serviço</th>
+        <th>Preço un.</th>
+        <th>Qtd.</th>
+        <th>Total</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of itens; let i = index; trackBy: trackByFn" >
+        <td>{{ i + 1 }}</td>
+
+     <!-- Categoria -->
+<td>
+  <select [(ngModel)]="item.categoriaId" (change)="onCategoriaChange(item)" #categoriaCtrl="ngModel" required>
+    <option [ngValue]="null">Selecione...</option>
+    <option *ngFor="let categoria of categorias" [ngValue]="categoria.id">{{ categoria.nome }}</option>
+  </select>
+  <div *ngIf="categoriaCtrl.invalid && categoriaCtrl.touched" class="text-danger">
+    Selecione uma categoria.
+  </div>
+</td>
+
+<!-- Artigo -->
+<td>
+  <select
+    [(ngModel)]="item.artigoId"
+    (change)="onArtigoChange(item)"
+    #artigoCtrl="ngModel"
+    required
+    [disabled]="!item.categoriaId"> <!-- Aqui -->
+    <option [ngValue]="null">Selecione...</option>
+    <option *ngFor="let artigo of getArtigosFiltradosPorCategoria(item.categoriaId)" [ngValue]="artigo.id">{{ artigo.nome }}</option>
+  </select>
+  <div *ngIf="artigoCtrl.invalid && artigoCtrl.touched" class="text-danger">
+    Selecione um artigo.
+  </div>
+</td>
+
+
+        <!-- Preço unitário -->
+     <td>{{ (item.artigoSelecionado?.preco ?? 0) | number:'1.2-2' }} Kz</td>
+
+
+        <!-- Quantidade com botões + / - -->
+   <td>
+  <button (click)="atualizarQuantidade(item, -1)" [disabled]="item.quantidade <= 1">−</button>
+  <span class="qty-display">{{ item.quantidade }}</span>
+  <button (click)="atualizarQuantidade(item, 1)">+</button>
+</td>
+
+
+        <!-- Total -->
+        <td>{{ item.total | number:'1.2-2' }} Kz</td>
+
+        <!-- Ações (remover, expandir etc.) -->
+        <td>
+          <button (click)="removerItem(i)"><i class="bi bi-trash"></i></button>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Adicionar novo item -->
+  <div class="add-item-btn">
+    <button (click)="adicionarItem()">
+      <i class="bi bi-plus-circle"></i> Adicionar um item
+    </button>
   </div>
 
+  <!-- Desconto -->
+  <div class="desconto-section">
+    <label for="desconto">Desconto (%):</label>
+    <input
+      id="desconto"
+      type="number"
+      [(ngModel)]="desconto"
+      (input)="recalcularTotais()"
+      min="0"
+      max="100"
+    />
+  </div>
+
+<div class="summary">
+  <div><span>Subtotal:</span><span>{{ subtotal | number:'1.2-2' }} Kz</span></div>
+  <div><span>Imposto:</span><span>{{ iva | number:'1.2-2' }} Kz</span></div>
+  <div><span>Desconto:</span><span>{{ descontoValor | number:'1.2-2' }} Kz</span></div>
+  <div class="total"><span>Total:</span><span>{{ totalGeral | number:'1.2-2' }} Kz</span></div>
+</div>
+
+</div>

@@ -1,15 +1,4 @@
-<div class="btn-wrapper">
-  <button
-  (click)="gerarPDF()"
-  [disabled]="!documento || isLoading"
-  class="btn-custom-dropdown"
-  type="button"
->
-  <span *ngIf="!isLoading">Download/Imprimir</span>
-  <span *ngIf="isLoading">Gerando PDF...</span>
-</button>
-<div></div>
-</div>
+
 
 <div class="recibo-wrapper">
 <div #recibo class="recibo" *ngIf="documento">
@@ -66,9 +55,41 @@
   </section>
 
   <footer>
-    <p>Documento emitido para fins de formação ou testes. Não tem validade fiscal.</p>
+    <p>Documento emitido com validade fiscal nos termos da legislação vigente.</p>
   </footer>
 </div>
 </div>
 
 
+
+<div class="btn-wrapper">
+  <button
+    (click)="baixarPDF()"
+    [disabled]="!documento || isLoading"
+    class="btn-hover-gradient"
+    type="button"
+  >
+    <span *ngIf="!isLoading"><i class="bi bi-download"></i> Baixar PDF</span>
+    <span *ngIf="isLoading">Processando...</span>
+  </button>
+
+  <button
+    (click)="imprimirPDF()"
+    [disabled]="!documento || isLoading"
+    class="btn-hover-gradient"
+    type="button"
+  >
+    <span *ngIf="!isLoading"><i class="bi bi-printer"></i> Imprimir PDF</span>
+    <span *ngIf="isLoading">Processando...</span>
+  </button>
+
+
+  <button
+    (click)="cancelar()"
+    [disabled]="isLoading"
+    class="btn-hover-gradient"
+    type="button"
+  >
+    <i class="bi bi-x-circle"></i> Cancelar
+  </button>
+</div>
