@@ -1,225 +1,281 @@
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: white;
+.proforma-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px 30px;
+  background: #fefefe;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   border-radius: 8px;
-
-  padding: 2px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
 }
 
 .header {
   display: flex;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.back-button {
-  color: #666;
-  text-decoration: none;
-  margin-right: 16px;
-}
-
-h1 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.form-grid {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 10px;
-}
-
-label {
-  font-size: 14px;
-  color: #374151;
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-input, select, textarea {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.readonly-input {
-  background-color: #f3f4f6;
-  margin-bottom: 10px;
-}
-
-.client-input {
-  display: flex;
-  gap: 8px;
-}
-
-.create-client-btn {
-  color: #2563eb;
-  border: 1px solid #2563eb;
-  background: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  white-space: nowrap;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 24px;
-}
-
-th {
-  text-align: left;
-  padding: 12px 16px;
-  background-color: #1d3557;
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-}
-
-td {
-  padding: 12px 16px;
-  font-size: 14px;
-}
-
-.quantity-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.quantity-control input {
-  width: 64px;
-  text-align: center;
-}
-
-.quantity-control button {
-  color: #6b7280;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.delete-btn {
-  color: #9ca3af;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.discount-btn {
-  color: #2563eb;
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 24px;
-  font-size: 14px;
-}
-
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.observations textarea {
-  width: 100%;
-  resize: vertical;
-}
-
-.summary {
-  background-color: #1d3557;
-  padding: 16px;
-  border-radius: 8px;
-}
-
-.summary-item {
-  display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #fff;
+  align-items: center;
+  margin-bottom: 25px;
 }
 
-.summary-item.total {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #e5e7eb;
-  font-weight: bold;
-  color: #ffff;
-}
-
-.footer {
-  display: flex;
-  align-items: flex-end;
-  margin-bottom: 10px;
-}
-
-.fbtnTop{
-  display: flex;
-  align-items: flex-end;
-
-}
-.bank-selectbtnTop{
-  display: flex;
-  flex-direction: column;
-  width: 256px;
-  margin-bottom: 10px;
-}
-
-.bank-select {
-  display: flex;
-  flex-direction: column;
-  width: 256px;
-  margin-bottom: 10px;
-}
-
-.action-buttons {
-  margin-left: auto;
-  display: flex;
-  gap: 16px;
-}
-
-.cancel-btn {
-  background: none;
-  border: none;
-  color: #4b5563;
-  cursor: pointer;
-  padding: 8px 16px;
-  font-size: 14px;
+.header h2 {
+  margin: 0;
+  font-weight: 700;
+  color: #007BFF;
 }
 
 .save-btn {
-  background-color: #1d3557;
+  background-color: #007BFF;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
 }
 
 .save-btn:hover {
-  background-color: #030a15;
-  color: #fff;
+  background-color: #0056b3;
+}
+
+.client-info {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.client-info input {
+  flex: 1 1 200px;
+  padding: 8px 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.client-info input:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.items-table thead {
+  background-color: #007BFF;
+  color: white;
+}
+
+.items-table th,
+.items-table td {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.items-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.items-table select {
+  padding: 6px 8px;
+  border-radius: 5px;
+  border: 1.5px solid #ccc;
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.items-table button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: background-color 0.2s ease;
+  border-radius: 4px;
+}
+
+.items-table button:hover {
+  background-color: #e0e0e0;
+}
+
+.add-item-btn {
+  margin-bottom: 25px;
+}
+
+.add-item-btn button {
+  background-color: #28a745;
+  border: none;
+  padding: 10px 16px;
+  color: white;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-item-btn button:hover {
+  background-color: #1e7e34;
+}
+
+.desconto-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.desconto-section label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.desconto-section input {
+  width: 80px;
+  padding: 6px 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1.5px solid #ccc;
+  text-align: right;
+  transition: border-color 0.3s ease;
+}
+
+.desconto-section input:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+.summary {
+  max-width: 300px;
+  margin-left: auto;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.summary div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 6px;
+}
+
+.summary .total {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #007BFF;
+  border-top: 2px solid #007BFF;
+  padding-top: 10px;
+}
+
+.items-table td input[type="number"] {
+  width: 40px;
+  padding: 5px 1px;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+
+  transition: border-color 0.3s ease;
+}
+
+.items-table td input[type="number"]:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+
+/* proforma.component.scss */
+.card-info {
+  background: linear-gradient(90deg, #e3f0ff 0%, #f9fafe 100%);
+  border-left: 6px solid #007BFF;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+  padding: 22px 28px 18px 28px;
+  margin-bottom: 30px;
+  color: #222;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 4px 18px rgba(0,123,255,0.15);
+  }
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 14px;
+    color: #007BFF;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    font-size: 1.0rem;
+    line-height: 1.5;
+    strong {
+      color: #0056b3;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+  }
+}
+
+.client-info select {
+  flex: 1 1 200px;
+  padding: 8px 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.3s ease;
+  appearance: none;
+  cursor: pointer;
+}
+
+.client-info select:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+// Estilo para input de desconto inválido (fora de 0-100)
+.desconto-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 250px;
+  margin: 1rem 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.desconto-section label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.desconto-section input[type='number'] {
+  width: 40%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.desconto-section input[type='number']:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
 }

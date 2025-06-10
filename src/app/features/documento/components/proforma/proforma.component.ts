@@ -171,7 +171,7 @@ const proforma: Proforma = {
   tipo: 'FACTURA_PROFORMA',
   numero: this.numeroFatura,
   clienteId: this.clienteSelecionado.id,
-  dataValidade: this.dataValidadeISO, // <-- corrigido aqui
+  dataValidade: this.dataValidadeISO,
   subTotal: this.subtotal,
   totalDescontos: this.descontoValor,
   totalImpostos: this.iva,
@@ -186,7 +186,7 @@ const proforma: Proforma = {
 };
 
 
-  console.log('Proforma montada:', proforma);
+
 
   // Envia para API (exemplo com serviço)
   this.proformaService.criarProforma(proforma).subscribe({
@@ -195,18 +195,19 @@ const proforma: Proforma = {
            this.isLoading = false;
       Swal.fire({
         icon: 'success',
-        title: 'Proforma salva com sucesso!',
+        title: 'Proforma criado com sucesso!',
         timer: 2000,
         showConfirmButton: false
-      });
-      // Aqui você pode redirecionar ou limpar formulário
+      }).then(() => {
+  this.router.navigate(['/documento']);
+});
     },
     error: (err) => {
            this.isLoading = false;
       Swal.fire({
         icon: 'error',
         title: 'Erro ao salvar',
-        text: 'Não foi possível salvar a proforma. Tente novamente.'
+        text: 'Não foi possível criar a proforma. Tente novamente.'
       });
       console.error(err);
     }
@@ -265,7 +266,7 @@ carregarClientes(): void {
 gerarNumeroFatura(): void {
   const ano = new Date().getFullYear();
   const sequencial = Math.floor(Math.random() * 9000) + 1000; // Ex: 4372
-  this.numeroFatura = `PP ${ano}/${sequencial}`;
+  this.numeroFatura = `PF ${ano}/${sequencial}`;
 }
 
 definirValidade(): void {

@@ -8,4 +8,6 @@ export interface Artigo {
   preco: number;
   dataCriacao: string;
   descricao: string;
+  criadoPor: string;
+  atualizadoPor?: string;
 }
