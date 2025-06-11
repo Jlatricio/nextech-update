@@ -47,4 +47,13 @@ obterNomeUsuario(): Observable<{ nome: string }> {
     return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+ toggleAtivoUsuario(id: number, isActive: boolean): Observable<Usuario> {
+  return this.httpClient.patch<Usuario>(`${this.apiUrl}/${id}/toggle-active`, { isActive }).pipe(
+    catchError(error => {
+      console.error('Erro ao ativar/desativar usuário', error);
+      return throwError(() => error);
+    })
+  );
+}
+
 }

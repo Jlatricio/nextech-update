@@ -263,4 +263,21 @@ fecharModal(): void {
       usuario.perfil.toLowerCase().includes(termo)
     );
   }
+
+
+ativarOuDesativarUsuario(usuario: Usuario): void {
+  const novoStatus = !usuario.isActive;
+  this.usuarioService.toggleAtivoUsuario(usuario.id!, novoStatus).subscribe({
+    next: () => {
+      usuario.isActive = novoStatus; // FORÇA atualização local
+      this.toastr.success(`Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso!`);
+    },
+    error: (error) => {
+      this.toastr.error('Erro ao alterar status do usuário.');
+      console.error('Erro ao ativar/desativar usuário:', error);
+    }
+  });
+}
+
+
 }

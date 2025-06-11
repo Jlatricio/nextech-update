@@ -46,9 +46,14 @@
               <button class="btn btn-outline-primary" (click)="editarUsuario(usuario)" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="bi bi-pencil"></i> Editar
               </button>
-              <button class="btn btn-outline-danger" (click)="deletarUsuario(usuario.id!)">
-                <i class="bi bi-trash"></i> Eliminar
-              </button>
+             <button
+  *ngIf="!usuario.isOwner"
+  class="btn"
+  [ngClass]="usuario.isActive ? 'btn-outline-danger' : 'btn-outline-success'"
+  (click)="ativarOuDesativarUsuario(usuario)">
+  <i class="bi" [ngClass]="usuario.isActive ? 'bi-trash' : 'bi-check-circle'"></i>
+  {{ usuario.isActive ? 'Desativar' : 'Ativar' }}
+</button>
             </div>
           </td>
         </tr>
