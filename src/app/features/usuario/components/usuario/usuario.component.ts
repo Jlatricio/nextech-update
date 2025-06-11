@@ -211,17 +211,27 @@ fecharModal(): void {
 
 
 
- editarUsuario(usuario: Usuario): void {
+editarUsuario(usuario: Usuario): void {
   const telefoneSemPrefixo = usuario.telefone?.replace('+244', '').replace(/\s+/g, '') || '';
 
   this.form.patchValue({
     ...usuario,
     telefone: telefoneSemPrefixo
   });
+
+
+  const isRestricted = usuario.isOwner || usuario.perfil === 'VENDEDOR';
+  if (isRestricted) {
+    this.form.get('perfil')?.disable();
+  } else {
+    this.form.get('perfil')?.enable();
+  }
+
   this.editando = true;
   this.usuarioEditandoId = usuario.id!;
   this.usuarioOriginal = { ...usuario };
 }
+
 
 
   cancelarEdicao(): void {
