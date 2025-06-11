@@ -1,0 +1,138 @@
+<div class="artigos-header text-center my-4">
+  <div class="icon-circle mx-auto">
+    <i class="bi bi-file-earmark-text"></i>
+  </div>
+  <h3 class="mt-3">Documentos</h3>
+ <div class="dropdown mb-3">
+    <button
+      type="button"
+      class="btn-hover-gradient"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      Novo Documento
+      <i class="bi bi-chevron-down ms-1"></i>
+    </button>
+
+    <ul class="dropdown-menu custom-dropdown shadow-lg p-2 border-0">
+      <li>
+        <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/proforma']">
+          <i class="bi bi-file-earmark-text"></i> Proforma
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura']">
+          <i class="bi bi-receipt"></i> Factura
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura-recibo']">
+          <i class="bi bi-cash-stack"></i> Factura/Recibo
+        </a>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="container-fluid">
+
+
+
+<!-- Abas -->
+<nav class="tabs mb-3">
+  <div class="tabs-wrapper">
+    <div class="tab-background" [ngStyle]="{ left: indicatorLeft, width: indicatorWidth }"></div>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'proformas'"
+       (click)="selecionarAba('proformas', $event)">
+      <i class="bi bi-file-earmark-text"></i> Proforma
+    </a>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'facturas'"
+       (click)="selecionarAba('facturas', $event)">
+      <i class="bi bi-receipt"></i> Factura
+    </a>
+
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'fr'"
+       (click)="selecionarAba('fr', $event)">
+      <i class="bi bi-credit-card-2-back"></i> Factura/Recibo
+    </a>
+  </div>
+</nav>
+
+
+  <!-- Tabela de documentos -->
+  <main class="table" id="customers_table">
+    <section class="table__body">
+      <table>
+        <thead>
+          <tr>
+            <th>Ref.</th>
+            <th>Cliente</th>
+            <th>Criado Por</th>
+            <th>Valor</th>
+            <th>Criado em</th>
+            <th>Impostos</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doc of DadosDocumentos" [hidden]="doc.tipo !== tipoDocumentoSelecionado()">
+            <td>{{ doc.numero }}</td>
+            <td>{{ doc.cliente.nome }}</td>
+            <td>{{ doc.criadoPor }}</td>
+            <td>{{ doc.total | currency:'Kz':'symbol':'1.2-2' }}</td>
+            <td>{{ doc.dataEmissao | date:'short' }}</td>
+            <td>{{ doc.totalImpostos | currency:'Kz':'symbol':'1.2-2' }}</td>
+            <td>
+              <div class="bnt-action dropdown">
+                <button type="button" class="btn" (click)="openModal(doc.id)">
+                  <i class="bi bi-three-dots"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal de Ações -->
+  <div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center">
+        <div class="modal-header border-0">
+          <h5 class="modal-title w-100" id="menuModalLabel">Ações</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-around flex-wrap gap-3">
+            <div (click)="acaoAnular(documentoSelecionadoId!)" class="text-center pointer">
+              <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
+              <div>Anulação</div>
+            </div>
+            <div (click)="acaoRectificar(documentoSelecionadoId!)" class="text-center pointer">
+              <i class="bi bi-pencil-square fs-2 text-primary"></i>
+              <div>Retificação</div>
+            </div>
+            <div (click)="acaoImprimir(documentoSelecionadoId!)" class="text-center pointer">
+              <i class="bi bi-printer-fill fs-2 text-secondary"></i>
+              <div>Imprimir</div>
+            </div>
+            <div (click)="acaoDownload(documentoSelecionadoId!)" class="text-center pointer">
+              <i class="bi bi-download fs-2 text-success"></i>
+              <div>Download</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
