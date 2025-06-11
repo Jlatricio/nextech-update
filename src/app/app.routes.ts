@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginGuard } from './guards/login.guard';
+import { ProformaComponent } from './features/documento/components/proforma/proforma.component';
+import { FacturaComponent } from './features/documento/components/factura/factura.component';
+import { FaturaReciboComponent } from './features/documento/components/fatura-recibo/fatura-recibo.component';
 
 export const routes: Routes = [
   {
@@ -75,6 +78,7 @@ export const routes: Routes = [
       canActivate: [AuthGuard]
     },
 
+
   {
     path: '',
     loadComponent: () => import('./shared/startup-component/startup-component.component').then(m => m.StartupComponentComponent)
@@ -87,5 +91,8 @@ export const routes: Routes = [
     redirectTo: 'inicio'
   },
 
+{ path: 'proforma/:id', component: ProformaComponent },
+{ path: 'factura/:id', component: FacturaComponent },
+{ path: 'factura-recibo/:id', component: FaturaReciboComponent },
 
 ];

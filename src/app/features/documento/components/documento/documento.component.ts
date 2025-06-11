@@ -11,6 +11,7 @@ import { factura } from '../factura/interface/factura';
 import { FacturaRecibo } from '../fatura-recibo/interface/facturarecibo';
 import { FacturareciboService } from '../fatura-recibo/service/facturarecibo.service';
 import { forkJoin } from 'rxjs';
+import { FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -31,7 +32,7 @@ export class DocumentosComponent implements AfterViewInit {
   facturas: factura[] = [];
   proformas: Proforma[] = [];
   facturasRecibo: FacturaRecibo[] = [];
-
+form!: FormGroup;
 
   constructor(
     private router: Router,
@@ -58,6 +59,57 @@ export class DocumentosComponent implements AfterViewInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     console.log('ID recebido:', id);
+
+    if (id) {
+      switch (this.tipoDocumentoSelecionado()) {
+        case 'FACTURA_PROFORMA':
+          this.ProformaService.visualizarProforma(+id).subscribe((proforma) => {
+            this.form.patchValue(proforma);
+          });
+          break;
+        case 'FACTURA':
+          this.FaturaService.visualizarFactura(+id).subscribe((factura) => {
+            this.form.patchValue(factura);
+          });
+          break;
+        case 'FACTURA_RECIBO':
+          this.FacturaReciboService.visualizarFaturaRecibo(+id).subscribe((facturaRecibo) => {
+            this.form.patchValue(facturaRecibo);
+          });
+          break;
+      }
+    }
+
+
+    this.FaturaService.listarFacturas().subscribe({
+      next: (facturas) => {
+      this.facturas = facturas;
+      this.DadosDocumentos = [...this.DadosDocumentos, ...facturas];
+      },
+      error: (err) => {
+      console.error('Erro ao listar facturas:', err);
+      }
+    });
+
+    this.ProformaService.listarProformas().subscribe({
+      next: (proformas) => {
+      this.proformas = proformas;
+      this.DadosDocumentos = [...this.DadosDocumentos, ...proformas];
+      },
+      error: (err) => {
+      console.error('Erro ao listar proformas:', err);
+      }
+    });
+
+    this.FacturaReciboService.listarFaturaRecibos().subscribe({
+      next: (facturasRecibo) => {
+      this.facturasRecibo = facturasRecibo;
+      this.DadosDocumentos = [...this.DadosDocumentos, ...facturasRecibo];
+      },
+      error: (err) => {
+      console.error('Erro ao listar facturas recibo:', err);
+      }
+    });
   }
 
   carregarDocumentos() {
@@ -117,7 +169,7 @@ listarProformas() {
 
   ngAfterViewInit() {
     // Inicializa o modal Bootstrap
-    const modalEl = document.getElementById('menuModal');
+    const modalEl = document.getElementById('modalAcoes');
     if (modalEl) {
       this.modalInstance = new Modal(modalEl);
     }
@@ -140,18 +192,31 @@ listarProformas() {
 
 acaoRectificar(id: number) {
   console.log('Retificação acionada para o documento com ID:', id);
-  // lógica da retificação
+
+  let rota = '';
+  switch (this.aba) {
+    case 'facturas':
+     rota = 'factura/' + id;
+      break;
+    case 'proformas':
+      rota = 'proforma/' + id;
+
+
+      break;
+    case 'fr':
+      rota = 'factura-recibo/' + id;
+      break;
+  }
+
   this.modalInstance?.hide();
+  // Remova as barras extras se já estiver usando rota relativa
+  this.router.navigate([rota], { relativeTo: this.route });
 }
 
-acaoImprimir(id: number) {
-  console.log('Impressão acionada para o documento com ID:', id);
-  // lógica de impressão
-  this.modalInstance?.hide();
-}
+
+
 
 acaoDownload(id: number) {
-  console.log('Download acionado para o documento com ID:', id);
   this.router.navigate(['/visualizar', id]);
   this.modalInstance?.hide();
 }
@@ -186,5 +251,8 @@ updateIndicator() {
   }
 
 }
+
+
+
 
 }
