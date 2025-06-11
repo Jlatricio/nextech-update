@@ -70,7 +70,7 @@ export const routes: Routes = [
   },
 
     {
-      path: 'vizualizar/:id',
+      path: 'visualizar/:id',
       loadComponent: () => import('./features/documento/components/visualizar/visualizar.component').then(m => m.VisualizarComponent),
       canActivate: [AuthGuard]
     },

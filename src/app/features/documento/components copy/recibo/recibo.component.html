@@ -1,0 +1,52 @@
+<!-- recibo.component.html -->
+<div #recibo class="recibo">
+  <h2>FACTURA/RECIBO FR 2025/1</h2>
+  <p>Cliente: {{ dados.nome }}</p>
+<p>Produto: {{ dados.produto }}</p>
+<p>Valor: {{ dados.valor | currency:'AOA':'symbol':'1.2-2':'pt-AO' }}</p>
+
+ <div class="recibo">
+  <header>
+    <img src="assets/logo.png" alt="Logotipo">
+    <div class="info-empresa">
+      <p>armindo oli</p>
+      <p>NIF: jandre1&#64;gmail.com</p>
+      <!-- ... -->
+    </div>
+  </header>
+
+  <section class="detalhes-recibo">
+    <h2>FACTURA/RECIBO FR 2025/1</h2>
+    <p>Data de emissão: {{ dados.data }}</p>
+    <!-- ... -->
+  </section>
+
+  <table>
+    <thead>
+      <tr>
+        <th>REF</th>
+        <th>DESCRIÇÃO</th>
+        <th>QTD</th>
+        <th>PR. UNITÁRIO</th>
+        <th>TOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of dados.itens">
+        <td>{{ item.ref }}</td>
+        <td>{{ item.descricao }}</td>
+        <td>{{ item.qtd }}</td>
+        <td>{{ item.preco | currency:'AOA':'symbol':'1.2-2':'pt-AO' }}</td>
+        <td>{{ item.total | currency:'AOA':'symbol':'1.2-2':'pt-AO' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <p>Documento emitido para fins de Formação ou Testes. Não tem validade fiscal.</p>
+  </footer>
+</div>
+
+</div>
+
+<button (click)="gerarPDF()">Visualizar Documento</button>

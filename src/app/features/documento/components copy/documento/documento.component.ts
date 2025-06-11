@@ -152,7 +152,7 @@ acaoImprimir(id: number) {
 
 acaoDownload(id: number) {
   console.log('Download acionado para o documento com ID:', id);
-  this.router.navigate(['/visualizar', id]);
+  this.router.navigate(['/vizualizar', id]);
   this.modalInstance?.hide();
 }
 
