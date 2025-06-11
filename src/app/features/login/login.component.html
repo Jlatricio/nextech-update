@@ -71,7 +71,12 @@
         <!-- Telefone -->
         <div class="input-field" [ngClass]="{'has-error': registerTelefone?.invalid && (registerTelefone?.dirty || registerTelefone?.touched)}">
           <i class="fas fa-phone"></i>
-          <input type="text" formControlName="telefone" placeholder="Telefone" />
+          <input type="text"
+          formControlName="telefone"
+           mask="000 000 000"
+      placeholder="9XX XXX XXX"
+      maxlength="9"
+          />
         </div>
         <div *ngIf="registerTelefone?.invalid && (registerTelefone?.dirty || registerTelefone?.touched)" class="error">
           <small *ngIf="registerTelefone?.errors?.['required']">Telefone é obrigatório.</small>

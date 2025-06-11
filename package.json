@@ -23,6 +23,7 @@
     "@angular/platform-server": "^19.2.11",
     "@angular/router": "^19.2.11",
     "@angular/ssr": "^19.2.5",
+    "@ng-select/ng-select": "^13.0.0",
     "@ngx-loading-bar/core": "^7.0.0",
     "@ngx-loading-bar/http-client": "^7.0.0",
     "@popperjs/core": "^2.11.8",

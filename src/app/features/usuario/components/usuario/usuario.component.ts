@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Usuario } from '../../interface/usuario';
+import { Usuario } from '../interface/usuario';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
@@ -65,8 +65,8 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
+
 criarOuAtualizarUsuario(): void {
-  // Ajusta validação da senha dinamicamente
   if (this.editando) {
     this.form.get('senha')?.clearValidators();
   } else {
@@ -100,17 +100,34 @@ criarOuAtualizarUsuario(): void {
     email: formValues.email,
   };
 
-  // Envia senha obrigatória na criação
-  if (!this.editando) {
-    usuario.senha = formValues.senha;
-  }
-
-  // Se editar e senha preenchida, atualiza senha
-  if (this.editando && formValues.senha) {
+  if (!this.editando || (this.editando && formValues.senha)) {
     usuario.senha = formValues.senha;
   }
 
   if (this.editando && this.usuarioEditandoId !== null) {
+    const original = {
+      nome: this.usuarioOriginal?.nome,
+      perfil: this.usuarioOriginal?.perfil,
+      telefone: this.usuarioOriginal?.telefone?.replace(/\s+/g, ''),
+      email: this.usuarioOriginal?.email,
+    };
+
+    // Remove senha da comparação
+    const atualizado = { ...usuario };
+    delete atualizado.senha;
+
+    if (JSON.stringify(original) === JSON.stringify(atualizado)) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sem alterações!',
+        text: 'Nenhuma modificação foi detectada nos dados.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      this.loading = false;
+      return;
+    }
+
     this.usuarioService.atualizarUsuario(this.usuarioEditandoId, usuario).subscribe({
       next: () => {
         Swal.fire({
@@ -126,6 +143,13 @@ criarOuAtualizarUsuario(): void {
         this.loading = false;
       },
       error: (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro!',
+          text: error.error?.message || 'Erro ao atualizar usuário.',
+          timer: 3000,
+          showConfirmButton: false
+        });
         console.error('Erro ao atualizar usuário:', error);
         this.loading = false;
       }
@@ -162,7 +186,6 @@ criarOuAtualizarUsuario(): void {
 
 
 
-
 fecharModal(): void {
   const modalElement = document.getElementById('exampleModal');
 
@@ -188,14 +211,18 @@ fecharModal(): void {
 
 
 
-  editarUsuario(usuario: Usuario): void {
-    this.form.patchValue({
-      ...usuario
-    });
-    this.editando = true;
-    this.usuarioEditandoId = usuario.id!;
-    this.usuarioOriginal = { ...usuario };
-  }
+ editarUsuario(usuario: Usuario): void {
+  const telefoneSemPrefixo = usuario.telefone?.replace('+244', '').replace(/\s+/g, '') || '';
+
+  this.form.patchValue({
+    ...usuario,
+    telefone: telefoneSemPrefixo
+  });
+  this.editando = true;
+  this.usuarioEditandoId = usuario.id!;
+  this.usuarioOriginal = { ...usuario };
+}
+
 
   cancelarEdicao(): void {
     this.form.reset();

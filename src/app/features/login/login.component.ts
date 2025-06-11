@@ -117,52 +117,62 @@ export class LoginComponent {
     });
   }
 
-  onRegister(): void {
-    if (!this.signUpMode) return;
+onRegister(): void {
+  if (!this.signUpMode) return;
 
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      this.errorMessage = 'Preencha todos os campos do cadastro corretamente.';
-      return;
-    }
-
-    const payload = {
-      nome: this.registerForm.value.nome,
-      email: this.registerForm.value.email,
-      telefone: this.registerForm.value.telefone,
-      senha: this.registerForm.value.senha
-    };
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.cadastroService.cadastrarUsuario(payload).subscribe({
-      next: () => {
-        Swal.fire({
-          title: 'Criando conta...',
-          didOpen: () => Swal.showLoading(),
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          timer: 1200
-        }).then(() => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Cadastro realizado!',
-            text: 'Sua conta foi criada com sucesso.',
-            timer: 1800,
-            showConfirmButton: false
-          }).then(() => {
-            this.toggleSignUpMode();
-            this.isLoading = false;
-          });
-        });
-      },
-      error: (error) => {
-        this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
-        this.isLoading = false;
-      }
-    });
+  if (this.registerForm.invalid) {
+    this.registerForm.markAllAsTouched();
+    this.errorMessage = 'Preencha todos os campos do cadastro corretamente.';
+    return;
   }
+
+  const payload = {
+    nome: this.registerForm.value.nome,
+    email: this.registerForm.value.email,
+    telefone: '+244' + this.registerForm.value.telefone.replace(/\s+/g, ''),
+    senha: this.registerForm.value.senha
+  };
+
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  this.cadastroService.cadastrarUsuario(payload).subscribe({
+    next: () => {
+      // Após cadastro, realiza o login automaticamente
+      this.authService.login(payload.email, payload.senha).subscribe({
+        next: () => {
+          Swal.fire({
+            title: 'Entrando...',
+            didOpen: () => Swal.showLoading(),
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            timer: 1200
+          }).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Conta criada e login bem-sucedido!',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => {
+              this.router.navigate(['/inicio']);
+            });
+          });
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.errorMessage = 'Conta criada, mas não foi possível fazer login automaticamente.';
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
+    },
+    error: (error) => {
+      this.isLoading = false;
+      this.errorMessage = error.error?.message || 'Erro ao criar conta.';
+    }
+  });
+}
 
   ngOnInit() {
     this.titleService.setTitle('Login');

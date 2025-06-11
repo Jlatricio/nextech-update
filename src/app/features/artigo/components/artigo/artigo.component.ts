@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Artigo } from '../../interface/artigo';
-import { finalize, Observable } from 'rxjs';
+import { finalize } from 'rxjs';
 import { ArtigoService } from '../../service/artigo.service';
 import bootstrap, { Modal } from 'bootstrap';
 import { CommonModule } from '@angular/common';
@@ -16,118 +16,86 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 @Component({
   selector: 'app-artigo',
   standalone: true,
-  imports: [NgxMaskDirective, ReactiveFormsModule, CommonModule, FormsModule, RouterModule, BsDropdownModule],
+  imports: [
+    NgxMaskDirective,
+    ReactiveFormsModule,
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    BsDropdownModule
+  ],
   providers: [provideNgxMask()],
-  templateUrl:'./artigo.component.html',
+  templateUrl: './artigo.component.html',
   styleUrls: ['./artigo.component.scss']
 })
-export class ArtigoComponent implements OnInit {
-loading: boolean = false;
+export class ArtigoComponent implements OnInit, AfterViewInit {
+  loading: boolean = false;
   form: FormGroup;
   categoriaForm!: FormGroup;
-artigos: Artigo[] = [];
- artigoSelecionadoId: number | null = null;
-    categorias: { id: number, nome: string }[] = [];
+  artigos: Artigo[] = [];
+  artigoSelecionadoId: number | null = null;
+  artigoSelecionado: Artigo | null = null;
+  artigoOriginal: Artigo | null = null;
+  categorias: { id: number, nome: string }[] = [];
   mostrarCampoNovaCategoria = false;
   novaCategoria = '';
-modoEdicao = false;
-modalModo: 'criar' | 'editar' = 'criar';
-
-
-
+  modoEdicao = false;
+  modalModo: 'criar' | 'editar' = 'criar';
 
   filtro = {
     Categorias: '',
     mes: '',
     tipo: ''
   };
-
-
-filtroNomeCategoriaSelecionada = 'Todos';
-
-selecionarCategoria(id: string, nome: string) {
-  this.filtro.Categorias = id;
-  this.filtroNomeCategoriaSelecionada = nome;
-}
-
+  filtroNomeCategoriaSelecionada = 'Todos';
   searchTerm: string = '';
 
- get artigosFiltrados(): Artigo[] {
-  let resultado = this.artigos;
+  descricao: string = '';
+  descricaoRestante: number = 300;
 
-  const termo = this.searchTerm?.trim().toLowerCase();
-  const categoriaSelecionada = this.filtro?.Categorias;
-
-  if (termo) {
-    resultado = resultado.filter(a => a.nome?.toLowerCase().includes(termo));
-  }
-
-  if (categoriaSelecionada) {
-    resultado = resultado.filter(a => a.categoria?.id === +categoriaSelecionada);
-  }
-
-  return resultado;
-}
-
-
-
-filtrar(): void {
-  this.loading = true;
-
-  this.artigoService.listarArtigo().subscribe({
-    next: artigos => {
-      this.categoriaService.listarCategorias().subscribe({
-        next: categorias => {
-          const artigosComCategoria = artigos.map(a => ({
-            ...a,
-            categoria: categorias.find(c => c.id === a.categoriaId)
-          }));
-
-          if (this.filtro.Categorias) {
-            this.artigos = artigosComCategoria.filter(a =>
-              a.categoria && a.categoria.id === Number(this.filtro.Categorias)
-            );
-          } else {
-            this.artigos = artigosComCategoria;
-          }
-
-          this.loading = false;
-        },
-        error: () => {
-          this.loading = false;
-        }
-      });
-    },
-    error: () => {
-      this.loading = false;
-    }
-  });
-}
-
-
-
-
-
-
+  impostos = [
+    { valor: 0, nome: 'Nenhum imposto' },
+    // IVA
+    { valor: 0.14, nome: ' 14% (taxa geral)' },
+    { valor: 0.07, nome: ' 7% (reduzida)' },
+    { valor: 0.05, nome: ' 5% (cesta básica)' },
+    { valor: 0.01, nome: ' 1% (Cabinda)' },
+    // Imposto Industrial
+    { valor: 0.25, nome: ' 25% (geral)' },
+    { valor: 0.10, nome: ' 10% (agropecuária)' },
+    { valor: 0.35, nome: ' 35% (setores especiais)' },
+    // IRT
+    { valor: 0.25, nome: ' 25% (Grupos B e C)' },
+    // IAC
+    { valor: 0.15, nome: ' 15% (juros)' },
+    { valor: 0.10, nome: ' 10% (dividendos)' },
+    { valor: 0.05, nome: ' 5%' },
+    // IP
+    { valor: 0.005, nome: ' 0,5% (padrão)' },
+    { valor: 0.001, nome: ' 0,1% (residencial)' },
+    { valor: 0.006, nome: ' 0,6% (terrenos)' },
+    { valor: 0.25, nome: ' 25% (renda)' },
+    // Outros
+    { valor: 0.02, nome: ' Sisa – 2%' },
+  ];
 
   constructor(
     private formBuilder: FormBuilder,
     private artigoService: ArtigoService,
     private titleService: TitleService,
     private categoriaService: CategoriaService,
-     private toastr: ToastrService
+    private toastr: ToastrService
   ) {
-
-
+    // Inicializa o form principal
     this.form = this.formBuilder.group({
-      nome: ['', Validators.required],
+      nome: ['', [Validators.required, Validators.minLength(3)]],
+      precoUnitario: ['', [Validators.required, Validators.pattern(/^\d+([.,]\d{1,2})?$/)]],
       categoria: ['', Validators.required],
-      imposto: ['', Validators.required],
-      precoUnitario: ['', Validators.required]
+      imposto: [0, Validators.required],
+      tipo: ['', Validators.required],
+      descricao: ['', [Validators.maxLength(300)]]
     });
-
-
-
+    // Form de nova categoria
     this.categoriaForm = this.formBuilder.group({
       nome: ['']
     });
@@ -135,155 +103,193 @@ filtrar(): void {
 
   ngOnInit(): void {
     this.titleService.setTitle('Artigos');
-     this.carregarCategorias();
-       this.inicializarFormulario();
+    this.carregarCategorias();
     this.carregarArtigos();
 
-     this.form.addControl('descricao', this.formBuilder.control('', [Validators.maxLength(300)]));
+    // Controla contagem de caracteres de descrição
     this.form.get('descricao')?.valueChanges.subscribe((value: string) => {
       this.descricao = value;
       this.descricaoRestante = 300 - (value?.length || 0);
     });
   }
 
+  ngAfterViewInit(): void {
+    this.descricaoRestante = 300 - (this.descricao?.length || 0);
+  }
 
+  // Propriedade para filtro na exibição
+  get artigosFiltrados(): Artigo[] {
+    let resultado = this.artigos;
+    const termo = this.searchTerm?.trim().toLowerCase();
+    const categoriaSelecionada = this.filtro?.Categorias;
+    if (termo) {
+      resultado = resultado.filter(a => a.nome?.toLowerCase().includes(termo));
+    }
+    if (categoriaSelecionada) {
+      resultado = resultado.filter(a => a.categoria?.id === Number(categoriaSelecionada));
+    }
+    return resultado;
+  }
 
+  selecionarCategoria(id: string, nome: string) {
+    this.filtro.Categorias = id;
+    this.filtroNomeCategoriaSelecionada = nome;
+  }
 
-    inicializarFormulario(): void {
-    this.form = this.formBuilder.group({
-      nome: ['', Validators.required],
-      precoUnitario: ['', Validators.required],
-      categoria: ['', Validators.required],
-      imposto: [0, Validators.required],
-      tipo: ['', Validators.required],
-      descricao: ['']
+  filtrar(): void {
+    this.loading = true;
+    this.artigoService.listarArtigo().subscribe({
+      next: artigos => {
+        this.categoriaService.listarCategorias().subscribe({
+          next: categorias => {
+            const artigosComCategoria = artigos.map(a => ({
+              ...a,
+              categoria: categorias.find(c => c.id === a.categoriaId)
+            }));
+            if (this.filtro.Categorias) {
+              this.artigos = artigosComCategoria.filter(a =>
+                a.categoria && a.categoria.id === Number(this.filtro.Categorias)
+              );
+            } else {
+              this.artigos = artigosComCategoria;
+            }
+            this.loading = false;
+          },
+          error: () => {
+            this.loading = false;
+          }
+        });
+      },
+      error: () => {
+        this.loading = false;
+      }
     });
   }
 
-carregarArtigos(): void {
-  this.artigoService.listarArtigo().subscribe({
-    next: artigos => {
-      this.categoriaService.listarCategorias().subscribe({
-        next: categorias => {
-          this.artigos = artigos.map(a => ({
-            ...a,
-            categoria: categorias.find(c => c.id === a.categoriaId)
-          }));
+  carregarArtigos(): void {
+    this.artigoService.listarArtigo().subscribe({
+      next: artigos => {
+        this.categoriaService.listarCategorias().subscribe({
+          next: categorias => {
+            this.artigos = artigos.map(a => ({
+              ...a,
+              categoria: categorias.find(c => c.id === a.categoriaId)
+            }));
+          },
+          error: err => {
+            console.error('Erro ao listar categorias dentro de carregarArtigos:', err);
+          }
+        });
+      },
+      error: err => {
+        console.error('Erro ao listar artigos:', err);
+      }
+    });
+  }
+
+  carregarCategorias(): void {
+    this.categoriaService.listarCategorias().subscribe({
+      next: data => {
+        this.categorias = data;
+      },
+      error: err => {
+        console.error('Erro ao carregar categorias:', err);
+      }
+    });
+  }
+
+  abrirCriarModal() {
+    this.modalModo = 'criar';
+    this.artigoSelecionado = null;
+    this.artigoSelecionadoId = null;
+    this.artigoOriginal = null;
+    this.modoEdicao = false;
+    // Limpa form se necessário:
+    this.form.reset();
+    // Ajusta valores iniciais se quiser:
+    this.form.get('imposto')?.setValue(0);
+    this.descricaoRestante = 300;
+    // Abre modal
+    const modalElement = document.getElementById('exampleModal') as HTMLElement | null;
+    if (modalElement) {
+      const modal = new Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  salvarArtigo(): void {
+    // Caso use salvarArtigo também para edição, poderia delegar a atualizarArtigo se modoEdicao = true.
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    // Garante descrição nunca vazia
+    let descricao = this.form.value.descricao?.trim();
+    if (!descricao) {
+      descricao = 'N/A';
+    }
+    // Prepara objeto parcial
+    const artigo: Partial<Artigo> = {
+      nome: this.form.value.nome.trim(),
+      preco: parseFloat(
+        String(this.form.value.precoUnitario)
+          .replace('Kz ', '')
+          .replace(/\./g, '')
+          .replace(',', '.')
+      ),
+      categoriaId: Number(this.form.value.categoria),
+      impostoAplicado: parseFloat(String(this.form.value.imposto)),
+      tipo: this.form.value.tipo,
+      descricao: descricao
+    };
+
+    if (this.artigoSelecionadoId) {
+      // Se preferir, aí aplica a mesma lógica de comparação antes de chamar, mas como temos método separado, podemos chamar:
+      this.atualizarArtigo(); // atualizarArtigo já faz validação e comparação
+    } else {
+      // Criação de novo artigo
+      this.artigoService.criarArtigo(artigo).subscribe({
+        next: res => {
+          console.log('Artigo criado!', res);
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso!',
+            text: 'Artigo criado com sucesso!',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          this.fecharModal();
+          this.carregarArtigos();
+          this.resetarFormulario();
+        },
+        error: err => {
+          console.error('Erro ao criar artigo:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro!',
+            text: err.error?.message || 'Erro ao criar artigo.',
+            timer: 3000,
+            showConfirmButton: false
+          });
+        },
+        complete: () => {
+          this.loading = false;
         }
       });
     }
-  });
-}
-
-artigoSelecionado: any = null;
-abrirCriarModal() {
-  this.modalModo = 'criar';
-  this.artigoSelecionado = {}; // ou zere o form como preferir
-}
-
-salvarArtigo(): void {
-  this.loading = true;
-  this.modalModo = 'criar';
-  // Garante que a descrição nunca seja vazia
-  let descricao = this.form.value.descricao?.trim();
-  if (!descricao) {
-    descricao = 'N/A';
   }
-
-  const artigo: Partial<Artigo> = {
-    nome: this.form.value.nome,
-    preco: parseFloat(
-      String(this.form.value.precoUnitario)
-        .replace('Kz ', '')
-        .replace(/\./g, '')
-        .replace(',', '.')
-    ),
-    categoriaId: Number(this.form.value.categoria),
-    impostoAplicado: parseFloat(this.form.value.imposto),
-    tipo: this.form.value.tipo,
-    descricao: descricao,
-  };
-
-  if (this.artigoSelecionadoId) {
-    this.artigoService.atualizarArtigo(this.artigoSelecionadoId, artigo).subscribe({
-      next: () => {
-        this.carregarArtigos();
-        this.resetarFormulario();
-        Swal.fire({
-          icon: 'success',
-          title: 'Sucesso!',
-          text: 'Artigo atualizado com sucesso!',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        this.fecharModal();
-      },
-      error: (err) => {
-        console.error('Erro ao atualizar:', err);
-      },
-      complete: () => {
-        this.loading = false;
-      }
-    });
-  } else {
-    this.artigoService.criarArtigo(artigo).subscribe({
-      next: (res: any) => {
-        console.log('Artigo criado!', res);
-        Swal.fire({
-          icon: 'success',
-          title: 'Sucesso!',
-          text: 'Artigo criado com sucesso!',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        this.fecharModal();
-      },
-      error: (err: any) => {
-        console.error('Erro:', err.error);
-      },
-      complete: () => {
-        this.carregarArtigos();
-        this.resetarFormulario();
-        this.loading = false;
-      }
-    });
-  }
-}
-
-fecharModal(): void {
-  const modalElement = document.getElementById('exampleModal');
-
-  if (modalElement) {
-    let modal = Modal.getInstance(modalElement);
-    if (!modal) {
-      modal = new Modal(modalElement);
-    }
-
-    modal.hide();
-
-    // Espera o modal terminar a animação e remove o backdrop manualmente
-    setTimeout(() => {
-      // Remove classe que trava o scroll da página
-      document.body.classList.remove('modal-open');
-
-      // Remove o backdrop (fundo escuro)
-      const backdrops = document.querySelectorAll('.modal-backdrop');
-      backdrops.forEach(b => b.remove());
-    }, 300); // 300ms é o tempo padrão do fade-out no Bootstrap
-  }
-}
-
-
-
-
 
   editarArtigo(artigo: Artigo): void {
+    // Salva o objeto original para comparação
+    this.artigoOriginal = { ...artigo };
+    this.artigoSelecionado = artigo;
+    this.artigoSelecionadoId = artigo.id!;
+    this.modoEdicao = true;
+    this.modalModo = 'editar';
 
-      this.modalModo = 'editar';
-     this.modalModo = 'editar';
-  this.artigoSelecionado = artigo;
-  this.artigoSelecionadoId = artigo.id;
-
+    // Preenche o form com valores do artigo
     this.form.patchValue({
       nome: artigo.nome,
       precoUnitario: artigo.preco.toString(),
@@ -292,31 +298,81 @@ fecharModal(): void {
       tipo: artigo.tipo,
       descricao: artigo.descricao
     });
-    this.modoEdicao = true;
+    // Ajusta contagem de caracteres
+    this.descricao = artigo.descricao || '';
+    this.descricaoRestante = 300 - (this.descricao?.length || 0);
 
-
-  const modalElement = document.getElementById('exampleModal') as HTMLElement | null;
-  if (modalElement) {
-    const modal = new Modal(modalElement);
-    modal.show();
+    // Abre modal
+    const modalElement = document.getElementById('exampleModal') as HTMLElement | null;
+    if (modalElement) {
+      const modal = new Modal(modalElement);
+      modal.show();
+    }
   }
-  }
 
-   atualizarArtigo(): void {
-    if (!this.artigoSelecionadoId) return;
+  atualizarArtigo(): void {
+    if (this.form.invalid) {
+      Swal.fire('Atenção', 'Preencha todos os campos obrigatórios.', 'warning');
+      return;
+    }
+    if (!this.artigoSelecionadoId) {
+      console.error('ID do artigo não definido para atualização.');
+      this.loading = false;
+      return;
+    }
 
+    // Extrai e parseia valores do formulário
+    const nomeForm: string = this.form.value.nome?.trim();
+    const precoParsed = parseFloat(
+      String(this.form.value.precoUnitario)
+        .replace('Kz ', '')
+        .replace(/\./g, '')
+        .replace(',', '.')
+    );
+    const categoriaIdParsed = Number(this.form.value.categoria);
+    const impostoParsed = parseFloat(String(this.form.value.imposto));
+    const tipoForm: string = this.form.value.tipo;
+    const descricaoForm: string = (this.form.value.descricao?.trim() || 'N/A');
+
+    // Se em modo edição, compara com o original
+    if (this.modoEdicao && this.artigoOriginal) {
+      const originalComparable = {
+        nome: this.artigoOriginal.nome,
+        preco: this.artigoOriginal.preco,
+        categoriaId: this.artigoOriginal.categoriaId,
+        impostoAplicado: this.artigoOriginal.impostoAplicado,
+        tipo: this.artigoOriginal.tipo,
+        descricao: this.artigoOriginal.descricao
+      };
+      const atualizadoComparable = {
+        nome: nomeForm,
+        preco: precoParsed,
+        categoriaId: categoriaIdParsed,
+        impostoAplicado: impostoParsed,
+        tipo: tipoForm,
+        descricao: descricaoForm
+      };
+      if (JSON.stringify(originalComparable) === JSON.stringify(atualizadoComparable)) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Sem alterações!',
+          text: 'Nenhuma modificação foi detectada nos dados do artigo.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        this.loading = false;
+        return;
+      }
+    }
+
+    // Monta payload final
     const payload: Partial<Artigo> = {
-      nome: this.form.value.nome,
-      preco: parseFloat(
-        String(this.form.value.precoUnitario)
-          .replace('Kz ', '')
-          .replace(/\./g, '')
-          .replace(',', '.')
-      ),
-      categoriaId: Number(this.form.value.categoria),
-      impostoAplicado: parseFloat(this.form.value.imposto),
-      tipo: this.form.value.tipo,
-      descricao: this.form.value.descricao || 'N/A'
+      nome: nomeForm,
+      preco: precoParsed,
+      categoriaId: categoriaIdParsed,
+      impostoAplicado: impostoParsed,
+      tipo: tipoForm,
+      descricao: descricaoForm
     };
 
     this.loading = true;
@@ -333,62 +389,101 @@ fecharModal(): void {
           });
           this.fecharModal();
           this.carregarArtigos();
+          // Reseta estado de edição
+          this.artigoOriginal = null;
+          this.artigoSelecionadoId = null;
+          this.artigoSelecionado = null;
+          this.modoEdicao = false;
+          this.resetarFormulario();
         },
         error: (err) => {
-          console.error('Erro ao atualizar artigo:', err);
+          // Tratar caso o backend ainda retorne “No changes detected to update.”
+          if (err.error?.message?.includes('No changes detected')) {
+            Swal.fire({
+              icon: 'info',
+              title: 'Sem alterações no servidor!',
+              text: 'O servidor não detectou mudanças no artigo.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          } else {
+            console.error('Erro ao atualizar artigo:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erro!',
+              text: err.error?.message || 'Erro ao atualizar artigo.',
+              timer: 3000,
+              showConfirmButton: false
+            });
+          }
         }
       });
   }
 
-
-excluirArtigo(id: number): void {
-  Swal.fire({
-    title: 'Tem certeza?',
-    text: 'Deseja realmente excluir este artigo?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sim, excluir!',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.artigoService.deletarArtigo(id).subscribe({
-        next: () => {
-          this.carregarArtigos();
-          this.toastr.success('Artigo excluído com sucesso!');
-        },
-        error: (err) => {
+  excluirArtigo(id: number): void {
+    Swal.fire({
+      title: 'Tem certeza?',
+      text: 'Deseja realmente excluir este artigo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir!',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.artigoService.deletarArtigo(id).subscribe({
+          next: () => {
+            this.carregarArtigos();
+            this.toastr.success('Artigo excluído com sucesso!');
+          },
+          error: (err) => {
             console.error('Erro ao excluir artigo:', err);
             Swal.fire({
-            icon: 'error',
-            title: 'Erro!',
-            text: 'Erro ao excluir artigo. Tente novamente.',
-            timer: 2000,
-            showConfirmButton: false
+              icon: 'error',
+              title: 'Erro!',
+              text: 'Erro ao excluir artigo. Tente novamente.',
+              timer: 2000,
+              showConfirmButton: false
             });
-        }
-      });
-    }
-  });
-}
+          }
+        });
+      }
+    });
+  }
 
   resetarFormulario(): void {
     this.form.reset();
     this.artigoSelecionadoId = null;
+    this.artigoSelecionado = null;
+    this.artigoOriginal = null;
+    this.modoEdicao = false;
+    // Ajusta contagem restante
+    this.descricaoRestante = 300;
+    // Se quiser, reatribui valor default no form:
+    this.form.get('imposto')?.setValue(0);
   }
 
-
-
-
-
-
+  fecharModal(): void {
+    const modalElement = document.getElementById('exampleModal');
+    if (modalElement) {
+      let modal = Modal.getInstance(modalElement);
+      if (!modal) {
+        modal = new Modal(modalElement);
+      }
+      modal.hide();
+      // Após animação, remove backdrop e classe que trava scroll
+      setTimeout(() => {
+        document.body.classList.remove('modal-open');
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(b => b.remove());
+      }, 300);
+    }
+  }
 
   onCategoriaSubmit(): void {
     if (this.categoriaForm.valid) {
       console.log('Categoria Form Data:', this.categoriaForm.value);
       // Lógica para salvar categoria (futura implementação)
-
       this.categoriaForm.reset();
-
       const modal = document.getElementById('categoriaModal');
       if (modal) {
         const bootstrapModal = Modal.getInstance(modal);
@@ -397,20 +492,17 @@ excluirArtigo(id: number): void {
     }
   }
 
-
-toggleNovaCategoria() {
-  this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
-}
+  toggleNovaCategoria() {
+    this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
+  }
 
   adicionarCategoria(): void {
     if (!this.novaCategoria.trim()) return;
-
     const novaCat = { nome: this.novaCategoria };
-
     this.categoriaService.criarCategoria(novaCat).subscribe({
       next: (categoriaCriada) => {
         this.categorias.push(categoriaCriada);
-        this.form.get('categoria')?.setValue(categoriaCriada.id);
+        this.form.get('categoria')?.setValue(categoriaCriada.id.toString());
         this.novaCategoria = '';
         this.mostrarCampoNovaCategoria = false;
       },
@@ -420,64 +512,9 @@ toggleNovaCategoria() {
     });
   }
 
-  carregarCategorias(): void {
-    this.categoriaService.listarCategorias().subscribe({
-      next: (data) => {
-        this.categorias = data; // Agora categorias é um array de objetos com id e nome
-      },
-      error: (err) => {
-        console.error('Erro ao carregar categorias:', err);
-      }
-    });
+  getNomesImpostos(valor: number): string[] {
+    return this.impostos
+      .filter(i => i.valor === valor)
+      .map(i => i.nome);
   }
-
-  descricao: string = '';
-  descricaoRestante: number = 300;
-
-  ngAfterViewInit(): void {
-    this.descricaoRestante = 300 - (this.descricao?.length || 0);
-  }
-
-
-  impostos = [
-  { valor: 0, nome: 'Nenhum imposto' },
-
-  // IVA
-  { valor: 0.14, nome: ' 14% (taxa geral)' },
-  { valor: 0.07, nome: ' 7% (reduzida)' },
-  { valor: 0.05, nome: ' 5% (cesta básica)' },
-  { valor: 0.01, nome: ' 1% (Cabinda)' },
-
-  // Imposto Industrial
-  { valor: 0.25, nome: ' 25% (geral)' },
-  { valor: 0.10, nome: ' 10% (agropecuária)' },
-  { valor: 0.35, nome: ' 35% (setores especiais)' },
-
-  // IRT
-  { valor: 0.25, nome: ' 25% (Grupos B e C)' },
-
-  // IAC
-  { valor: 0.15, nome: ' 15% (juros)' },
-  { valor: 0.10, nome: ' 10% (dividendos)' },
-  { valor: 0.05, nome: ' 5%' },
-
-  // IP
-  { valor: 0.005, nome: ' 0,5% (padrão)' },
-  { valor: 0.001, nome: ' 0,1% (residencial)' },
-  { valor: 0.006, nome: ' 0,6% (terrenos)' },
-  { valor: 0.25, nome: ' 25% (renda)' },
-
-  // Outros
-  { valor: 0.02, nome: ' Sisa – 2%' },
-];
-
-
-getNomesImpostos(valor: number): string[] {
-  return this.impostos
-    .filter(i => i.valor === valor)
-    .map(i => i.nome);
-}
-
-
-
 }
