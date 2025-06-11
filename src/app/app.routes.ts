@@ -55,7 +55,7 @@ export const routes: Routes = [
   },
   {
     path: 'despesa',
-    loadComponent: () => import('./features/despesas/components/despesa/despesa.component').then(m => m.DespesaComponent),
+    loadComponent: () => import('./features/despesas/components/despesa/despesa.component').then(m => m.DespesasComponent),
     canActivate: [AuthGuard]  // Protege a rota de despesa
   },
   {
