@@ -377,11 +377,6 @@ excluirArtigo(id: number): void {
   }
 
 
-
-
-
-
-
   onCategoriaSubmit(): void {
     if (this.categoriaForm.valid) {
       console.log('Categoria Form Data:', this.categoriaForm.value);
@@ -398,9 +393,9 @@ excluirArtigo(id: number): void {
   }
 
 
-toggleNovaCategoria() {
+  toggleNovaCategoria() {
   this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
-}
+  }
 
   adicionarCategoria(): void {
     if (!this.novaCategoria.trim()) return;

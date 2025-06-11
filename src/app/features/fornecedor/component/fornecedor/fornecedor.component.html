@@ -38,14 +38,18 @@
           <td>{{ fornecedor.email }}</td>
           <td>{{ fornecedor.endereco }}</td>
           <td>
-            <button type="button" class="btn btn-danger"
-            (click)="deleteFornecedor(fornecedor)">
-              <i class="bi bi-trash"></i>
-            </button> 
-             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
-              (click)="populateForm(fornecedor)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
+            <div class="bnt-action">
+              <!-- Botão de editar -->
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                (click)="populateForm(fornecedor)">
+                <i class="bi bi-pencil-square"></i> Editar
+              </button>
+              <!-- Botão de eliminar -->
+              <button type="button" class="btn btn-outline-danger"
+                (click)="deleteFornecedor(fornecedor)">
+                <i class="bi bi-trash"></i> Eliminar
+              </button> 
+            </div>
           </td>
         </tr>
       </tbody>
@@ -60,12 +64,13 @@
     <div class="modal-content">
       
       <div class="modal-body">
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <form [formGroup]="form" novalidate >
 
           <div class="modal-header">
-            <h1 class="modal-title fs-5">Criar Fornecedor</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+            <h1 class="modal-title fs-5">{{ editando ? 'Editar Usuário' : 'Criar Usuário' }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+              (click)="cancelarEdicao()"></button>
+            </div>
             <!-- input nome -->
           <div class="mb-3">
             <label for="nome" class="form-label">Nome do Fornecedor</label>
@@ -114,7 +119,9 @@
           </div>
 
           <div class="mb-3">
-            <button type="submit" class="btn btn-success">Salvar</button>
+            <button type="submit" class="btn btn-success" (click)="criarOuAtualizarUsuario()">
+              {{ editando ? 'Atualizar' : 'Salvar' }}
+            </button>
           </div>  
         </form>
       </div>
