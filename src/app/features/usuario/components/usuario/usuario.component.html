@@ -81,17 +81,21 @@
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Tipo de Usuário</label>
-            <select class="form-select" formControlName="perfil">
-              <option value="">Selecione o tipo</option>
-              <option value="ADMIN">Admin</option>
-              <option value="VENDEDOR">Vendedor</option>
-            </select>
-            <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
-              Tipo de usuário é obrigatório.
-            </div>
-          </div>
+        <div class="mb-3" *ngIf="!(usuarioOriginal?.isOwner || usuarioOriginal?.perfil === 'VENDEDOR')">
+  <label class="form-label">Tipo de Usuário</label>
+  <select
+    class="form-select"
+    formControlName="perfil">
+    <option value="">Selecione o tipo</option>
+    <option value="ADMIN">Admin</option>
+    <option value="VENDEDOR">Vendedor</option>
+  </select>
+  <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
+    Tipo de usuário é obrigatório.
+  </div>
+</div>
+
+
 
           <div class="mb-3">
             <label class="form-label">Email</label>

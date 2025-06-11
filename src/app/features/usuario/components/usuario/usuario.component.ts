@@ -269,11 +269,23 @@ ativarOuDesativarUsuario(usuario: Usuario): void {
   const novoStatus = !usuario.isActive;
   this.usuarioService.toggleAtivoUsuario(usuario.id!, novoStatus).subscribe({
     next: () => {
-      usuario.isActive = novoStatus; // FORÇA atualização local
-      this.toastr.success(`Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso!`);
+      usuario.isActive = novoStatus;
+      Swal.fire({
+        icon: 'success',
+        title: 'Sucesso!',
+        text: `Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso!`,
+        timer: 2000,
+        showConfirmButton: false
+      });
     },
     error: (error) => {
-      this.toastr.error('Erro ao alterar status do usuário.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro!',
+        text: 'Erro ao alterar status do usuário.',
+        timer: 3000,
+        showConfirmButton: false
+      });
       console.error('Erro ao ativar/desativar usuário:', error);
     }
   });
