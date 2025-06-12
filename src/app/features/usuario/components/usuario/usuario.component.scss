@@ -64,9 +64,13 @@ $cor-fundo-th: #ffffff;
 
 
 main.table {
-    width: 80vw;
-    height: 57vh;
-    background-color: rgba(255, 255, 255, 0.333);
+     width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
 
 
  table {
