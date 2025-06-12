@@ -1,29 +1,28 @@
+
 <div class="artigos-header text-center my-4">
   <div class="icon-circle mx-auto">
     <i class="bi bi-file-earmark-text"></i>
   </div>
   <h3 class="mt-3">Usuários</h3>
   <button
-  type="button"
-  class="btn-hover-gradient"
-  data-bs-toggle="modal"
-  data-bs-target="#exampleModal"
->
-  Criar Usuário
-  <i class="bi bi-plus-lg ms-2"></i>
-</button>
-
+    type="button"
+    class="btn-hover-gradient"
+    data-bs-toggle="modal"
+    data-bs-target="#exampleModal"
+  >
+    Criar Usuário
+    <i class="bi bi-plus-lg ms-2"></i>
+  </button>
 </div>
-
-
 
 <!-- Tabela de usuários -->
 <main class="table" id="customers_table">
   <section class="table__header">
     <!-- Filtros ou buscas podem ser adicionados aqui -->
+    <input type="text" placeholder="Buscar..." [(ngModel)]="filtro" class="form-control mb-2" />
   </section>
   <section class="table__body">
-    <table>
+    <table class="table table-striped">
       <thead>
         <tr>
           <th>Nome</th>
@@ -31,6 +30,7 @@
           <th>Tipo de Usuário</th>
           <th>Telefone</th>
           <th>Data de Criação</th>
+          <th>Alterar Senha</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -38,22 +38,29 @@
         <tr *ngFor="let usuario of usuariosFiltrados">
           <td>{{ usuario.nome }}</td>
           <td>{{ usuario.email }}</td>
-            <td>{{ getPerfilNome(usuario.perfil) }}</td>
+          <td>{{ getPerfilNome(usuario.perfil) }}</td>
           <td>{{ usuario.telefone }}</td>
           <td>{{ usuario.dataCriacao | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <a 
+               (click)="abrirModalAlterarSenha(usuario); $event.preventDefault()"
+               data-bs-toggle="modal"
+               data-bs-target="#modalalterarsenha">
+              Alterar senha
+            </a>
+          </td>
           <td>
             <div class="bnt-action">
               <button class="btn btn-outline-primary" (click)="editarUsuario(usuario)" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="bi bi-pencil"></i> Editar
               </button>
-             <button
-  *ngIf="!usuario.isOwner"
-  class="btn"
-  [ngClass]="usuario.isActive ? 'btn-outline-danger' : 'btn-outline-success'"
-  (click)="ativarOuDesativarUsuario(usuario)">
-  <i class="bi" [ngClass]="usuario.isActive ? 'bi-trash' : 'bi-check-circle'"></i>
-  {{ usuario.isActive ? 'Desativar' : 'Ativar' }}
-</button>
+              <button *ngIf="!usuario.isOwner"
+                      class="btn"
+                      [ngClass]="usuario.isActive ? 'btn-outline-danger' : 'btn-outline-success'"
+                      (click)="ativarOuDesativarUsuario(usuario)">
+                <i class="bi" [ngClass]="usuario.isActive ? 'bi-trash' : 'bi-check-circle'"></i>
+                {{ usuario.isActive ? 'Desativar' : 'Ativar' }}
+              </button>
             </div>
           </td>
         </tr>
@@ -70,7 +77,6 @@
         <h1 class="modal-title fs-5">{{ editando ? 'Editar Usuário' : 'Criar Usuário' }}</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancelarEdicao()"></button>
       </div>
-
       <div class="modal-body">
         <form [formGroup]="form" novalidate>
           <div class="mb-3">
@@ -81,21 +87,17 @@
             </div>
           </div>
 
-        <div class="mb-3" *ngIf="!(usuarioOriginal?.isOwner || usuarioOriginal?.perfil === 'VENDEDOR')">
-  <label class="form-label">Tipo de Usuário</label>
-  <select
-    class="form-select"
-    formControlName="perfil">
-    <option value="">Selecione o tipo</option>
-    <option value="ADMIN">Admin</option>
-    <option value="VENDEDOR">Vendedor</option>
-  </select>
-  <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
-    Tipo de usuário é obrigatório.
-  </div>
-</div>
-
-
+          <div class="mb-3" *ngIf="!(usuarioOriginal?.isOwner || usuarioOriginal?.perfil === 'VENDEDOR')">
+            <label class="form-label">Tipo de Usuário</label>
+            <select class="form-select" formControlName="perfil">
+              <option value="">Selecione o tipo</option>
+              <option value="ADMIN">Admin</option>
+              <option value="VENDEDOR">Vendedor</option>
+            </select>
+            <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
+              Tipo de usuário é obrigatório.
+            </div>
+          </div>
 
           <div class="mb-3">
             <label class="form-label">Email</label>
@@ -106,48 +108,94 @@
             </div>
           </div>
 
-         <div class="mb-3">
-  <label class="form-label">Telefone</label>
-  <div class="input-group">
-    <span class="input-group-text">
-      <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
-      &nbsp;+244
-    </span>
-    <input
-      type="text"
-      class="form-control"
-      formControlName="telefone"
-      mask="000 000 000"
-      placeholder="Ex: 923 456 789"
-      maxlength="9"
-    />
-  </div>
-  <div *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)" class="text-danger">
-    <div *ngIf="form.get('telefone')?.errors?.['required']">Telefone é obrigatório.</div>
-    <div *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</div>
-  </div>
-</div>
+          <div class="mb-3">
+            <label class="form-label">Telefone</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+                &nbsp;+244
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="telefone"
+                mask="000 000 000"
+                placeholder="Ex: 923 456 789"
+                maxlength="9"
+              />
+            </div>
+            <div *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)" class="text-danger">
+              <div *ngIf="form.get('telefone')?.errors?.['required']">Telefone é obrigatório.</div>
+              <div *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</div>
+            </div>
+          </div>
 
-
-     <div class="mb-3" *ngIf="!editando">
-  <label class="form-label">Senha</label>
-  <input type="password" class="form-control" formControlName="senha" />
-  <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
-    <div *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória.</div>
-  </div>
-</div>
-
-
-
-
-
+          <div class="mb-3" *ngIf="!editando">
+            <label class="form-label">Senha</label>
+            <input type="password" class="form-control" formControlName="senha" />
+            <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
+              <div *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória.</div>
+            </div>
+          </div>
 
           <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-success" (click)="criarOuAtualizarUsuario()" [disabled]="form.invalid">
               <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
               {{ editando ? 'Atualizar' : 'Salvar' }}
             </button>
-              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Alteração de Senha -->
+<div class="modal fade" id="modalalterarsenha" tabindex="-1" aria-labelledby="modalalterarsenhaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content modal-white">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100 text-center" id="modalalterarsenhaLabel">
+          Alterar Senha
+          <ng-container *ngIf="nomeUsuarioParaSenha">
+            de {{ nomeUsuarioParaSenha }}
+          </ng-container>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formSenha" (ngSubmit)="onAlterarSenha()">
+          <div class="form-group mb-3">
+            <label for="senhaAtual" class="form-label">Senha atual</label>
+            <input type="password" id="senhaAtual" class="form-control modern-input" formControlName="senha" required />
+            <div *ngIf="formSenha.get('senha')?.invalid && (formSenha.get('senha')?.touched || formSenha.get('senha')?.dirty)" class="text-danger mt-1 small">
+              Senha atual é obrigatória.
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label for="novaSenha" class="form-label">Nova senha</label>
+            <input type="password" id="novaSenha" class="form-control modern-input" formControlName="novaSenha" required />
+            <div *ngIf="formSenha.get('novaSenha')?.invalid && (formSenha.get('novaSenha')?.touched || formSenha.get('novaSenha')?.dirty)" class="text-danger mt-1 small">
+              <div *ngIf="formSenha.get('novaSenha')?.errors?.['required']">Nova senha é obrigatória.</div>
+              <div *ngIf="formSenha.get('novaSenha')?.errors?.['minlength']">Mínimo de 8 caracteres.</div>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label for="confirmarSenha" class="form-label">Confirmar nova senha</label>
+            <input type="password" id="confirmarSenha" class="form-control modern-input" formControlName="confirmarSenha" required />
+            <div *ngIf="formSenha.get('confirmarSenha')?.invalid && (formSenha.get('confirmarSenha')?.touched || formSenha.get('confirmarSenha')?.dirty)" class="text-danger mt-1 small">
+              Confirmação obrigatória.
+            </div>
+          </div>
+          <div *ngIf="formSenha.errors?.['senhasDiferentes']" class="text-danger mb-3 small">
+            As senhas não coincidem.
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm" [disabled]="formSenha.invalid || loadingSenha">
+              <span *ngIf="loadingSenha" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Alterar Senha
+            </button>
+          </div>
         </form>
       </div>
     </div>

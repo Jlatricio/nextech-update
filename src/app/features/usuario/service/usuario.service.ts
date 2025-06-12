@@ -24,7 +24,6 @@ export class UsuarioService {
 obterNomeUsuario(): Observable<{ nome: string }> {
   return this.httpClient.get<{ nome: string }>(`${this.apiUrl}/nome`).pipe(
     catchError(error => {
-      console.error('Erro ao obter nome do usuário', error);
       return throwError(() => error);
     })
   );
@@ -55,5 +54,19 @@ obterNomeUsuario(): Observable<{ nome: string }> {
     })
   );
 }
+
+changePassword(id: number, senha: string, novaSenha: string): Observable<any> {
+  return this.httpClient.patch(`${this.apiUrl}/change-passwords/${id}`, {
+    id,
+    senha,
+    novaSenha
+  }).pipe(
+    catchError(error => {
+      return throwError(() => error);
+    })
+  );
+}
+
+
 
 }
