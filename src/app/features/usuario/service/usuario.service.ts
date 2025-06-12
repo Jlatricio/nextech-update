@@ -15,7 +15,6 @@ export class UsuarioService {
      listaUsuario(): Observable<Usuario[]> {
   return this.httpClient.get<Usuario[]>(this.apiUrl).pipe(
     catchError(error => {
-      console.error('Erro ao listar usuários', error);
       return throwError(() => error);
     })
   );
@@ -49,7 +48,6 @@ obterNomeUsuario(): Observable<{ nome: string }> {
  toggleAtivoUsuario(id: number, isActive: boolean): Observable<Usuario> {
   return this.httpClient.patch<Usuario>(`${this.apiUrl}/${id}/toggle-active`, { isActive }).pipe(
     catchError(error => {
-      console.error('Erro ao ativar/desativar usuário', error);
       return throwError(() => error);
     })
   );
