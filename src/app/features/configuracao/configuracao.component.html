@@ -63,6 +63,25 @@
       <div *ngSwitchCase="'configuracao'" class="configuracao-container">
     <form [formGroup]="form" (ngSubmit)="salvarEmpresa()" class="form-wrapper">
 
+      <!-- Campo de upload de logo -->
+  <div class="form-field">
+    <label for="logo" class="form-label-custom">Logo da Empresa</label>
+    <input
+      type="file"
+      id="logo"
+      accept="image/*"
+      (change)="onFileSelected($event)"
+    />
+    <div *ngIf="fileError" class="error-message">
+      {{ fileError }}
+    </div>
+    <!-- Opcional: mostrar preview -->
+    <div *ngIf="previewUrl" class="preview-wrapper">
+      <p>Pré-visualização:</p>
+      <img [src]="previewUrl" alt="Preview da logo" style="max-width: 200px; max-height: 200px;" />
+    </div>
+  </div>
+
   <div *ngFor="let field of fields" class="form-field">
     <label [for]="field.id" class="form-label-custom">{{ field.label }}</label>
 

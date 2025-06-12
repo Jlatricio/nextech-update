@@ -72,9 +72,6 @@ a {
 }
 
 
-
-
-
 ngx-loading-bar {
   height: 4px !important;
   background: linear-gradient(90deg, #0a2755, #1d3557, #457b9d, #0a2755) !important;
@@ -90,12 +87,8 @@ ngx-loading-bar {
   pointer-events: none;
 }
 
-/* Quando a barra está ativa, ngx-loading-bar adiciona a classe ng-animating, que você pode usar para mostrar a barra */
 
 ngx-loading-bar.ng-animating {
   opacity: 1;
   pointer-events: auto;
 }
-
-
-

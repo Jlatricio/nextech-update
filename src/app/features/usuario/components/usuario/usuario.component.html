@@ -37,7 +37,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let usuario of usuariosFiltrados">
-          <td>{{ usuario.nome }}</td>
+          <td>  {{ usuario.nome }}</td>
           <td>{{ usuario.email }}</td>
           <td>{{ getPerfilNome(usuario.perfil) }}</td>
           <td>{{ usuario.telefone }}</td>
@@ -55,16 +55,16 @@
               <button class="btn btn-outline-primary" (click)="editarUsuario(usuario)" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="bi bi-pencil"></i> Editar
               </button>
-             
+
             </div>
           </td>
-          <td *ngIf="!usuario.isOwner">
+          <td>
              <div class="bnt-action">
               <button *ngIf="!usuario.isOwner"
                       class="btn"
                       [ngClass]="usuario.isActive ? 'btn-outline-danger' : 'btn-outline-success'"
                       (click)="ativarOuDesativarUsuario(usuario)">
-                <i class="bi" [ngClass]="usuario.isActive ? 'bi-trash' : 'bi-check-circle'"></i>
+                <i class="bi" [ngClass]="usuario.isActive ? 'bi-slash-circle' : 'bi-check-circle'"></i>
                 {{ usuario.isActive ? 'Desativar' : 'Ativar' }}
               </button>
             </div>

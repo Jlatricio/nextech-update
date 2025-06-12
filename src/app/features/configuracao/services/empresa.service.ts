@@ -23,4 +23,14 @@ export class EmpresaService {
     return this.httpClient.patch<Empresa>(this.apiUrl, dados);
   }
 
+ uploadLogo(file: File): Observable<{ filename: string; path: string }> {
+    const formData = new FormData();
+    // O backend espera campo 'logo'
+    formData.append('logo', file, file.name);
+    // Ajuste URL: se apiUrl é '.../v1/companies'
+    return this.httpClient.post<{ filename: string; path: string }>(
+      `${this.apiUrl}/upload-logo`,
+      formData
+    );
+  }
 }
