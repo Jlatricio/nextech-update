@@ -31,7 +31,8 @@
           <th>Telefone</th>
           <th>Data de Criação</th>
           <th>Alterar Senha</th>
-          <th>Ações</th>
+          <th>Editar</th>
+          <th>Acções</th>
         </tr>
       </thead>
       <tbody>
@@ -42,7 +43,7 @@
           <td>{{ usuario.telefone }}</td>
           <td>{{ usuario.dataCriacao | date: 'dd/MM/yyyy' }}</td>
           <td>
-            <a 
+            <a
                (click)="abrirModalAlterarSenha(usuario); $event.preventDefault()"
                data-bs-toggle="modal"
                data-bs-target="#modalalterarsenha">
@@ -54,6 +55,11 @@
               <button class="btn btn-outline-primary" (click)="editarUsuario(usuario)" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="bi bi-pencil"></i> Editar
               </button>
+             
+            </div>
+          </td>
+          <td *ngIf="!usuario.isOwner">
+             <div class="bnt-action">
               <button *ngIf="!usuario.isOwner"
                       class="btn"
                       [ngClass]="usuario.isActive ? 'btn-outline-danger' : 'btn-outline-success'"
