@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { TitleService } from '../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 import { EmpresaService } from './services/empresa.service';
-import { Observable } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { Empresa } from './interface/empresa';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -22,6 +22,11 @@ export class ConfiguracaoComponent implements OnInit{
    form: FormGroup;
    formConta: FormGroup;
      aba: 'configuracao' | 'subscribe' | 'contas' | 'ajuda' | 'tutoriais' | 'termos' = 'configuracao';
+      selectedFile: File | null = null;
+  fileError: string | null = null;
+  previewUrl: string | ArrayBuffer | null = null;
+  fileTooLarge = false;
+  readonly MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB em bytes
 
      constructor(
     private titleService: TitleService,
@@ -132,30 +137,85 @@ dados(): void {
 }
 
 
-salvarEmpresa(): void {
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
+ salvarEmpresa(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    // Se o arquivo for obrigatório, descomente:
+    // if (!this.selectedFile) {
+    //   this.fileError = 'Selecione uma imagem de logo.';
+    //   return;
+    // }
+
+    if (this.selectedFile) {
+      this.uploadLogoEAtualizarEmpresa();
+    } else {
+
+      this.atualizarEmpresaSemLogo();
+    }
+  }
+
+  private atualizarEmpresaSemLogo(): void {
+    const empresa: Empresa = { ...this.form.value };
+
+    if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
+      empresa.telefone = `+244${empresa.telefone}`;
+    }
+
+    this.empresaService.atualizadados(empresa).subscribe({
+      next: res => {
+        console.log('Empresa salva com sucesso (sem logo):', res);
+        this.dados();
+      },
+      error: err => {
+        console.error('Erro ao salvar empresa (sem logo):', err);
+      }
+    });
+  }
+
+private uploadLogoEAtualizarEmpresa(): void {
+  if (!this.selectedFile) {
     return;
   }
-
-  // Clona o valor do formulário para evitar modificar o original
-  const empresa: Empresa = { ...this.form.value };
-
-  // Adiciona o prefixo +244 ao telefone
-  if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
-    empresa.telefone = `+244${empresa.telefone}`;
-  }
-
-  this.empresaService.atualizadados(empresa).subscribe({
-    next: (res) => {
-      console.log('Empresa salva com sucesso:', res);
-      this.dados(); // Atualiza os dados na tela após salvar
+  this.empresaService.uploadLogo(this.selectedFile).pipe(
+    finalize(() => {
+      // opcional: limpeza de estado de upload
+    })
+  ).subscribe({
+    next: (response) => {
+      // response tem { filename: string; path: string; }
+      // Use apenas path ou filename. Exemplo:
+      const logoPath = response.path; // '/files/uuid.ext'
+      // Se quiser URL completa, combine com base:
+      // const logoUrlCompleta = `${environment.apiBaseUrl}${logoPath}`;
+      const empresa: Empresa = { ...this.form.value };
+      if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
+        empresa.telefone = `+244${empresa.telefone}`;
+      }
+      // Atribua a propriedade logoURL conforme sua model:
+      empresa.logoURL = logoPath;
+      // Se quiser URL completa: empresa.logoURL = logoUrlCompleta;
+      this.empresaService.atualizadados(empresa).subscribe({
+        next: res => {
+          console.log('Empresa salva com logo com sucesso:', res);
+          this.dados();
+          this.selectedFile = null;
+          this.previewUrl = null;
+        },
+        error: err => {
+          console.error('Erro ao salvar empresa após upload de logo:', err);
+        }
+      });
     },
-    error: (err) => {
-      console.error('Erro ao salvar empresa:', err);
+    error: err => {
+      console.error('Erro ao fazer upload da logo:', err);
+      this.fileError = 'Falha no upload da imagem. Tente novamente.';
     }
   });
 }
+
 
 
 
@@ -169,9 +229,7 @@ ngOnInit(): void {
 
 
 
-onFileSelected($event: Event) {
-throw new Error('Method not implemented.');
-}
+
 onSubmit() {
 throw new Error('Method not implemented.');
 }
@@ -282,5 +340,43 @@ updateIndicator() {
   }
 
 }
+
+
+ onFileSelected(event: Event): void {
+    this.fileError = null;
+    this.previewUrl = null;
+    this.fileTooLarge = false;
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      this.selectedFile = null;
+      return;
+    }
+
+    const file = input.files[0];
+    // Verificar tamanho
+    if (file.size > this.MAX_FILE_SIZE) {
+      this.fileError = 'O arquivo excede o tamanho máximo de 1 MB.';
+      this.selectedFile = null;
+      this.fileTooLarge = true;
+      return;
+    }
+
+    // Opcional: verificar tipo mime (já limitou pelo accept, mas pode reforçar)
+    if (!file.type.startsWith('image/')) {
+      this.fileError = 'Formato de arquivo inválido. Selecione uma imagem.';
+      this.selectedFile = null;
+      return;
+    }
+
+    this.selectedFile = file;
+    this.fileTooLarge = false;
+
+    // Gerar preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
 
 }

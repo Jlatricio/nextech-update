@@ -9,6 +9,11 @@ import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { provideLoadingBar } from '@ngx-loading-bar/core';
+import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
+import { importProvidersFrom } from '@angular/core';
+import { LoadingBarModule } from '@ngx-loading-bar/core';
+
+
 
 import Swal from 'sweetalert2';
 import { registerLocaleData } from '@angular/common';
@@ -17,10 +22,11 @@ registerLocaleData(pt);
 export const appConfig: ApplicationConfig = {
 
   providers: [
-provideLoadingBar({
-  latencyThreshold: 100
-}),
-
+   importProvidersFrom(
+    LoadingBarModule,
+    LoadingBarHttpClientModule
+  ),
+  provideLoadingBar({ latencyThreshold: 100 }),
     provideRouter(routes),
     provideAnimations(),
     provideToastr({
