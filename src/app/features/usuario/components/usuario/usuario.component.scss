@@ -8,6 +8,8 @@ $cor-fundo-th: #ffffff;
   align-items: center;
 }
 
+
+
 .icon-circle {
   width: 80px;
   height: 80px;
@@ -93,6 +95,10 @@ main.table {
   }
 
   tbody {
+    a {
+  cursor: pointer;
+  text-decoration: none;
+}
     tr {
       background: #fff;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
@@ -195,7 +201,7 @@ main.table {
 // modal
   .modal-body {
     &::-webkit-scrollbar {
-        width: 6px; 
+        width: 6px;
     }
 
     &::-webkit-scrollbar-track {
@@ -213,4 +219,45 @@ main.table {
         }
     }
   }
+
+
+
+
+.modal-white {
+  background-color: #ffffff !important;
+  color: #333;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.btn-close {
+  filter: brightness(0.5);
+}
+
+.modern-input {
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.modern-input:focus {
+  border-color:linear-gradient(90deg, #1d3557 0%, #0a2755 100%);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary {
+  background-color:linear-gradient(90deg, #1d3557 0%, #0a2755 100%);
+  border: none;
+  font-weight: 500;
+}
 
