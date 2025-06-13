@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Despesa } from '../../interface/despesa';
 
-import { finalize } from 'rxjs';
 import { DespesaService } from '../../service/despesa.service';
 
 import { Modal } from 'bootstrap';
@@ -41,7 +40,6 @@ import { FornecedorService } from '../../service/fornecedorService';
   styleUrls: ['./despesa.component.scss'],
 })
 export class DespesasComponent implements OnInit {
-  loading: boolean = false;
   form: FormGroup;
 
   despesa: Despesa[] = [];
@@ -53,93 +51,31 @@ export class DespesasComponent implements OnInit {
   modoEdicao = false;
   modalModo: 'criar' | 'editar' = 'criar';
 
-  filtro = {
-    Categorias: '',
-    mes: '',
-    tipo: '',
-  };
-
-  filtroNomeCategoriaSelecionada = 'Todos';
-
-  selecionarCategoria(id: string, nome: string) {
-    this.filtro.Categorias = id;
-    this.filtroNomeCategoriaSelecionada = nome;
-  }
-
-  searchTerm: string = '';
-
-  // get despesaFiltrados(): Despesa[] {
-  //   let resultado = this.despesa;
-
-  //   const termo = this.searchTerm?.trim().toLowerCase();
-  //   const categoriaSelecionada = this.filtro?.Categorias;
-
-  //   if (termo) {
-  //     resultado = resultado.filter((a) =>
-  //       a.nome?.toLowerCase().includes(termo)
-  //     );
-  //   }
-
-  //   if (categoriaSelecionada) {
-  //     resultado = resultado.filter(
-  //       (a) => a.categoria?.id === +categoriaSelecionada
-  //     );
-  //   }
-
-  //   return resultado;
-  // }
-
-  // filtrar(): void {
-  //   this.loading = true;
-  // }
-
   constructor(
     private formBuilder: FormBuilder,
     private despesaService: DespesaService,
     private titleService: TitleService,
-    private fornecedorService: FornecedorService,
+    private fornecedorService: FornecedorService
   ) {
     this.form = this.formBuilder.group({
       nome: ['', Validators.required],
+      fornecedorId: [null, Validators.required],
+      valor: [0, [Validators.required, Validators.min(0)]],
+      retencaoFonte: [null, Validators.required],
       motivo: ['', Validators.required],
-      fornecedorId: ['', Validators.required],
-      valor: ['', Validators.required],
-      retencaoFonte: ['', Validators.required],
-      descricao: [''],
     });
   }
 
   ngOnInit(): void {
     this.titleService.setTitle('despesa');
-    this.inicializarFormulario();
     this.carregarDespesa();
     this.carregarFornecedores();
-
-    this.form.addControl(
-      'descricao',
-      this.formBuilder.control('', [Validators.maxLength(300)])
-    );
-    this.form.get('descricao')?.valueChanges.subscribe((value: string) => {
-      this.descricao = value;
-      this.descricaoRestante = 300 - (value?.length || 0);
-    });
   }
 
   carregarFornecedores(): void {
     this.fornecedorService.listar().subscribe({
       next: (dados) => (this.fornecedores = dados),
       error: (err) => console.error('Erro ao carregar fornecedores', err),
-    });
-  }
-
-  inicializarFormulario(): void {
-    this.form = this.formBuilder.group({
-      nome: ['', Validators.required],
-      valor: ['', Validators.required],
-      fornecedorId: ['', Validators.required],
-      motivo: ['', Validators.required],
-      retencaoFonte: ['', Validators.required],
-      descricao: [''],
     });
   }
 
@@ -156,13 +92,12 @@ export class DespesasComponent implements OnInit {
   }
 
   salvarDespesa(): void {
-    this.loading = true;
     this.modalModo = 'criar';
 
     // Garante que a descrição nunca seja vazia
-    let descricao = this.form.value.descricao?.trim();
-    if (!descricao) {
-      descricao = 'N/A';
+    let motivo = this.form.value.motivo?.trim();
+    if (!motivo) {
+      motivo = 'N/A';
     }
 
     const despesa: Partial<Despesa> = {
@@ -173,8 +108,9 @@ export class DespesasComponent implements OnInit {
           .replace(/\./g, '')
           .replace(',', '.')
       ),
-      // categoriaId: Number(this.form.value.categoria),
-      descricao: descricao,
+      motivo: this.form.value.motivo,
+      fornecedorId: this.form.value.fornecedorId, 
+      retencaoFonte: this.form.value.retencaoFonte, 
     };
 
     if (this.despesaSelecionadoId) {
@@ -196,9 +132,6 @@ export class DespesasComponent implements OnInit {
           error: (err) => {
             console.error('Erro ao atualizar:', err);
           },
-          complete: () => {
-            this.loading = false;
-          },
         });
     } else {
       this.despesaService.criarDespesa(despesa).subscribe({
@@ -219,7 +152,6 @@ export class DespesasComponent implements OnInit {
         complete: () => {
           this.carregarDespesa();
           this.resetarFormulario();
-          this.loading = false;
         },
       });
     }
@@ -256,10 +188,10 @@ export class DespesasComponent implements OnInit {
 
     this.form.patchValue({
       nome: despesa.nome,
-      valor: despesa.valor.toString(),
-      retencaoFonte: despesa.retencaoFonte,
       fornecedorId: despesa.fornecedorId,
-      descricao: despesa.descricao,
+      retencaoFonte: despesa.retencaoFonte,
+      valor: despesa.valor.toString(),
+      motivo: despesa.motivo,
     });
     this.modoEdicao = true;
 
@@ -285,13 +217,11 @@ export class DespesasComponent implements OnInit {
       ),
       // categoriaId: Number(this.form.value.categoria),
 
-      descricao: this.form.value.descricao || 'N/A',
+      motivo: this.form.value.motivo || 'N/A',
     };
 
-    this.loading = true;
     this.despesaService
       .atualizarDespesa(this.despesaSelecionadoId, payload)
-      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
           Swal.fire({
@@ -346,12 +276,5 @@ export class DespesasComponent implements OnInit {
 
   toggleNovaCategoria() {
     this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
-  }
-
-  descricao: string = '';
-  descricaoRestante: number = 300;
-
-  ngAfterViewInit(): void {
-    this.descricaoRestante = 300 - (this.descricao?.length || 0);
   }
 }
