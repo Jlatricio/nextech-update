@@ -1,38 +1,40 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable} from 'rxjs';
 import { Despesa } from '../interface/despesa';
-import { Observable, tap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DespesaService {
-  private readonly apiUrl = '';
-  http: any;
-  constructor(private httpClient: HttpClient) { }
+  private apiUrl = `${environment.apiUrl}/expenses`;
 
-  salvarDespesa(registro: Despesa) {
-    return this.httpClient.post<Despesa>(this.apiUrl, registro)
-      .pipe(
-        tap((despesa: Despesa) => console.log(despesa))
-      );
+  constructor(private httpClient: HttpClient) {}
+
+  // Lista todos os Despesa
+  listarDespesa(): Observable<Despesa[]> {
+    return this.httpClient.get<Despesa[]>(this.apiUrl);
   }
 
-  listaDespesas() {
-    return this.httpClient.get<Despesa[]>(this.apiUrl)
-      .pipe(
-        tap((despesas: Despesa[]) => console.log(despesas))
-      );
+  // // Obtém um despesa por ID
+  // obterDespesaPorId(id: number): Observable<Despesa> {
+  //   return this.httpClient.get<Despesa>(`${this.apiUrl}/${id}`);
+  // }
+
+  // Cria um novo despesa
+  criarDespesa(despesa: Partial<Despesa>): Observable<Despesa> {
+    return this.httpClient.post<Despesa>(this.apiUrl, despesa);
   }
 
+  // Atualiza um despesa existente
+  atualizarDespesa(id: number, despesa: Partial<Despesa>): Observable<Despesa> {
+    return this.httpClient.patch<Despesa>(`${this.apiUrl}/${id}`, despesa);
+  }
+
+  // Deleta um despesa por ID
   deletarDespesa(id: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.apiUrl}/${id}`);
   }
-
-  atualizarDespesa(id: number, registro: Despesa): Observable<Despesa> {
-    return this.httpClient.put<Despesa>(`${this.apiUrl}/${id}`, registro)
-      .pipe(
-        tap(despesaAtualizada => console.log(despesaAtualizada))
-      );
-  }
 }
+

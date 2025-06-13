@@ -22,11 +22,11 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     CommonModule,
     FormsModule,
     RouterModule,
-    BsDropdownModule
+    BsDropdownModule,
   ],
   providers: [provideNgxMask()],
   templateUrl: './artigo.component.html',
-  styleUrls: ['./artigo.component.scss']
+  styleUrls: ['./artigo.component.scss'],
 })
 export class ArtigoComponent implements OnInit, AfterViewInit {
   loading: boolean = false;
@@ -36,7 +36,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   artigoSelecionadoId: number | null = null;
   artigoSelecionado: Artigo | null = null;
   artigoOriginal: Artigo | null = null;
-  categorias: { id: number, nome: string }[] = [];
+  categorias: { id: number; nome: string }[] = [];
   mostrarCampoNovaCategoria = false;
   novaCategoria = '';
   modoEdicao = false;
@@ -45,7 +45,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   filtro = {
     Categorias: '',
     mes: '',
-    tipo: ''
+    tipo: '',
   };
   filtroNomeCategoriaSelecionada = 'Todos';
   searchTerm: string = '';
@@ -62,13 +62,13 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     { valor: 0.01, nome: ' 1% (Cabinda)' },
     // Imposto Industrial
     { valor: 0.25, nome: ' 25% (geral)' },
-    { valor: 0.10, nome: ' 10% (agropecuária)' },
+    { valor: 0.1, nome: ' 10% (agropecuária)' },
     { valor: 0.35, nome: ' 35% (setores especiais)' },
     // IRT
     { valor: 0.25, nome: ' 25% (Grupos B e C)' },
     // IAC
     { valor: 0.15, nome: ' 15% (juros)' },
-    { valor: 0.10, nome: ' 10% (dividendos)' },
+    { valor: 0.1, nome: ' 10% (dividendos)' },
     { valor: 0.05, nome: ' 5%' },
     // IP
     { valor: 0.005, nome: ' 0,5% (padrão)' },
@@ -89,15 +89,18 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     // Inicializa o form principal
     this.form = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
-      precoUnitario: ['', [Validators.required, Validators.pattern(/^\d+([.,]\d{1,2})?$/)]],
+      precoUnitario: [
+        '',
+        [Validators.required, Validators.pattern(/^\d+([.,]\d{1,2})?$/)],
+      ],
       categoria: ['', Validators.required],
       imposto: [0, Validators.required],
       tipo: ['', Validators.required],
-      descricao: ['', [Validators.maxLength(300)]]
+      descricao: ['', [Validators.maxLength(300)]],
     });
     // Form de nova categoria
     this.categoriaForm = this.formBuilder.group({
-      nome: ['']
+      nome: [''],
     });
   }
 
@@ -123,10 +126,14 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     const termo = this.searchTerm?.trim().toLowerCase();
     const categoriaSelecionada = this.filtro?.Categorias;
     if (termo) {
-      resultado = resultado.filter(a => a.nome?.toLowerCase().includes(termo));
+      resultado = resultado.filter((a) =>
+        a.nome?.toLowerCase().includes(termo)
+      );
     }
     if (categoriaSelecionada) {
-      resultado = resultado.filter(a => a.categoria?.id === Number(categoriaSelecionada));
+      resultado = resultado.filter(
+        (a) => a.categoria?.id === Number(categoriaSelecionada)
+      );
     }
     return resultado;
   }
@@ -139,16 +146,18 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   filtrar(): void {
     this.loading = true;
     this.artigoService.listarArtigo().subscribe({
-      next: artigos => {
+      next: (artigos) => {
         this.categoriaService.listarCategorias().subscribe({
-          next: categorias => {
-            const artigosComCategoria = artigos.map(a => ({
+          next: (categorias) => {
+            const artigosComCategoria = artigos.map((a) => ({
               ...a,
-              categoria: categorias.find(c => c.id === a.categoriaId)
+              categoria: categorias.find((c) => c.id === a.categoriaId),
             }));
             if (this.filtro.Categorias) {
-              this.artigos = artigosComCategoria.filter(a =>
-                a.categoria && a.categoria.id === Number(this.filtro.Categorias)
+              this.artigos = artigosComCategoria.filter(
+                (a) =>
+                  a.categoria &&
+                  a.categoria.id === Number(this.filtro.Categorias)
               );
             } else {
               this.artigos = artigosComCategoria;
@@ -157,44 +166,47 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
           },
           error: () => {
             this.loading = false;
-          }
+          },
         });
       },
       error: () => {
         this.loading = false;
-      }
+      },
     });
   }
 
   carregarArtigos(): void {
     this.artigoService.listarArtigo().subscribe({
-      next: artigos => {
+      next: (artigos) => {
         this.categoriaService.listarCategorias().subscribe({
-          next: categorias => {
-            this.artigos = artigos.map(a => ({
+          next: (categorias) => {
+            this.artigos = artigos.map((a) => ({
               ...a,
-              categoria: categorias.find(c => c.id === a.categoriaId)
+              categoria: categorias.find((c) => c.id === a.categoriaId),
             }));
           },
-          error: err => {
-            console.error('Erro ao listar categorias dentro de carregarArtigos:', err);
-          }
+          error: (err) => {
+            console.error(
+              'Erro ao listar categorias dentro de carregarArtigos:',
+              err
+            );
+          },
         });
       },
-      error: err => {
+      error: (err) => {
         console.error('Erro ao listar artigos:', err);
-      }
+      },
     });
   }
 
   carregarCategorias(): void {
     this.categoriaService.listarCategorias().subscribe({
-      next: data => {
+      next: (data) => {
         this.categorias = data;
       },
-      error: err => {
+      error: (err) => {
         console.error('Erro ao carregar categorias:', err);
-      }
+      },
     });
   }
 
@@ -210,7 +222,9 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     this.form.get('imposto')?.setValue(0);
     this.descricaoRestante = 300;
     // Abre modal
-    const modalElement = document.getElementById('exampleModal') as HTMLElement | null;
+    const modalElement = document.getElementById(
+      'exampleModal'
+    ) as HTMLElement | null;
     if (modalElement) {
       const modal = new Modal(modalElement);
       modal.show();
@@ -242,7 +256,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       categoriaId: Number(this.form.value.categoria),
       impostoAplicado: parseFloat(String(this.form.value.imposto)),
       tipo: this.form.value.tipo,
-      descricao: descricao
+      descricao: descricao,
     };
 
     if (this.artigoSelecionadoId) {
@@ -251,32 +265,32 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     } else {
       // Criação de novo artigo
       this.artigoService.criarArtigo(artigo).subscribe({
-        next: res => {
+        next: (res) => {
           console.log('Artigo criado!', res);
           Swal.fire({
             icon: 'success',
             title: 'Sucesso!',
             text: 'Artigo criado com sucesso!',
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
           this.fecharModal();
           this.carregarArtigos();
           this.resetarFormulario();
         },
-        error: err => {
+        error: (err) => {
           console.error('Erro ao criar artigo:', err);
           Swal.fire({
             icon: 'error',
             title: 'Erro!',
             text: err.error?.message || 'Erro ao criar artigo.',
             timer: 3000,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
         },
         complete: () => {
           this.loading = false;
-        }
+        },
       });
     }
   }
@@ -296,14 +310,16 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       categoria: artigo.categoriaId.toString(),
       imposto: artigo.impostoAplicado,
       tipo: artigo.tipo,
-      descricao: artigo.descricao
+      descricao: artigo.descricao,
     });
     // Ajusta contagem de caracteres
     this.descricao = artigo.descricao || '';
     this.descricaoRestante = 300 - (this.descricao?.length || 0);
 
     // Abre modal
-    const modalElement = document.getElementById('exampleModal') as HTMLElement | null;
+    const modalElement = document.getElementById(
+      'exampleModal'
+    ) as HTMLElement | null;
     if (modalElement) {
       const modal = new Modal(modalElement);
       modal.show();
@@ -332,7 +348,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     const categoriaIdParsed = Number(this.form.value.categoria);
     const impostoParsed = parseFloat(String(this.form.value.imposto));
     const tipoForm: string = this.form.value.tipo;
-    const descricaoForm: string = (this.form.value.descricao?.trim() || 'N/A');
+    const descricaoForm: string = this.form.value.descricao?.trim() || 'N/A';
 
     // Se em modo edição, compara com o original
     if (this.modoEdicao && this.artigoOriginal) {
@@ -342,7 +358,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
         categoriaId: this.artigoOriginal.categoriaId,
         impostoAplicado: this.artigoOriginal.impostoAplicado,
         tipo: this.artigoOriginal.tipo,
-        descricao: this.artigoOriginal.descricao
+        descricao: this.artigoOriginal.descricao,
       };
       const atualizadoComparable = {
         nome: nomeForm,
@@ -350,15 +366,18 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
         categoriaId: categoriaIdParsed,
         impostoAplicado: impostoParsed,
         tipo: tipoForm,
-        descricao: descricaoForm
+        descricao: descricaoForm,
       };
-      if (JSON.stringify(originalComparable) === JSON.stringify(atualizadoComparable)) {
+      if (
+        JSON.stringify(originalComparable) ===
+        JSON.stringify(atualizadoComparable)
+      ) {
         Swal.fire({
           icon: 'info',
           title: 'Sem alterações!',
           text: 'Nenhuma modificação foi detectada nos dados do artigo.',
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
         this.loading = false;
         return;
@@ -372,11 +391,12 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       categoriaId: categoriaIdParsed,
       impostoAplicado: impostoParsed,
       tipo: tipoForm,
-      descricao: descricaoForm
+      descricao: descricaoForm,
     };
 
     this.loading = true;
-    this.artigoService.atualizarArtigo(this.artigoSelecionadoId, payload)
+    this.artigoService
+      .atualizarArtigo(this.artigoSelecionadoId, payload)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
@@ -385,7 +405,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
             title: 'Atualizado!',
             text: 'Artigo atualizado com sucesso!',
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
           this.fecharModal();
           this.carregarArtigos();
@@ -404,7 +424,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
               title: 'Sem alterações no servidor!',
               text: 'O servidor não detectou mudanças no artigo.',
               timer: 2000,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
           } else {
             console.error('Erro ao atualizar artigo:', err);
@@ -413,10 +433,10 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
               title: 'Erro!',
               text: err.error?.message || 'Erro ao atualizar artigo.',
               timer: 3000,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
           }
-        }
+        },
       });
   }
 
@@ -427,7 +447,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sim, excluir!',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.artigoService.deletarArtigo(id).subscribe({
@@ -442,9 +462,9 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
               title: 'Erro!',
               text: 'Erro ao excluir artigo. Tente novamente.',
               timer: 2000,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
-          }
+          },
         });
       }
     });
@@ -453,30 +473,6 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   resetarFormulario(): void {
     this.form.reset();
     this.artigoSelecionadoId = null;
-    this.artigoSelecionado = null;
-    this.artigoOriginal = null;
-    this.modoEdicao = false;
-    // Ajusta contagem restante
-    this.descricaoRestante = 300;
-    // Se quiser, reatribui valor default no form:
-    this.form.get('imposto')?.setValue(0);
-  }
-
-  fecharModal(): void {
-    const modalElement = document.getElementById('exampleModal');
-    if (modalElement) {
-      let modal = Modal.getInstance(modalElement);
-      if (!modal) {
-        modal = new Modal(modalElement);
-      }
-      modal.hide();
-      // Após animação, remove backdrop e classe que trava scroll
-      setTimeout(() => {
-        document.body.classList.remove('modal-open');
-        const backdrops = document.querySelectorAll('.modal-backdrop');
-        backdrops.forEach(b => b.remove());
-      }, 300);
-    }
   }
 
   onCategoriaSubmit(): void {
@@ -508,14 +504,27 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Erro ao criar categoria:', err);
-      }
+      },
     });
+  }
+  fecharModal(): void {
+ 
+    // Fecha o modal se estiver usando Bootstrap
+    const modalElement = document.querySelector('.modal');
+    if (modalElement) {
+      const modalInstance = Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity();
+    
   }
 
   getNomesImpostos(valor: number): string[] {
-    return this.impostos
-      .filter(i => i.valor === valor)
-      .map(i => i.nome);
+    return this.impostos.filter((i) => i.valor === valor).map((i) => i.nome);
   }
 
     getPrimeiroEUltimoNome(nomeCompleto: string): string {

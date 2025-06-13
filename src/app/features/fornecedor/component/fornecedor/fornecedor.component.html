@@ -38,14 +38,18 @@
           <td>{{ fornecedor.email }}</td>
           <td>{{ fornecedor.endereco }}</td>
           <td>
-            <button type="button" class="btn btn-danger"
-            (click)="deleteFornecedor(fornecedor)">
-              <i class="bi bi-trash"></i>
-            </button> 
-             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
-              (click)="populateForm(fornecedor)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
+            <div class="bnt-action">
+              <!-- Botão de editar -->
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                (click)="populateForm(fornecedor)">
+                <i class="bi bi-pencil-square"></i> Editar
+              </button>
+              <!-- Botão de eliminar -->
+              <button type="button" class="btn btn-outline-danger"
+                (click)="deleteFornecedor(fornecedor)">
+                <i class="bi bi-trash"></i> Eliminar
+              </button> 
+            </div>
           </td>
         </tr>
       </tbody>
@@ -60,12 +64,13 @@
     <div class="modal-content">
       
       <div class="modal-body">
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <form [formGroup]="form" novalidate >
 
           <div class="modal-header">
-            <h1 class="modal-title fs-5">Criar Fornecedor</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+            <h1 class="modal-title fs-5">{{ editando ? 'Editar Usuário' : 'Criar Usuário' }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+              (click)="cancelarEdicao()"></button>
+            </div>
             <!-- input nome -->
           <div class="mb-3">
             <label for="nome" class="form-label">Nome do Fornecedor</label>
@@ -88,11 +93,26 @@
 
           <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="text" id="telefone" name="telefone" class="form-control"formControlName='telefone' required/>
-            <div class="text-danger"
-              *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)">
-              Telefone é obrigatório.
+            
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+                &nbsp;+244
+              </span>
+              <input type="text" class="form-control" formControlName="telefone" mask="000 000 000" placeholder="Ex: 923 456 789"
+                maxlength="9" />
             </div>
+            <small class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone é
+              obrigatório.</small>
+            <small class="text-danger" *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="endereco" class="form-label">Endereço</label>
+              <input id="endereco" class="form-control" type="text" formControlName="endereco" required />
+              <small class="text-danger" *ngIf="form.controls['endereco'].invalid && form.controls['endereco'].touched">Endereço
+                é obrigatório.
+              </small>
           </div>
 
           <div class="mb-3">
@@ -114,7 +134,9 @@
           </div>
 
           <div class="mb-3">
-            <button type="submit" class="btn btn-success">Salvar</button>
+            <button type="submit" class="btn btn-success" (click)="criarOuAtualizarUsuario()">
+              {{ editando ? 'Atualizar' : 'Salvar' }}
+            </button>
           </div>  
         </form>
       </div>

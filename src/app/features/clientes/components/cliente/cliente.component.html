@@ -18,7 +18,7 @@
 </div>
 
 <!-- Tabela de clientes -->
-<main class="table" id="customers_table">
+<main class="table table-hover" id="customers_table">
   <section class="table__body">
     <table class=" table-hover">
       <thead >
@@ -28,25 +28,24 @@
           <th>E-mail</th>
           <th>Endereço</th>
           <th>Tipo</th>
-         <th>Data de Criação</th>
+          <th>Data de Criação</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let cliente of clientes$ | async">
+        <tr *ngFor="let cliente of clientes$ |async">
           <td>{{ cliente.nome }}</td>
           <td>{{ cliente.telefone }}</td>
           <td>{{ cliente.email }}</td>
           <td>{{ cliente.endereco }}</td>
-            <td>{{ getTipoClienteNome(cliente.tipo) }}</td>
-            <td>{{ cliente.dataCriacao | date:'short' }}</td>
-          <!-- <td>{{ cliente.createdAt | date:'short' }}</td> -->
+          <td>{{ getTipoClienteNome(cliente.tipo) }}</td>
+          <td>{{ cliente.dataCriacao | date:'short' }}</td>
             <td>
             <div class="bnt-action">
-              <button class="btn btn-outline-primary" (click)="populateForm(cliente)" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              <button type="button" class="btn btn-outline-primary" (click)="populateForm(cliente)" data-bs-toggle="modal" data-bs-target="#exampleModal">
               <i class="bi bi-pencil"></i> Editar
               </button>
-              <button class="btn btn-outline-danger" (click)="deleteCliente(cliente.id)">
+              <button type="button" class="btn btn-outline-danger" (click)="deleteCliente(cliente)">
               <i class="bi bi-trash"></i> Eliminar
               </button>
             </div>
@@ -54,6 +53,7 @@
         </tr>
       </tbody>
     </table>
+    
   </section>
 </main>
 
@@ -65,10 +65,10 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
         <div class="modal-header">
-          <h1 *ngIf="!editando" class="modal-title fs-5" id="exampleModalLabel">
-            {{ editando ? 'Editar Cliente' : 'Criar Cliente' }}
+          <h1 class="modal-title fs-5" id="exampleModalLabel">
+            {{ editando ? 'Editar Cliente' : 'Criar Cliente' }}     
           </h1>
-
+          
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
         </div>
 
@@ -86,29 +86,48 @@
             <small class="text-danger" *ngIf="form.controls['email'].invalid && form.controls['email'].touched">
               {{ form.controls['email'].errors?.['required'] ? 'Email é obrigatório.' : 'Formato de email inválido.' }}
             </small>
+            <small *ngIf="form.get('email')?.hasError('emailExiste')">
+              Este e-mail já está cadastrado.
+            </small>            
           </div>
 
           <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input id="telefone" class="form-control" type="text" formControlName="telefone" required />
-            <small class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone
-              é obrigatório.</small>
-          </div>
+            
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+                &nbsp;+244
+              </span>
+              <input type="text" 
+                class="form-control" 
+                formControlName="telefone" 
+                mask="000 000 000" 
+                placeholder="Ex: 9 XX XXX XXX"
+                maxlength="9" /> 
+              </div>
+              <small  class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone é obrigatório.</small>
+              <small class="text-danger"  *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</small>
+            </div>
 
-          <div class="mb-3">
+           <div class="mb-3">
             <label for="endereco" class="form-label">Endereço</label>
             <input id="endereco" class="form-control" type="text" formControlName="endereco" required />
             <small class="text-danger" *ngIf="form.controls['endereco'].invalid && form.controls['endereco'].touched">Endereço
-              é obrigatório.</small>
-          </div>
+              é obrigatório.
+            </small>
+           </div>
 
           <div class="mb-3">
-            <label for="tipo" class="form-label">Tipo</label>
-            <select id="tipo" class="form-select" formControlName="tipo" required>
-              <option value="" disabled selected>Selecione o tipo</option>
-              <option value="PESSOA_FISICA">Pessoa Física</option>
-              <option value="PESSOA_JURIDICA">Pessoa Jurídica</option>
+
+            <label for="tipo">Tipo de Pessoa:</label>
+            <select id="tipo" formControlName="tipo" class="form-select">
+              <option value="" disabled>Selecione o tipo</option>
+              <option *ngFor="let tipo of tipos" [value]="tipo.value">
+                {{ tipo.label }}
+              </option>
             </select>
+            
             <small class="text-danger" *ngIf="form.controls['tipo'].invalid && form.controls['tipo'].touched">Tipo é
               obrigatório.</small>
           </div>
@@ -116,7 +135,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button *ngIf="!editando" type="submit" class="btn btn-success" [disabled]="form.invalid">
+          <button type="submit" class="btn btn-success" [disabled]="form.invalid">
             {{ editando ? 'Atualizar' : 'Salvar' }}
           </button>
         </div>
