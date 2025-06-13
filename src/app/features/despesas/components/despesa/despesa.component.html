@@ -18,8 +18,8 @@
   <div class="filtros-container">
     <div class="search-group">
       <i class="bi bi-search search-icon"></i>
-      <input type="text" class="search-input" placeholder="Pesquisar..." [(ngModel)]="searchTerm" />
-      <i *ngIf="searchTerm" class="bi bi-x-lg clear-icon" (click)="searchTerm = ''"></i>
+      <input type="text" class="search-input" placeholder="Pesquisar..." />
+      
     </div>
 
     <div class="filtros-selects">
@@ -30,14 +30,8 @@
           <label>Categoria</label>
           <button dropdownToggle type="button"
             class="btn btn-light d-flex justify-content-between w-100 align-items-center">
-            {{ filtroNomeCategoriaSelecionada }}
             <i class="bi bi-chevron-down ms-auto"></i>
           </button>
-          <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
-            <li>
-              <a class="dropdown-item" (click)="selecionarCategoria('', 'Todos')">Todos</a>
-            </li>
-          </ul>
         </div>
 
       </div>
@@ -45,11 +39,7 @@
 
     </div>
   </div>
-  <div *ngIf="loading" class="loader-container">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Carregando...</span>
-    </div>
-  </div>
+ 
 
   <section class="table__body">
     <table>
@@ -118,20 +108,27 @@
 
           <div class="mb-3">
             <label for="fornecedorId">Fornecedor<span class="text-danger">*</span></label>
-            <select name="fornecedorId" id="fornecedorId" class="form-select" formControlName="fornecedorId" required>
-              <option value="">Selecione o fornecedor</option>
+            <select formControlName="fornecedorId" class="form-select">
+              <option [ngValue]="null">Selecione o fornecedor</option>
               <option *ngFor="let fornecedor of fornecedores" [value]="fornecedor.id">
                 {{ fornecedor.nome }}
-              </option> </select>
+              </option>   
+            </select>
+            <small *ngIf="form.get('fornecedorId')?.invalid && form.get('fornecedorId')?.touched" class="text-danger">
+              Fornecedor é obrigatório      
+            </small>
           </div>
 
           <div class="mb-3">
             <label for="retencaoFonte" class="form-label">Retenção na fonte<span class="text-danger">*</span></label>
-            <select name="retencaoFonte" id="retencaoFonte" class="form-select" formControlName="retencaoFonte" required>
-              <option  title="Nenhum">Nenhum Retenção na fonte</option>
-                <option value="sim" >Sim</option>
-                <option value="não" >Não</option>
+            <select formControlName="retencaoFonte" class="form-select">
+              <option [ngValue]="null">Selecione</option>
+              <option [value]="true">Sim</option>
+              <option [value]="false">Não</option>   
             </select>
+            <small *ngIf="form.get('retencaoFonte')?.invalid && form.get('retencaoFonte')?.touched" class="text-danger">
+              Retenção na fonte é obrigatória      
+            </small>
           </div>
 
           <div class="mb-3">
@@ -140,19 +137,27 @@
               mask="separator.2" thousandSeparator="." decimalMarker="," prefix="Kz " required />
          </div>
 
-          <div class="mb-3">
-              <label for="descricao" class="form-label">Motivo</label>
-              <textarea id="descricao" class="form-control" formControlName="descricao" maxlength="300" rows="3"
-             [(ngModel)]="descricao" (input)="descricaoRestante = 300 - descricao.length" placeholder="Digite a descrição da despesa"></textarea>
-            <small class="text-muted">
-              {{ descricaoRestante || 300 }} caracteres restantes
-            </small>
+         <div class="mb-3">
+
+          <label for="motivo" class="form-label">Motivo</label>
+          <select id="motivo" class="form-select" formControlName="motivo">
+            <option value="">Selecione um motivo</option>
+            <option value="COMPRA_PRODUTO">Compra de Produto</option>
+            <option value="PAGAMENTO_SERVICO">Pagamento de Serviço</option>
+            <option value="DESPESA_INTERNA">Despesa Interna</option>
+            <option value="AMORTIZACOES">Amortizações</option>
+            <option value="PAGAMENTO_CREDITO">Pagamento de Crédito</option>
+            <option value="DESPESAS_BANCARIAS">Despesas Bancárias</option>
+          </select>
+          <div *ngIf="form.get('motivo')?.invalid && form.get('motivo')?.touched" class="text-danger">
+            Motivo é obrigatório
           </div>
+         </div>
 
           <div class="mb-3">
-            <button type="submit" class="btn btn-success" [disabled]="loading"
+            <button type="submit" class="btn btn-success" 
               (click)="modalModo === 'criar' ? salvarDespesa() : atualizarDespesa()">
-              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+            
               {{ modalModo === 'criar' ? 'Salvar' : 'Atualizar' }}
             </button>
           </div>
