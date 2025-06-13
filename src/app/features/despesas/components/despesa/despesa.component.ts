@@ -19,10 +19,11 @@ import { Modal } from 'bootstrap';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 
-import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { Fornecedor } from '../../interface/fornecedor';
+import { FornecedorService } from '../../service/fornecedorService';
 
 @Component({
   selector: 'app-despesa',
@@ -44,6 +45,8 @@ export class DespesasComponent implements OnInit {
   form: FormGroup;
 
   despesa: Despesa[] = [];
+  fornecedores: Fornecedor[] = [];
+
   despesaSelecionadoId: number | null = null;
 
   mostrarCampoNovaCategoria = false;
@@ -65,36 +68,36 @@ export class DespesasComponent implements OnInit {
 
   searchTerm: string = '';
 
-  get despesaFiltrados(): Despesa[] {
-    let resultado = this.despesa;
+  // get despesaFiltrados(): Despesa[] {
+  //   let resultado = this.despesa;
 
-    const termo = this.searchTerm?.trim().toLowerCase();
-    const categoriaSelecionada = this.filtro?.Categorias;
+  //   const termo = this.searchTerm?.trim().toLowerCase();
+  //   const categoriaSelecionada = this.filtro?.Categorias;
 
-    if (termo) {
-      resultado = resultado.filter((a) =>
-        a.nome?.toLowerCase().includes(termo)
-      );
-    }
+  //   if (termo) {
+  //     resultado = resultado.filter((a) =>
+  //       a.nome?.toLowerCase().includes(termo)
+  //     );
+  //   }
 
-    if (categoriaSelecionada) {
-      resultado = resultado.filter(
-        (a) => a.categoria?.id === +categoriaSelecionada
-      );
-    }
+  //   if (categoriaSelecionada) {
+  //     resultado = resultado.filter(
+  //       (a) => a.categoria?.id === +categoriaSelecionada
+  //     );
+  //   }
 
-    return resultado;
-  }
+  //   return resultado;
+  // }
 
-  filtrar(): void {
-    this.loading = true;
-  }
+  // filtrar(): void {
+  //   this.loading = true;
+  // }
 
   constructor(
     private formBuilder: FormBuilder,
     private despesaService: DespesaService,
     private titleService: TitleService,
-    private toastr: ToastrService
+    private fornecedorService: FornecedorService,
   ) {
     this.form = this.formBuilder.group({
       nome: ['', Validators.required],
@@ -110,6 +113,7 @@ export class DespesasComponent implements OnInit {
     this.titleService.setTitle('despesa');
     this.inicializarFormulario();
     this.carregarDespesa();
+    this.carregarFornecedores();
 
     this.form.addControl(
       'descricao',
@@ -118,6 +122,13 @@ export class DespesasComponent implements OnInit {
     this.form.get('descricao')?.valueChanges.subscribe((value: string) => {
       this.descricao = value;
       this.descricaoRestante = 300 - (value?.length || 0);
+    });
+  }
+
+  carregarFornecedores(): void {
+    this.fornecedorService.listar().subscribe({
+      next: (dados) => (this.fornecedores = dados),
+      error: (err) => console.error('Erro ao carregar fornecedores', err),
     });
   }
 
@@ -162,7 +173,7 @@ export class DespesasComponent implements OnInit {
           .replace(/\./g, '')
           .replace(',', '.')
       ),
-      categoriaId: Number(this.form.value.categoria),
+      // categoriaId: Number(this.form.value.categoria),
       descricao: descricao,
     };
 
@@ -247,9 +258,7 @@ export class DespesasComponent implements OnInit {
       nome: despesa.nome,
       valor: despesa.valor.toString(),
       retencaoFonte: despesa.retencaoFonte,
-      criadoPor: despesa.CriadoPor,
-
-      categoria: despesa.categoriaId.toString(),
+      fornecedorId: despesa.fornecedorId,
       descricao: despesa.descricao,
     });
     this.modoEdicao = true;
@@ -274,7 +283,7 @@ export class DespesasComponent implements OnInit {
           .replace(/\./g, '')
           .replace(',', '.')
       ),
-      categoriaId: Number(this.form.value.categoria),
+      // categoriaId: Number(this.form.value.categoria),
 
       descricao: this.form.value.descricao || 'N/A',
     };
@@ -314,7 +323,6 @@ export class DespesasComponent implements OnInit {
         this.despesaService.deletarDespesa(id).subscribe({
           next: () => {
             this.carregarDespesa();
-            this.toastr.success('Despesa excluído com sucesso!');
           },
           error: (err) => {
             console.error('Erro ao excluir Despesa:', err);
