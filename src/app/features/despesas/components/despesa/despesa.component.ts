@@ -1,20 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule,FormsModule,} from '@angular/forms';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { Artigo } from '../../interface/artigo';
-import { finalize } from 'rxjs';
-import { DespesaService } from '../../service/artigo.service';
-import { Modal } from 'bootstrap';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { Despesa } from '../../interface/despesa';
+
+import { finalize } from 'rxjs';
+import { DespesaService } from '../../service/despesa.service';
+
+import { Modal } from 'bootstrap';
+
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @Component({
-  selector: 'app-artigo',
+  selector: 'app-despesa',
   standalone: true,
   imports: [
     NgxMaskDirective,
@@ -29,15 +40,15 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
   styleUrls: ['./despesa.component.scss'],
 })
 export class DespesasComponent implements OnInit {
-    loading: boolean = false;
-    form: FormGroup;
+  loading: boolean = false;
+  form: FormGroup;
 
-    artigos: Artigo[] = [];
-    artigoSelecionadoId: number | null = null;
-    
-    mostrarCampoNovaCategoria = false;
-    modoEdicao = false;
-    modalModo: 'criar' | 'editar' = 'criar';
+  despesa: Despesa[] = [];
+  despesaSelecionadoId: number | null = null;
+
+  mostrarCampoNovaCategoria = false;
+  modoEdicao = false;
+  modalModo: 'criar' | 'editar' = 'criar';
 
   filtro = {
     Categorias: '',
@@ -54,8 +65,8 @@ export class DespesasComponent implements OnInit {
 
   searchTerm: string = '';
 
-  get artigosFiltrados(): Artigo[] {
-    let resultado = this.artigos;
+  get despesaFiltrados(): Despesa[] {
+    let resultado = this.despesa;
 
     const termo = this.searchTerm?.trim().toLowerCase();
     const categoriaSelecionada = this.filtro?.Categorias;
@@ -93,14 +104,12 @@ export class DespesasComponent implements OnInit {
       retencaoFonte: ['', Validators.required],
       descricao: [''],
     });
-
-    
   }
 
   ngOnInit(): void {
     this.titleService.setTitle('despesa');
     this.inicializarFormulario();
-    this.carregarArtigos();
+    this.carregarDespesa();
 
     this.form.addControl(
       'descricao',
@@ -123,28 +132,29 @@ export class DespesasComponent implements OnInit {
     });
   }
 
-  carregarArtigos(): void {
-    this.artigoService.listarArtigo().subscribe({
+  carregarDespesa(): void {
+    this.despesaService.listarDespesa().subscribe({
       next: () => {},
     });
   }
 
-  artigoSelecionado: any = null;
+  despesaSelecionado: any = null;
   abrirCriarModal() {
     this.modalModo = 'criar';
-    this.artigoSelecionado = {}; // ou zere o form como preferir
+    this.despesaSelecionado = {}; // ou zere o form como preferir
   }
 
-  salvarArtigo(): void {
+  salvarDespesa(): void {
     this.loading = true;
     this.modalModo = 'criar';
+
     // Garante que a descrição nunca seja vazia
     let descricao = this.form.value.descricao?.trim();
     if (!descricao) {
       descricao = 'N/A';
     }
 
-    const artigo: Partial<Artigo> = {
+    const despesa: Partial<Despesa> = {
       nome: this.form.value.nome,
       valor: parseFloat(
         String(this.form.value.valor)
@@ -156,12 +166,12 @@ export class DespesasComponent implements OnInit {
       descricao: descricao,
     };
 
-    if (this.artigoSelecionadoId) {
-      this.artigoService
-        .atualizarArtigo(this.artigoSelecionadoId, artigo)
+    if (this.despesaSelecionadoId) {
+      this.despesaService
+        .atualizarDespesa(this.despesaSelecionadoId, despesa)
         .subscribe({
           next: () => {
-            this.carregarArtigos();
+            this.carregarDespesa();
             this.resetarFormulario();
             Swal.fire({
               icon: 'success',
@@ -180,7 +190,7 @@ export class DespesasComponent implements OnInit {
           },
         });
     } else {
-      this.artigoService.criarArtigo(artigo).subscribe({
+      this.despesaService.criarDespesa(despesa).subscribe({
         next: (res: any) => {
           console.log('Despesa criado!', res);
           Swal.fire({
@@ -196,7 +206,7 @@ export class DespesasComponent implements OnInit {
           console.error('Erro:', err.error);
         },
         complete: () => {
-          this.carregarArtigos();
+          this.carregarDespesa();
           this.resetarFormulario();
           this.loading = false;
         },
@@ -227,20 +237,20 @@ export class DespesasComponent implements OnInit {
     }
   }
 
-  editarArtigo(artigo: Artigo): void {
+  editarDespesa(despesa: Despesa): void {
     this.modalModo = 'editar';
     this.modalModo = 'editar';
-    this.artigoSelecionado = artigo;
-    this.artigoSelecionadoId = artigo.id;
+    this.despesaSelecionado = despesa;
+    this.despesaSelecionadoId = despesa.id;
 
     this.form.patchValue({
-      nome: artigo.nome,
-      valor: artigo.valor.toString(),
-      retencaoFonte: artigo.retencaoFonte,
-      criadoPor: artigo.CriadoPor,
+      nome: despesa.nome,
+      valor: despesa.valor.toString(),
+      retencaoFonte: despesa.retencaoFonte,
+      criadoPor: despesa.CriadoPor,
 
-      categoria: artigo.categoriaId.toString(),
-      descricao: artigo.descricao,
+      categoria: despesa.categoriaId.toString(),
+      descricao: despesa.descricao,
     });
     this.modoEdicao = true;
 
@@ -253,10 +263,10 @@ export class DespesasComponent implements OnInit {
     }
   }
 
-  atualizarArtigo(): void {
-    if (!this.artigoSelecionadoId) return;
+  atualizarDespesa(): void {
+    if (!this.despesaSelecionadoId) return;
 
-    const payload: Partial<Artigo> = {
+    const payload: Partial<Despesa> = {
       nome: this.form.value.nome,
       valor: parseFloat(
         String(this.form.value.valor)
@@ -270,8 +280,8 @@ export class DespesasComponent implements OnInit {
     };
 
     this.loading = true;
-    this.artigoService
-      .atualizarArtigo(this.artigoSelecionadoId, payload)
+    this.despesaService
+      .atualizarDespesa(this.despesaSelecionadoId, payload)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
@@ -283,7 +293,7 @@ export class DespesasComponent implements OnInit {
             showConfirmButton: false,
           });
           this.fecharModal();
-          this.carregarArtigos();
+          this.carregarDespesa();
         },
         error: (err) => {
           console.error('Erro ao atualizar Despesa:', err);
@@ -291,7 +301,7 @@ export class DespesasComponent implements OnInit {
       });
   }
 
-  excluirArtigo(id: number): void {
+  excluirDespesa(id: number): void {
     Swal.fire({
       title: 'Tem certeza?',
       text: 'Deseja realmente excluir este Despesa?',
@@ -301,9 +311,9 @@ export class DespesasComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.artigoService.deletarArtigo(id).subscribe({
+        this.despesaService.deletarDespesa(id).subscribe({
           next: () => {
-            this.carregarArtigos();
+            this.carregarDespesa();
             this.toastr.success('Despesa excluído com sucesso!');
           },
           error: (err) => {
@@ -323,10 +333,9 @@ export class DespesasComponent implements OnInit {
 
   resetarFormulario(): void {
     this.form.reset();
-    this.artigoSelecionadoId = null;
+    this.despesaSelecionadoId = null;
   }
 
-  
   toggleNovaCategoria() {
     this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
   }

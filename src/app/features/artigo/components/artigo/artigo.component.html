@@ -144,6 +144,10 @@
         <div class="mb-3">
           <label for="nome" class="form-label">Nome do artigo <span class="text-danger">*</span></label>
              <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
+             <div *ngIf="form.get('nome')?.touched && form.get('nome')?.invalid" class="text-danger small">
+      <div *ngIf="form.get('nome')?.errors?.['required']">O nome é obrigatório.</div>
+      <div *ngIf="form.get('nome')?.errors?.['minlength']">O nome deve ter pelo menos 3 caracteres.</div>
+    </div>
         </div>
 
         <div class="mb-3">
@@ -156,8 +160,10 @@
       <i class="bi bi-plus-circle"></i>
     </button>
   </div>
+ <div *ngIf="form.get('categoria')?.touched && form.get('categoria')?.invalid" class="text-danger small">
+      A categoria é obrigatória.
+    </div>
 
-  <!-- Campo de criar nova categoria (agora aparece logo abaixo do botão) -->
   <div class="mt-2" *ngIf="mostrarCampoNovaCategoria">
     <label for="novaCategoria" class="form-label">Nova Categoria</label>
     <div class="input-group">
@@ -183,6 +189,9 @@
     <option value="ARRENDAMENTO">Arrendamento</option>
     <option value="ARRENDAMENTO_COM_RETENCAO_15">Arrendamento com Retenção 15%</option>
   </select>
+    <div *ngIf="form.get('tipo')?.touched && form.get('tipo')?.invalid" class="text-danger small">
+      O tipo é obrigatório.
+    </div>
 </div>
 
 
@@ -234,6 +243,9 @@
     <option value="0" title="Taxas variáveis sobre importações"> Direitos Aduaneiros</option>
   </optgroup>
 </select>
+<div *ngIf="form.get('imposto')?.touched && form.get('imposto')?.invalid" class="text-danger small">
+      O imposto é obrigatório.
+    </div>
 </div>
 
         <div class="mb-3">
@@ -249,7 +261,12 @@
             prefix="Kz "
             required
           />
+          <div *ngIf="form.get('precoUnitario')?.touched && form.get('precoUnitario')?.invalid" class="text-danger small">
+      <div *ngIf="form.get('precoUnitario')?.errors?.['required']">O preço é obrigatório.</div>
+      <div *ngIf="form.get('precoUnitario')?.errors?.['pattern']">Preço inválido.</div>
+    </div>
         </div>
+
         <div class="mb-3">
           <label for="descricao" class="form-label">Descrição</label>
           <textarea
@@ -269,7 +286,7 @@
 
        <div class="mb-3">
   <button type="submit" class="btn btn-success"
-        [disabled]="loading"
+        [disabled]="form.invalid || loading"
         (click)="modalModo === 'criar' ? salvarArtigo() : atualizarArtigo()">
   <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
   {{ modalModo === 'criar' ? 'Salvar' : 'Atualizar' }}
@@ -278,3 +295,7 @@
 
 
       </form>
+    </div>
+  </div>
+</div>
+</div>

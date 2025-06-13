@@ -10,6 +10,7 @@ import { Cliente } from '../../interface/cliente';
 import Swal from 'sweetalert2';
 import Modal from 'bootstrap/js/dist/modal';
 
+
 @Component({
   selector: 'app-cliente',
   standalone: true,
@@ -18,6 +19,7 @@ import Modal from 'bootstrap/js/dist/modal';
   styleUrl: './cliente.component.scss',
 })
 export class ClienteComponent implements OnInit {
+
   clientes$: Observable<Cliente[]>;
   form: FormGroup;
 
@@ -41,11 +43,7 @@ export class ClienteComponent implements OnInit {
     return this.formBuilder.group({
       nome: ['', Validators.required],
       tipo: ['', Validators.required],
-      email: [
-        '',
-        [Validators.required, Validators.email],
-       
-      ],
+      email: ['', [Validators.required, Validators.email]],
       telefone: ['', [Validators.required]],
       endereco: ['', Validators.required],
     });
@@ -102,6 +100,7 @@ export class ClienteComponent implements OnInit {
       this.createCliente(cliente); // Pass Cliente with id
     }
   }
+  
   private createCliente(cliente: Cliente): void {
     this.clienteService.createCliente(cliente).subscribe({
       next: () => {
@@ -125,54 +124,28 @@ export class ClienteComponent implements OnInit {
         let msg = 'Erro ao criar cliente.';
 
         if (error?.status === 400) {
-          msg = error.error?.message || 'Dados inválidos. Verifique o formulário.';
+          msg =
+            error.error?.message || 'Dados inválidos. Verifique o formulário.';
         } else if (error?.status === 403) {
-          msg = error.error?.message || 'E-mail ou telefone já estão cadastrados.';
+          msg =
+            error.error?.message || 'E-mail ou telefone já estão cadastrados.';
         } else if (error?.status === 500) {
           msg = 'Erro interno no servidor. Tente novamente mais tarde.';
         } else if (error?.status === 0) {
           msg = 'Não foi possível conectar ao servidor.';
         }
-        
+
         Swal.fire({
           icon: 'error',
-          title:'Verifica o formulario ',
-          text:  msg,
+          title: 'Verifica o formulario ',
+          text: msg,
           timer: 2000,
           showConfirmButton: false,
         });
-
       },
     });
-
-   
-
-
   }
-  // emailExisteValidator(): AsyncValidatorFn {
-  //   return (control: AbstractControl): Observable<ValidationErrors | null> => {
-  //     if (!control.value) return of(null);
-  //     return this.clienteService.checkEmail(control.value).pipe(
-  //       map((emailExiste) => (emailExiste ? { emailExiste: true } : null)),
-  //       catchError(() => of (null))
-  //     );
-  //   };
-  // }
-
-  // telefoneExisteValidator(): AsyncValidatorFn {
-  //   return (control: AbstractControl): Observable<ValidationErrors | null> => {
-  //     if (!control.value) return of(null);
-  //     return this.clienteService.checkTelefone(control.value).pipe(
-  //       map((telefoneExiste) =>
-  //         telefoneExiste ? { telefoneExiste: true } : null
-  //       ),
-  //       catchError(() => of(null))
-  //     );
-  //   };
-  // }
-
   
-
   private updateCliente(cliente: Cliente): void {
     this.clienteService
       .editarCliente({

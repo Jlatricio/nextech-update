@@ -105,11 +105,11 @@
   </main>
 
   <!-- Modal de Ações -->
-  <div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true">
+  <div class="modal fade" id="modalAcoes" tabindex="-1" aria-labelledby="modalAcoesLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-center">
         <div class="modal-header border-0">
-          <h5 class="modal-title w-100" id="menuModalLabel">Ações</h5>
+          <h5 class="modal-title w-100" id="modalAcoesLabel">Ações</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
         </div>
         <div class="modal-body">
@@ -122,17 +122,16 @@
               <i class="bi bi-pencil-square fs-2 text-primary"></i>
               <div>Retificação</div>
             </div>
-            <div (click)="acaoImprimir(documentoSelecionadoId!)" class="text-center pointer">
-              <i class="bi bi-printer-fill fs-2 text-secondary"></i>
-              <div>Imprimir</div>
-            </div>
             <div (click)="acaoDownload(documentoSelecionadoId!)" class="text-center pointer">
+              <i class="bi bi-printer-fill fs-2 text-success me-1"></i>
               <i class="bi bi-download fs-2 text-success"></i>
-              <div>Download</div>
+              <div>Imprimir / Download</div>
             </div>
+
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+

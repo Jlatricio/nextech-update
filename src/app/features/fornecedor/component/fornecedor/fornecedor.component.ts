@@ -129,7 +129,7 @@ export class FornecedoresComponent {
         // Exibir mensagem de sucesso
           Swal.fire({
           title: 'Tem certeza?',
-          text: 'Deseja realmente excluir este artigo?',
+          text: 'Deseja realmente excluir este  fornecedor?',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Sim, excluir!',
@@ -140,10 +140,11 @@ export class FornecedoresComponent {
       },
       (error) => {
         // Exibir mensagem de erro
+        console.log(error.message)
         Swal.fire({
                     icon: 'error',
                     title: 'Erro!',
-                    text: 'Erro ao excluir artigo. Tente novamente.',
+                    text: 'Erro ao excluir fornecedor. Tente novamente.',
                     timer: 2000,
                     showConfirmButton: false
                     });
