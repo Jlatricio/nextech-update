@@ -14,7 +14,7 @@
   height: 29.7cm;
   background: #fff;
   padding: 2.5rem;
-  padding-bottom: 6rem; 
+  padding-bottom: 6rem;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.08);
 
@@ -157,3 +157,31 @@
 .btn-hover-gradient:hover {
   color: #fff;
 }
+
+
+.logo-fake {
+  font-size:2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #1d3557 0%, #0a2755 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+
+  display: inline-block;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.logo-desc {
+  display: block;
+  font-size: 0.65rem;
+  color: rgba(0, 0, 0, 0.4);
+  margin-top: 0.2rem;
+  font-style: italic;
+  line-height: 1;
+}
+

@@ -3,10 +3,24 @@
 <div class="recibo-wrapper">
 <div #recibo class="recibo" *ngIf="documento">
   <header>
-    <img
-      [src]="documento.empresa.logoURL || 'assets/logo.png'"
-      alt="Logo da empresa {{ documento.empresa.nome || '' }}"
-    />
+   <div *ngIf="documento.empresa.logoURL; else semLogo">
+  <img
+    [src]="documento.empresa.logoURL"
+    alt="Logo da empresa {{ documento.empresa.nome || '' }}"
+    style="max-height: 80px;"
+  />
+</div>
+
+<ng-template #semLogo>
+  <div style="text-align: center;">
+    <div class="logo-fake">
+      {{ documento.empresa.nome || 'Nome da Empresa' }}
+    </div>
+    <small class="logo-desc">Adicione o logotipo da sua empresa</small>
+  </div>
+</ng-template>
+
+
     <div class="info-empresa">
       <p><strong>{{ documento.empresa.nome || 'Nome da empresa não disponível' }}</strong></p>
       <p>Endereço: {{ documento.empresa.endereco || 'N/D' }}</p>

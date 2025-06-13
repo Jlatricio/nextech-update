@@ -7,7 +7,7 @@
   data-bs-toggle="modal"
   data-bs-target="#modalSubscricao"
 >
-  <i class="bi bi-bell ms-2"></i>
+  <i class="bi bi-stars"></i>
   Subscrição
 </button>
 
@@ -16,9 +16,9 @@
  <div class="user">
 
 
-<div class="flex-center user-area" *ngIf="usuario.length > 0">
+<div class="flex-center user-area">
   <button class="btn-welcome">
-    Olá, {{ getNomeUsuario() }}
+    Olá, {{ nomeUsuario.split(' ')[0] }}
   </button>
 </div>
 
@@ -42,13 +42,12 @@
 
       <div class="modal-body">
         <div class="subscription-container mb-5">
-          <h2>Subscrição</h2>
+          <h2>  <i class="bi bi-stars"></i>Subscrição</h2>
           <p class="description"> Para ativar sua subscrição, selecione um pacote
     e realize o pagamento via referência bancária no
     ATM ou plataformas digitais como Multicaixa Express.</p>
 
           <div class="packages d-flex justify-content-center flex-wrap gap-4">
-            <!-- Plano Mensal -->
             <div class="package-card">
               <h3>1 Mês</h3>
               <p class="price">4.000,00 KZ</p>
