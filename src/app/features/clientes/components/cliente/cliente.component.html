@@ -1,12 +1,14 @@
 <!-- Botão para novo cliente -->
-<div class="container-fluid my-3">
-
-  <div class="d-block align-items-center">
-    <h3>Clientes</h3>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      <i class="bi bi-plus-lg me-2"></i>Novo Cliente
-    </button>
+<div class="artigos-header text-center my-4">
+  <div class="icon-circle mx-auto">
+    <i class="bi bi-file-earmark-text"></i>
   </div>
+  <h3>Clientes</h3>
+  <button type="button" class="btn-hover-gradient" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Novo Cliente
+    <i class="bi bi-plus-lg ms-2"></i>
+  </button>
+ 
 </div>
 
 <!-- Campo de pesquisa -->
@@ -18,9 +20,9 @@
 </div>
 
 <!-- Tabela de clientes -->
-<main class="table table-hover" id="customers_table">
-  <section class="table__body">
-    <table class=" table-hover">
+<main class="table" id="customers_table">
+ 
+    <table class="table__body">
       <thead >
         <tr>
           <th>Nome</th>
@@ -53,8 +55,6 @@
         </tr>
       </tbody>
     </table>
-    
-  </section>
 </main>
 
 <!-- Modal de criação/edição -->
