@@ -157,7 +157,7 @@
             <!-- Senha (só em criação) -->
             <div class="mb-3" *ngIf="!editando">
               <label class="form-label">Senha</label>
-              <input type="password" class="form-control" formControlName="senha" />
+              <input type="password" class="form-control" formControlName="senha" autocomplete="new-password" />
               <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
                 <div *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória.</div>
               </div>
@@ -195,21 +195,21 @@
           <form [formGroup]="formSenha" (ngSubmit)="onAlterarSenha()">
             <div class="form-group mb-3">
               <label for="senhaAtual" class="form-label">Senha atual</label>
-              <input type="password" id="senhaAtual" class="form-control modern-input" formControlName="senha" required />
+              <input type="password" autocomplete="new-password" id="senhaAtual" class="form-control modern-input" formControlName="senha" required />
               <div *ngIf="formSenha.get('senha')?.invalid && (formSenha.get('senha')?.touched || formSenha.get('senha')?.dirty)" class="text-danger mt-1 small">
                 Senha atual é obrigatória.
               </div>
             </div>
             <div class="form-group mb-3">
               <label for="novaSenha" class="form-label">Nova senha</label>
-              <input type="password" id="novaSenha" class="form-control modern-input" formControlName="novaSenha" required />
+              <input type="password" autocomplete="new-password" id="novaSenha" class="form-control modern-input" formControlName="novaSenha" required />
               <div *ngIf="formSenha.get('novaSenha')?.invalid && (formSenha.get('novaSenha')?.touched || formSenha.get('novaSenha')?.dirty)" class="text-danger mt-1 small">
                 <div *ngIf="formSenha.get('novaSenha')?.errors?.['required']">Nova senha é obrigatória.</div>
                 <div *ngIf="formSenha.get('novaSenha')?.errors?.['minlength']">Mínimo de 8 caracteres.</div>
               </div>
             </div>
             <div class="form-group mb-3">
-              <label for="confirmarSenha" class="form-label">Confirmar nova senha</label>
+              <label for="confirmarSenha" autocomplete="new-password" class="form-label">Confirmar nova senha</label>
               <input type="password" id="confirmarSenha" class="form-control modern-input" formControlName="confirmarSenha" required />
               <div *ngIf="formSenha.get('confirmarSenha')?.invalid && (formSenha.get('confirmarSenha')?.touched || formSenha.get('confirmarSenha')?.dirty)" class="text-danger mt-1 small">
                 Confirmação obrigatória.
