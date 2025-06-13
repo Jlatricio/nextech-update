@@ -33,7 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let cliente of clientes$ | async">
+        <tr *ngFor="let cliente of clientes$ |async">
           <td>{{ cliente.nome }}</td>
           <td>{{ cliente.telefone }}</td>
           <td>{{ cliente.email }}</td>
@@ -53,6 +53,7 @@
         </tr>
       </tbody>
     </table>
+    
   </section>
 </main>
 
@@ -92,24 +93,30 @@
 
           <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input id="telefone" class="form-control" type="text" formControlName="telefone" required />
-           
-            <small class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">
-              Telefone é obrigatório.
-            </small>
+            
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+                &nbsp;+244
+              </span>
+              <input type="text" 
+                class="form-control" 
+                formControlName="telefone" 
+                mask="000 000 000" 
+                placeholder="Ex: 9 XX XXX XXX"
+                maxlength="9" /> 
+              </div>
+              <small  class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone é obrigatório.</small>
+              <small class="text-danger"  *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</small>
+            </div>
 
-            <small *ngIf="form.get('telefone')?.hasError('telefoneExiste')">
-              Este telefone já está cadastrado.       
-             </small>
-  
-          </div>
-
-          <div class="mb-3">
+           <div class="mb-3">
             <label for="endereco" class="form-label">Endereço</label>
             <input id="endereco" class="form-control" type="text" formControlName="endereco" required />
             <small class="text-danger" *ngIf="form.controls['endereco'].invalid && form.controls['endereco'].touched">Endereço
-              é obrigatório.</small>
-          </div>
+              é obrigatório.
+            </small>
+           </div>
 
           <div class="mb-3">
 

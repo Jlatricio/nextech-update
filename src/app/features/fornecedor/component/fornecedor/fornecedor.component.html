@@ -93,11 +93,26 @@
 
           <div class="mb-3">
             <label for="telefone" class="form-label">Telefone</label>
-            <input type="text" id="telefone" name="telefone" class="form-control"formControlName='telefone' required/>
-            <div class="text-danger"
-              *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)">
-              Telefone é obrigatório.
+            
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
+                &nbsp;+244
+              </span>
+              <input type="text" class="form-control" formControlName="telefone" mask="000 000 000" placeholder="Ex: 923 456 789"
+                maxlength="9" />
             </div>
+            <small class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone é
+              obrigatório.</small>
+            <small class="text-danger" *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="endereco" class="form-label">Endereço</label>
+              <input id="endereco" class="form-control" type="text" formControlName="endereco" required />
+              <small class="text-danger" *ngIf="form.controls['endereco'].invalid && form.controls['endereco'].touched">Endereço
+                é obrigatório.
+              </small>
           </div>
 
           <div class="mb-3">

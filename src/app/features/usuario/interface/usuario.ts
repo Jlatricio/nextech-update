@@ -6,4 +6,6 @@ export interface Usuario {
   perfil: string;
   dataCriacao?: string;
   senha: string;
+  isActive: boolean;
+  isOwner: boolean;
 }

@@ -1,12 +1,21 @@
-<!-- Botão de novo usuário -->
-<div class="container-fluid">
-  <div>
-    <h3>Usuários</h3>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="cancelarEdicao()">
-      <i class="bi bi-plus-lg me-2"></i>Novo Usuário
-    </button>
+<div class="artigos-header text-center my-4">
+  <div class="icon-circle mx-auto">
+    <i class="bi bi-file-earmark-text"></i>
   </div>
+  <h3 class="mt-3">Usuários</h3>
+  <button
+  type="button"
+  class="btn-hover-gradient"
+  data-bs-toggle="modal"
+  data-bs-target="#exampleModal"
+>
+  Criar Usuário
+  <i class="bi bi-plus-lg ms-2"></i>
+</button>
+
 </div>
+
+
 
 <!-- Tabela de usuários -->
 <main class="table" id="customers_table">
@@ -37,9 +46,14 @@
               <button class="btn btn-outline-primary" (click)="editarUsuario(usuario)" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="bi bi-pencil"></i> Editar
               </button>
-              <button class="btn btn-outline-danger" (click)="deletarUsuario(usuario.id!)">
-                <i class="bi bi-trash"></i> Eliminar
-              </button>
+             <button
+  *ngIf="!usuario.isOwner"
+  class="btn"
+  [ngClass]="usuario.isActive ? 'btn-outline-danger' : 'btn-outline-success'"
+  (click)="ativarOuDesativarUsuario(usuario)">
+  <i class="bi" [ngClass]="usuario.isActive ? 'bi-trash' : 'bi-check-circle'"></i>
+  {{ usuario.isActive ? 'Desativar' : 'Ativar' }}
+</button>
             </div>
           </td>
         </tr>
@@ -67,17 +81,21 @@
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Tipo de Usuário</label>
-            <select class="form-select" formControlName="perfil">
-              <option value="">Selecione o tipo</option>
-              <option value="ADMIN">Admin</option>
-              <option value="VENDEDOR">Vendedor</option>
-            </select>
-            <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
-              Tipo de usuário é obrigatório.
-            </div>
-          </div>
+        <div class="mb-3" *ngIf="!(usuarioOriginal?.isOwner || usuarioOriginal?.perfil === 'VENDEDOR')">
+  <label class="form-label">Tipo de Usuário</label>
+  <select
+    class="form-select"
+    formControlName="perfil">
+    <option value="">Selecione o tipo</option>
+    <option value="ADMIN">Admin</option>
+    <option value="VENDEDOR">Vendedor</option>
+  </select>
+  <div *ngIf="form.get('perfil')?.invalid && (form.get('perfil')?.touched || form.get('perfil')?.dirty)" class="text-danger">
+    Tipo de usuário é obrigatório.
+  </div>
+</div>
+
+
 
           <div class="mb-3">
             <label class="form-label">Email</label>
@@ -90,34 +108,34 @@
 
          <div class="mb-3">
   <label class="form-label">Telefone</label>
-  <div class="input-group">
+   <div class="input-group">
     <span class="input-group-text">
       <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
       &nbsp;+244
     </span>
-    <input
-      type="text"
+    <input type="text"
       class="form-control"
       formControlName="telefone"
       mask="000 000 000"
-      placeholder="000 000 000"
+      placeholder="Ex: 923 456 789"
       maxlength="9"
     />
   </div>
   <div *ngIf="form.get('telefone')?.invalid && (form.get('telefone')?.touched || form.get('telefone')?.dirty)" class="text-danger">
     <div *ngIf="form.get('telefone')?.errors?.['required']">Telefone é obrigatório.</div>
-    <div *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter no mínimo 9 caracteres.</div>
+    <div *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</div>
   </div>
-</div>
+ </div>
 
 
-          <div class="mb-3">
+     <div class="mb-3" *ngIf="!editando">
   <label class="form-label">Senha</label>
   <input type="password" class="form-control" formControlName="senha" />
   <div *ngIf="form.get('senha')?.invalid && (form.get('senha')?.touched || form.get('senha')?.dirty)" class="text-danger">
-    <div *ngIf="form.get('senha')?.errors?.['required']">Senha atual é obrigatória.</div>
+    <div *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória.</div>
   </div>
 </div>
+
 
 
 

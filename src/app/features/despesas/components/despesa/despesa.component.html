@@ -1,5 +1,5 @@
 <!-- btn Despesa -->
-<div class="artigos-header text-center my-4">
+<div class="despesa-header text-center my-4">
   <div class="icon-circle mx-auto">
     <i class="bi bi-file-earmark-text"></i>
   </div>
@@ -13,7 +13,7 @@
 
 <!-- btn Despesa Fechar -->
 
-<!-- tabela de artigos -->
+<!-- tabela de despesa -->
 <main class="table" id="customers_table">
   <div class="filtros-container">
     <div class="search-group">
@@ -66,27 +66,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let artigo of artigosFiltrados">
+        <tr *ngFor="let despesa of despesa">
 
-          <td>{{ artigo.nome }}</td>
-          <td>{{ artigo.CriadoPor }}</td>
-          <td>{{ artigo.fornecedorId}}</td>
-          <td>{{ artigo.motivo}}</td>
-          <td>{{ artigo.valor| currency: 'Kz' }}</td>
-        
-          <td>{{ artigo.dataCriacao}}</td>
-          <td>{{ artigo.retencaoFonte}}</td>
-          <td>{{ artigo.categoria?.nome || 'Sem categoria' }}</td>
-          
-          <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy' }}</td>
-          <td>{{ artigo.CriadoPor }}</td>
+          <td>{{ despesa.nome }}</td>
+          <td>{{ despesa.CriadoPor }}</td>
+          <td>{{ despesa.fornecedorId}}</td>
+          <td>{{ despesa.motivo}}</td>
+          <td>{{ despesa.valor| currency: 'Kz' }}</td>
+          <td>{{ despesa.retencaoFonte}}</td>
+          <td>{{ despesa.dataCriacao | date: 'dd/MM/yyyy' }}</td>
+      
 
           <td>
-            <div class="bnt-action"> <button class="btn btn-outline-primary" (click)="editarArtigo(artigo)">
+            <div class="bnt-action"> <button class="btn btn-outline-primary" (click)="editarDespesa(despesa)">
                 <i class="bi bi-pencil"></i> Editar
               </button>
 
-              <button class="btn btn-outline-danger" (click)="excluirArtigo(artigo.id)">
+              <button class="btn btn-outline-danger" (click)="excluirDespesa(despesa.id)">
                 <i class="bi bi-trash"></i> Eliminar
               </button>
             </div>
@@ -96,7 +92,7 @@
     </table>
   </section>
 </main>
-<!-- tabela de artigo -->
+<!-- tabela de despesa -->
 
 
 <!-- Modal -->
@@ -132,8 +128,8 @@
             <label for="retencaoFonte" class="form-label">Retenção na fonte<span class="text-danger">*</span></label>
             <select name="retencaoFonte" id="retencaoFonte" class="form-select" formControlName="retencaoFonte" required>
               <option  title="Nenhum">Nenhum Retenção na fonte</option>
-                <option value="sim" title="Sim">Sim</option>
-                <option value="não" title="Não">Não</option>
+                <option value="sim" >Sim</option>
+                <option value="não" >Não</option>
             </select>
           </div>
 
@@ -146,7 +142,7 @@
           <div class="mb-3">
               <label for="descricao" class="form-label">Motivo</label>
               <textarea id="descricao" class="form-control" formControlName="descricao" maxlength="300" rows="3"
-             [(ngModel)]="descricao" (input)="descricaoRestante = 300 - descricao.length" placeholder="Digite a descrição do despensa"></textarea>
+             [(ngModel)]="descricao" (input)="descricaoRestante = 300 - descricao.length" placeholder="Digite a descrição da despesa"></textarea>
             <small class="text-muted">
               {{ descricaoRestante || 300 }} caracteres restantes
             </small>
@@ -154,7 +150,7 @@
 
           <div class="mb-3">
             <button type="submit" class="btn btn-success" [disabled]="loading"
-              (click)="modalModo === 'criar' ? salvarArtigo() : atualizarArtigo()">
+              (click)="modalModo === 'criar' ? salvarDespesa() : atualizarDespesa()">
               <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
               {{ modalModo === 'criar' ? 'Salvar' : 'Atualizar' }}
             </button>

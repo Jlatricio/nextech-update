@@ -1,4 +1,4 @@
-export interface Artigo {
+export interface Despesa {
   id: number;
   nome: string;
   CriadoPor: string;

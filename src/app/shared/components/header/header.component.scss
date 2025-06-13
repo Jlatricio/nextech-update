@@ -1,3 +1,43 @@
+.logo-area{
+  display: flex;
+  gap: 10px;
+}
+
+.btn-hover-gradient {
+  position: relative;
+   background: linear-gradient(30deg, #225091 0%, #114395 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 1.2rem;
+  font-weight: 700;
+  font-size: 1rem;
+  overflow: hidden;
+  transition: color 0.3s ease;
+  z-index: 0;
+}
+
+.btn-hover-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+     background: linear-gradient(90deg, #154a94 0%, #114395 100%);
+  z-index: -1;
+  transition: width 0.4s ease;
+}
+
+.btn-hover-gradient:hover::before {
+  width: 100%;
+}
+
+.btn-hover-gradient:hover {
+  color: #ffd700;
+}
+
+
 
 header {
   position: fixed;
@@ -85,4 +125,163 @@ img {
 .logout-btn:hover {
   transform: scale(1.2);
 }
+.modal-content {
+  background: linear-gradient(30deg, #1d3557 0%, #114395 100%) !important;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.btn-close-white {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+.btn-close-white:hover {
+  opacity: 1;
+}
+
+.subscription-container {
+  padding: 50px 20px;
+  text-align: center;
+  background: linear-gradient(30deg, #1d3557 0%, #114395 100%);
+  min-height: 100vh;
+}
+
+.subscription-container h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #ffafbd, #ffc3a0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.subscription-container .description {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-bottom: 50px;
+  max-width: 700px;
+  margin-inline: auto;
+}
+
+.packages {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.package-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 35px 25px;
+  width: 320px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.package-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.package-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  color: #ffd700;
+}
+
+.package-card .price {
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.package-card .plan-note {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 25px;
+}
+
+.package-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.package-features li {
+  font-size: 0.95rem;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.package-card button {
+  padding: 12px 26px;
+  background: linear-gradient(to right, #ff7ecb, #ffa3a5);
+  border: none;
+  color: #1a1a2e;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.package-card button:hover {
+  background: linear-gradient(to right, #ffa3a5, #ff7ecb);
+  transform: scale(1.03);
+}
+
+
+.package-card.destaque {
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  box-shadow: 0 12px 50px rgba(255, 215, 0, 0.3);
+  transform: scale(1.03);
+}
+
+.package-card.destaque h3 {
+  color: #ffcc00;
+}
+
+.package-card.destaque .package-features li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.package-card.destaque button {
+  background: #fff;
+  color: #111;
+}
+
+.package-card.destaque button:hover {
+  background: #f1f1f1;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .package-card {
+    width: 90%;
+  }
+}
+
+/* Estilo para o botão de fechar branco */
+.btn-close.btn-close-white {
+  filter: invert(1);
+}
+
+.user{
+  display: flex;
+}
+
 

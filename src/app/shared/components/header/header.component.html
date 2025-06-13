@@ -1,15 +1,95 @@
 <header class="header">
   <div class="flex-center logo-area">
     <img src="assets/logo.png" alt="Logo">
+  <button
+  type="button"
+  class="btn-hover-gradient"
+  data-bs-toggle="modal"
+  data-bs-target="#modalSubscricao"
+>
+  <i class="bi bi-bell ms-2"></i>
+  Subscrição
+</button>
+
   </div>
 
-  <div class="flex-center user-area" *ngFor="let usuario of usuarios">
-    <button class="btn-welcome">
-      Olá, {{ nome.split(' ')[0] }}
-    </button>
+ <div class="user">
 
-    <a (click)="logout()" class="logout-btn" title="Terminar Sessão">
+
+<div class="flex-center user-area" *ngIf="usuario.length > 0">
+  <button class="btn-welcome">
+    Olá, {{ getNomeUsuario() }}
+  </button>
+</div>
+
+
+
+  <a (click)="logout()" class="logout-btn" title="Terminar Sessão">
       <i class="bi bi-box-arrow-right"></i>
     </a>
-  </div>
+ </div>
 </header>
+
+
+<!-- Modal de Subscrição -->
+<div class="modal fade" id="modalSubscricao" tabindex="-1" aria-labelledby="modalSubscricaoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100 text-center" id="modalSubscricaoLabel"></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="subscription-container mb-5">
+          <h2>Subscrição</h2>
+          <p class="description"> Para ativar sua subscrição, selecione um pacote
+    e realize o pagamento via referência bancária no
+    ATM ou plataformas digitais como Multicaixa Express.</p>
+
+          <div class="packages d-flex justify-content-center flex-wrap gap-4">
+            <!-- Plano Mensal -->
+            <div class="package-card">
+              <h3>1 Mês</h3>
+              <p class="price">4.000,00 KZ</p>
+              <p class="plan-note">Plano Mensal</p>
+              <ul class="package-features">
+                <li>Acesso completo à plataforma</li>
+                <li>Suporte via email</li>
+                <li>Limite de 10 downloads</li>
+              </ul>
+              <button class="btn btn-warning">Assinar por 1 mês</button>
+            </div>
+
+            <!-- Plano Semestral (Destaque) -->
+            <div class="package-card destaque">
+              <h3>7 Meses</h3>
+              <p class="price">25.000,00 KZ</p>
+              <p class="plan-note">Plano Semestral</p>
+              <ul class="package-features">
+                <li>Tudo do plano mensal</li>
+                <li>Atendimento prioritário</li>
+                <li>Downloads ilimitados</li>
+                <li>Acesso a conteúdos premium</li>
+              </ul>
+              <button class="btn btn-dark">Assinar por 7 meses</button>
+            </div>
+
+            <!-- Plano Anual -->
+            <div class="package-card">
+              <h3>12 Meses</h3>
+              <p class="price">45.000,00 KZ</p>
+              <p class="plan-note">Plano Anual</p>
+              <ul class="package-features">
+                <li>Tudo do plano semestral</li>
+                <li>Consultorias exclusivas</li>
+                <li>Convites para eventos</li>
+              </ul>
+              <button class="btn btn-warning">Assinar por 12 meses</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ProformaService } from './proforma.service';
+import { HeaderService } from './header.service';
 
-describe('ProformaService', () => {
-  let service: ProformaService;
+describe('HeaderService', () => {
+  let service: HeaderService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ProformaService);
+    service = TestBed.inject(HeaderService);
   });
 
   it('should be created', () => {
