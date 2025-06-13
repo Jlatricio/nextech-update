@@ -107,6 +107,7 @@ export class LoginComponent {
         this.isLoading = false;
         if (error.status === 401) {
           this.errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
+          console.log(error);
         } else {
           this.errorMessage = error.error?.message || 'Erro ao fazer login.';
         }

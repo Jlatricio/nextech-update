@@ -5,7 +5,7 @@ export interface Usuario {
   telefone: string;
   perfil: string;
   dataCriacao?: string;
-   senha?: string;  
+   senha?: string;
   isActive: boolean;
   isOwner: boolean;
 }

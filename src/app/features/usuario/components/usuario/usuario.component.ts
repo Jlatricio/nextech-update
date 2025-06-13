@@ -177,81 +177,87 @@ listarUsuarios(): void {
   }
 
   criarOuAtualizarUsuario(): void {
-    const senhaCtrl = this.form.get('senha');
-    if (this.editando) {
-      senhaCtrl?.clearValidators();
-    } else {
-      senhaCtrl?.setValidators([Validators.required]);
-    }
-    senhaCtrl?.updateValueAndValidity();
+  const senhaCtrl = this.form.get('senha');
 
-    if (this.form.invalid) {
+  // Definir validação da senha
+  if (this.editando) {
+    senhaCtrl?.clearValidators(); // Em edição, não é obrigatório
+  } else {
+    senhaCtrl?.setValidators([Validators.required]); // Na criação, é obrigatório
+  }
+  senhaCtrl?.updateValueAndValidity();
+
+  // Verificação de validade
+  if (this.form.invalid) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atenção!',
+      text: 'Preencha todos os campos obrigatórios.',
+      timer: 2000,
+      showConfirmButton: false
+    });
+    return;
+  }
+
+  this.loading = true;
+
+  const formValues = this.form.value;
+  const telefoneCompleto = formValues.telefone
+    .replace(/\s+/g, '')
+    .replace(/^(\+244)?/, '+244');
+
+  // Montar payload básico
+  const usuarioPayload: any = {
+    nome: formValues.nome,
+    perfil: formValues.perfil,
+    telefone: telefoneCompleto,
+    email: formValues.email
+  };
+
+  // Incluir senha SOMENTE se:
+  // - não estiver editando (criação)
+  // - ou estiver editando E campo senha foi preenchido manualmente
+  if (!this.editando || (this.editando && formValues.senha?.trim())) {
+    usuarioPayload.senha = formValues.senha;
+  }
+
+  // Atualização
+  if (this.editando && this.usuarioEditandoId !== null) {
+    const original = {
+      nome: this.usuarioOriginal?.nome,
+      perfil: this.usuarioOriginal?.perfil,
+      telefone: this.usuarioOriginal?.telefone?.replace(/\s+/g, ''),
+      email: this.usuarioOriginal?.email
+    };
+
+    const atualizado = { ...usuarioPayload };
+    delete atualizado.senha; // ignorar senha na verificação de alteração
+
+    if (JSON.stringify(original) === JSON.stringify(atualizado)) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Atenção!',
-        text: 'Preencha todos os campos obrigatórios.',
+        icon: 'info',
+        title: 'Sem alterações!',
+        text: 'Nenhuma modificação foi detectada.',
         timer: 2000,
         showConfirmButton: false
       });
+      this.loading = false;
       return;
     }
 
-    this.loading = true;
-    const formValues = this.form.value;
-    const telefoneCompleto = formValues.telefone
-      .replace(/\s+/g, '')
-      .replace(/^(\+244)?/, '+244');
+    this.usuarioService.atualizarUsuario(this.usuarioEditandoId, usuarioPayload).subscribe({
+      next: () => this.afterSave('Usuário atualizado com sucesso!'),
+      error: (error) => this.handleError('Erro ao atualizar usuário.', error)
+    });
 
-    const usuarioPayload: any = {
-      nome: formValues.nome,
-      perfil: formValues.perfil,
-      telefone: telefoneCompleto,
-      email: formValues.email
-    };
-
-    if (!this.editando || formValues.senha) {
-      usuarioPayload.senha = formValues.senha;
-    }
-
-    if (this.editando && this.usuarioEditandoId !== null) {
-      // Atualização
-      const original = {
-        nome: this.usuarioOriginal?.nome,
-        perfil: this.usuarioOriginal?.perfil,
-        telefone: this.usuarioOriginal?.telefone?.replace(/\s+/g, ''),
-        email: this.usuarioOriginal?.email
-      };
-      const atualizado = { ...usuarioPayload };
-      delete atualizado.senha;
-
-      if (JSON.stringify(original) === JSON.stringify(atualizado)) {
-        Swal.fire({
-          icon: 'info',
-          title: 'Sem alterações!',
-          text: 'Nenhuma modificação foi detectada.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        this.loading = false;
-        return;
-      }
-
-      this.usuarioService.atualizarUsuario(this.usuarioEditandoId, usuarioPayload).subscribe({
-        next: () => {
-          this.afterSave('Usuário atualizado com sucesso!');
-        },
-        error: (error) => this.handleError('Erro ao atualizar usuário.', error)
-      });
-    } else {
-      // Criação
-      this.usuarioService.criarUsuario(usuarioPayload).subscribe({
-        next: () => {
-          this.afterSave('Usuário criado com sucesso!');
-        },
-        error: (error) => this.handleError('Erro ao criar usuário.', error)
-      });
-    }
+  } else {
+    // Criação
+    this.usuarioService.criarUsuario(usuarioPayload).subscribe({
+      next: () => this.afterSave('Usuário criado com sucesso!'),
+      error: (error) => this.handleError('Erro ao criar usuário.', error)
+    });
   }
+}
 
   private afterSave(msg: string): void {
     Swal.fire({ icon: 'success', title: 'Sucesso!', text: msg, timer: 2000, showConfirmButton: false });
@@ -287,22 +293,27 @@ listarUsuarios(): void {
     }
   }
 
- editarUsuario(usuario: Usuario): void {
-  const telefoneSemPrefixo = usuario.telefone?.replace('+244', '').replace(/\s+/g, '') || '';
-
+editarUsuario(usuario: Usuario): void {
   this.form.patchValue({
-    id: usuario.id,
     nome: usuario.nome,
     email: usuario.email,
-    telefone: telefoneSemPrefixo,
-    perfil: usuario.perfil ?? '',
-    // outros campos se houver
+    telefone: usuario.telefone?.replace('+244', '').replace(/\s+/g, ''),
+    perfil: usuario.perfil,
+    senha: '' 
   });
 
   this.editando = true;
   this.usuarioEditandoId = usuario.id!;
   this.usuarioOriginal = { ...usuario };
+
+  // Remover validação de senha em modo edição
+  const senhaCtrl = this.form.get('senha');
+  senhaCtrl?.clearValidators();
+  senhaCtrl?.updateValueAndValidity();
 }
+
+
+
 
 
   cancelarEdicao(): void {
