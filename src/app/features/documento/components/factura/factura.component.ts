@@ -11,10 +11,14 @@ import { Cliente } from '../../../clientes/interface/cliente';
 import { EmpresaService } from '../../../configuracao/services/empresa.service';
 import { Empresa } from '../../../configuracao/interface/empresa';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { FaturaService } from './service/fatura.service';
 import { factura } from './interface/factura';
+import { DocumentoService } from '../../service/documento.service';
+import { DocumentoContextService } from '../../../../core/services/documento-context.service';
+
+
 
 @Component({
   selector: 'app-factura',
@@ -53,7 +57,10 @@ form: FormGroup;
     private empresaService: EmpresaService,
     private toastr: ToastrService,
      private formBuilder: FormBuilder,
-    private router: Router) {
+     private DocumentoService: DocumentoService,
+      private contextService: DocumentoContextService,
+    private router: Router,
+  private route: ActivatedRoute) {
 
     this.form = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
@@ -275,11 +282,7 @@ carregarClientes(): void {
   });
 }
 
-gerarNumeroFatura(): void {
-  const ano = new Date().getFullYear();
-  const sequencial = Math.floor(Math.random() * 9000) + 1000; // Ex: 4372
-  this.numeroFatura = `FT ${ano}/${sequencial}`;
-}
+
 
 definirValidade(): void {
   const hoje = new Date();
@@ -296,11 +299,23 @@ this.dataValidadeFormatada = validade.toLocaleDateString('pt-AO', {
 }
 
 
-  ngOnInit(): void {
-  this.dados();
-      this.gerarNumeroFatura();
-  this.definirValidade();
-      this.carregarClientes();
+ngOnInit(): void {
+  this.route.paramMap.subscribe(params => {
+    const numero = params.get('numero');
+
+    if (numero) {
+      // Decodifica o parâmetro para recuperar o número original
+      this.numeroFatura = decodeURIComponent(numero);
+      console.log('Número recebido:', this.numeroFatura);
+    } else {
+      console.warn('Nenhum número de fatura recebido. Redirecionando...');
+      this.router.navigate(['/documento']);
+      return;
+    }
+
+    this.dados();
+    this.definirValidade();
+    this.carregarClientes();
     this.titleService.setTitle('Criar uma factura');
 
     this.categoriaService.listarCategorias().subscribe({
@@ -315,7 +330,9 @@ this.dataValidadeFormatada = validade.toLocaleDateString('pt-AO', {
       },
       error: err => console.error('Erro ao carregar categorias:', err)
     });
-  }
+  });
+}
+
 
   carregarArtigos(): void {
     this.artigoService.listarArtigo().subscribe({
@@ -356,13 +373,13 @@ this.dataValidadeFormatada = validade.toLocaleDateString('pt-AO', {
       total: 0,
       imposto: 0
     };
-    this.itens = [...this.itens, novoItem]; // cria novo array (detecção)
+    this.itens = [...this.itens, novoItem];
     this.cdr.detectChanges();
   }
 
   removerItem(index: number): void {
     this.itens.splice(index, 1);
-    this.itens = [...this.itens]; // recria o array para forçar detecção
+    this.itens = [...this.itens];
     this.recalcularTotais();
     this.cdr.detectChanges();
   }
@@ -378,7 +395,7 @@ this.dataValidadeFormatada = validade.toLocaleDateString('pt-AO', {
 
 
  onArtigoChange(item: any) {
-  item.artigoSelecionado = this.getArtigoById(item.artigoId); // ou outra forma de obter o artigo
+  item.artigoSelecionado = this.getArtigoById(item.artigoId);
   this.atualizarTotalItem(item);
   this.recalcularTotais();
 }
@@ -444,4 +461,3 @@ recalcularTotais() {
 
 
 }
-

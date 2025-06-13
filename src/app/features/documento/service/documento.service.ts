@@ -8,6 +8,7 @@ import { map, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class DocumentoService {
+
    private apiUrl = `${environment.apiUrl}`;
 
 
@@ -23,6 +24,16 @@ export class DocumentoService {
 visualizarDocumento(id: number): Observable<DadosDocumento> {
   return this.httpClient.get<DadosDocumento>(`${this.apiUrl}/documents/${id}`);
 }
+
+// Gera um código de referência
+gerarCodigoReferencia(payload: { tipo: string; motivo?: string }): Observable<string> {
+  return this.httpClient.post<{ referencia: string }>(
+    `${this.apiUrl}/documents/generate-code`, payload
+  ).pipe(map(res => res.referencia));
+}
+
+
+
 
 
 }

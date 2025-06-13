@@ -12,7 +12,7 @@ import { Cliente } from '../../../clientes/interface/cliente';
 import { EmpresaService } from '../../../configuracao/services/empresa.service';
 import { Empresa } from '../../../configuracao/interface/empresa';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { FacturareciboService } from './service/facturarecibo.service';
@@ -56,7 +56,8 @@ form: FormGroup;
     private empresaService: EmpresaService,
     private toastr: ToastrService,
      private formBuilder: FormBuilder,
-    private router: Router) {
+    private router: Router,
+  private route: ActivatedRoute) {
     this.form = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -299,10 +300,20 @@ this.dataValidadeFormatada = validade.toLocaleDateString('pt-AO', {
 
 
  ngOnInit(): void {
-  this.dados();
-      this.gerarNumeroFatura();
-  this.definirValidade();
-      this.carregarClientes();
+  this.route.paramMap.subscribe(params => {
+    const numero = params.get('numero');
+    if (numero) {
+      this.numeroFatura = decodeURIComponent(numero);
+      console.log('Número recebido (Fatura Recibo):', this.numeroFatura);
+    } else {
+      console.warn('Nenhum número recebido. Redirecionando...');
+      this.router.navigate(['/documento']);
+      return;
+    }
+
+    this.dados();
+    this.definirValidade();
+    this.carregarClientes();
     this.titleService.setTitle('Criar uma Fatura Recibo');
 
     this.categoriaService.listarCategorias().subscribe({
@@ -317,7 +328,8 @@ this.dataValidadeFormatada = validade.toLocaleDateString('pt-AO', {
       },
       error: err => console.error('Erro ao carregar categorias:', err)
     });
-  }
+  });
+}
 
  carregarArtigos(): void {
     this.artigoService.listarArtigo().subscribe({

@@ -517,4 +517,10 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       .filter(i => i.valor === valor)
       .map(i => i.nome);
   }
+
+    getPrimeiroEUltimoNome(nomeCompleto: string): string {
+  const nomes = nomeCompleto.trim().split(/\s+/);
+  if (nomes.length === 1) return nomes[0];
+  return `${nomes[0]} ${nomes[nomes.length - 1]}`;
+}
 }

@@ -34,5 +34,5 @@ export class FaturaService {
       return this.httpClient.put(`${this.apiUrl}/documents/${id}`, documentos);
     }
 
- 
+  
 }
