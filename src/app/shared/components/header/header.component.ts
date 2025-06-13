@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Usuario } from '../../../features/usuario/components/interface/usuario';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UsuarioService } from '../../../features/usuario/service/usuario.service';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
@@ -14,59 +14,32 @@ import { HeaderService } from './service/header.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent {
- usuario: Usuario[] = [];
+export class HeaderComponent implements OnInit {
+ nomeUsuario = '';
 
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private usuarioService: UsuarioService,
-    private headerService: HeaderService
+
   ) {}
 
   ngOnInit(): void {
-    this.listarUsuarios();
-  }
-
-  getUsuarioLogadoId(): number | null {
-  const token = localStorage.getItem('token');
-  if (token) {
-    try {
+      if (isPlatformBrowser(this.platformId)) {
+const token = localStorage.getItem('token');
+    if (token) {
       const decoded: any = jwtDecode(token);
-      return decoded?.id ?? null;
-    } catch (e) {
-      console.error('Erro ao decodificar o token:', e);
-      return null;
+      this.nomeUsuario = decoded.nome;
+      console.log('Perfil de usuário:', this.nomeUsuario);
     }
   }
-  return null;
 }
 
 
- listarUsuarios(): void {
-  const idLogado = this.getUsuarioLogadoId();
-
-  this.headerService.listaUsuario().subscribe({
-    next: (res: Usuario[]) => {
-      const usuarioEncontrado = res.find(user => user.id === idLogado);
-      if (usuarioEncontrado) {
-        this.usuario = [usuarioEncontrado]; // Armazena como array com 1 item, opcional
-      } else {
-        console.warn('Usuário logado não encontrado na lista.');
-        this.usuario = [];
-      }
-    },
-    error: (err) => {
-      console.error('Erro ao listar usuários', err);
-      this.usuario = [];
-    }
-  });
-}
 
 
- getNomeUsuario(): string {
-  return this.usuario[0]?.nome?.split(' ')[0] ?? '';
-}
+
+
 
   logout(): void {
     Swal.fire({
