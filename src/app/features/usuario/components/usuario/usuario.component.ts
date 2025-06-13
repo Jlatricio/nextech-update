@@ -11,7 +11,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Usuario } from '../interface/usuario';
 import { TitleService } from '../../../../core/services/title.service';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { UsuarioService } from '../../service/usuario.service';
 import Swal from 'sweetalert2';
@@ -46,7 +46,8 @@ export class UsuariosComponent implements OnInit {
     private toastr: ToastrService,
     private formBuilder: FormBuilder,
     private usuarioService: UsuarioService,
-    private titleService: TitleService
+    private titleService: TitleService,
+    private router: Router
   ) {
     // Apenas inicializa formulários aqui
     this.form = this.formBuilder.group({
@@ -299,7 +300,7 @@ editarUsuario(usuario: Usuario): void {
     email: usuario.email,
     telefone: usuario.telefone?.replace('+244', '').replace(/\s+/g, ''),
     perfil: usuario.perfil,
-    senha: '' 
+    senha: ''
   });
 
   this.editando = true;
@@ -404,31 +405,47 @@ editarUsuario(usuario: Usuario): void {
     this.nomeUsuarioParaSenha = usuario.nome;
     this.formSenha.reset();
   }
-
-  onAlterarSenha(): void {
-    if (this.formSenha.invalid) {
-      if (this.formSenha.errors?.['senhasDiferentes']) {
-        Swal.fire({ icon: 'warning', title: 'Atenção', text: 'A nova senha e a confirmação não coincidem.' });
-        return;
-      }
-      Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Verifique os campos obrigatórios.' });
+onAlterarSenha(): void {
+  if (this.formSenha.invalid) {
+    if (this.formSenha.errors?.['senhasDiferentes']) {
+      Swal.fire({ icon: 'warning', title: 'Atenção', text: 'A nova senha e a confirmação não coincidem.' });
       return;
     }
+    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Verifique os campos obrigatórios.' });
+    return;
+  }
 
-    const { senha, novaSenha } = this.formSenha.value;
-    const userId = this.usuarioAlterarSenhaId ?? this.usuarioEditandoId ?? this.usuarioLogado?.id;
-    if (!userId) {
-      this.toastr.error('Usuário não encontrado.');
-      return;
-    }
+  const { senha, novaSenha } = this.formSenha.value;
+  const userId = this.usuarioAlterarSenhaId ?? this.usuarioEditandoId ?? this.usuarioLogado?.id;
 
+  if (!userId) {
+    this.toastr.error('Usuário não encontrado.');
+    return;
+  }
+
+  const isProprioUsuario = this.usuarioLogado?.id === userId;
+
+  const prosseguirAlteracao = () => {
     this.loadingSenha = true;
+
     this.usuarioService.changePassword(userId, senha, novaSenha).subscribe({
       next: () => {
         this.loadingSenha = false;
-        Swal.fire({ icon: 'success', title: 'Sucesso', text: 'Senha alterada com sucesso!', timer: 2000, showConfirmButton: false });
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso',
+          text: 'Senha alterada com sucesso!',
+          timer: 2000,
+          showConfirmButton: false
+        });
+
         this.formSenha.reset();
         this.fecharModalSenha();
+
+        if (isProprioUsuario) {
+          localStorage.removeItem('token');
+          this.router.navigate(['/login']);
+        }
       },
       error: (err) => {
         this.loadingSenha = false;
@@ -436,7 +453,26 @@ editarUsuario(usuario: Usuario): void {
         Swal.fire({ icon: 'error', title: 'Erro', text: msg });
       }
     });
+  };
+
+  if (isProprioUsuario) {
+    Swal.fire({
+      title: 'Tem certeza?',
+      text: 'Ao alterar sua própria senha, você será desconectado!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, alterar e sair',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        prosseguirAlteracao();
+      }
+    });
+  } else {
+    prosseguirAlteracao(); // admin alterando senha de outro usuário
   }
+}
+
 
   fecharModalSenha(): void {
     const modalEl = document.getElementById('modalalterarsenha');
