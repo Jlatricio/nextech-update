@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Usuario } from '../../../features/usuario/components/interface/usuario';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UsuarioService } from '../../../features/usuario/service/usuario.service';
 import { jwtDecode } from 'jwt-decode';
