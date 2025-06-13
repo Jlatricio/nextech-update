@@ -71,24 +71,3 @@ a {
   }
 }
 
-
-ngx-loading-bar {
-  height: 4px !important;
-  background: linear-gradient(90deg, #0a2755, #1d3557, #457b9d, #0a2755) !important;
-  background-size: 200% auto;
-  animation: loading-bar-stripes 1.5s linear infinite;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  transition: opacity 0.3s ease;
-  opacity: 0;
-  pointer-events: none;
-}
-
-
-ngx-loading-bar.ng-animating {
-  opacity: 1;
-  pointer-events: auto;
-}

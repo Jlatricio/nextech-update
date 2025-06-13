@@ -1,6 +1,6 @@
 import { ApplicationConfig, Injector, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideToastr } from 'ngx-toastr';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
@@ -8,25 +8,25 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { provideLoadingBar } from '@ngx-loading-bar/core';
-import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
 import { importProvidersFrom } from '@angular/core';
-import { LoadingBarModule } from '@ngx-loading-bar/core';
-
 
 
 import Swal from 'sweetalert2';
 import { registerLocaleData } from '@angular/common';
 import pt from '@angular/common/locales/pt';
+import { provideLoadingBar } from '@ngx-loading-bar/core';
+import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
+
+
 registerLocaleData(pt);
 export const appConfig: ApplicationConfig = {
 
   providers: [
    importProvidersFrom(
-    LoadingBarModule,
+    HttpClientModule,
     LoadingBarHttpClientModule
   ),
-  provideLoadingBar({ latencyThreshold: 100 }),
+
     provideRouter(routes),
     provideAnimations(),
     provideToastr({
@@ -35,6 +35,8 @@ export const appConfig: ApplicationConfig = {
       closeButton: true,
     }),
     { provide: LOCALE_ID, useValue: 'pt-AO' },
+     provideLoadingBar({}),
+
     provideHttpClient(
       withInterceptors([
         (req, next) => {

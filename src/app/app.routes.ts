@@ -4,6 +4,7 @@ import { LoginGuard } from './guards/login.guard';
 import { ProformaComponent } from './features/documento/components/proforma/proforma.component';
 import { FacturaComponent } from './features/documento/components/factura/factura.component';
 import { FaturaReciboComponent } from './features/documento/components/fatura-recibo/fatura-recibo.component';
+import { RoleGuard } from './guards/role-guard.guard';
 
 export const routes: Routes = [
   {
@@ -19,7 +20,8 @@ export const routes: Routes = [
   {
     path: 'artigo',
     loadComponent: () => import('./features/artigo/components/artigo/artigo.component').then(m => m.ArtigoComponent),
-    canActivate: [AuthGuard]  // Protege a rota de artigo
+   canActivate: [AuthGuard, RoleGuard],
+  data: { allowedRoles: ['ADMIN'] }
   },
   {
     path: 'cliente',
@@ -49,27 +51,32 @@ export const routes: Routes = [
   {
     path: 'relatorio',
     loadComponent: () => import('./features/relatorio/relatorios.component').then(m => m.RelatoriosComponent),
-    canActivate: [AuthGuard]  // Protege a rota de relatorio
+   canActivate: [AuthGuard, RoleGuard],
+  data: { allowedRoles: ['ADMIN'] }
   },
   {
     path: 'usuario',
     loadComponent: () => import('./features/usuario/components/usuario/usuario.component').then(m => m.UsuariosComponent),
-    canActivate: [AuthGuard]  // Protege a rota de usuario
+    canActivate: [AuthGuard, RoleGuard],
+  data: { allowedRoles: ['ADMIN'] }
   },
   {
     path: 'despesa',
     loadComponent: () => import('./features/despesas/components/despesa/despesa.component').then(m => m.DespesaComponent),
-    canActivate: [AuthGuard]  // Protege a rota de despesa
+    canActivate: [AuthGuard, RoleGuard],
+  data: { allowedRoles: ['ADMIN'] }
   },
   {
     path: 'fornecedor',
     loadComponent: () => import('./features/fornecedor/component/fornecedor/fornecedor.component').then(m => m.FornecedoresComponent),
-    canActivate: [AuthGuard]  // Protege a rota de fornecedor
+    canActivate: [AuthGuard, RoleGuard],
+  data: { allowedRoles: ['ADMIN'] }
   },
   {
     path: 'configuracao',
     loadComponent: () => import('./features/configuracao/configuracao.component').then(m => m.ConfiguracaoComponent),
-    canActivate: [AuthGuard]  // Protege a rota de configuracao
+  canActivate: [AuthGuard, RoleGuard],
+  data: { allowedRoles: ['ADMIN'] }
   },
 
     {
@@ -91,8 +98,5 @@ export const routes: Routes = [
     redirectTo: 'inicio'
   },
 
-{ path: 'proforma/:id', component: ProformaComponent },
-{ path: 'factura/:id', component: FacturaComponent },
-{ path: 'factura-recibo/:id', component: FaturaReciboComponent },
 
 ];
