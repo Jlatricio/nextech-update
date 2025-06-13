@@ -188,24 +188,36 @@ salvarFatura(): void {
   // Recalcula totais
   this.recalcularTotais();
 
+    console.log('Itens da fatura a enviar:', this.itens);
+
   // Monta objeto Factura
   const factura: factura = {
-    tipo: 'FACTURA',
-    numero: this.numeroFatura,
-    clienteId: this.clienteSelecionado.id,
-    dataValidade: this.dataValidadeISO,
-    subTotal: this.subtotal,
-    totalDescontos: this.descontoValor,
-    totalImpostos: this.iva,
-    total: this.totalGeral,
-    descontoPercentual: this.desconto,
-    criadoPor: 'Usuário Atual',
-    itensFactura: this.itens.map(item => ({
-      artigoId: item.artigoId!,
-      quantidade: item.quantidade,
-      total: item.total
-    }))
-  };
+  tipo: 'FACTURA',
+  numero: this.numeroFatura,
+  clienteId: this.clienteSelecionado.id,
+  dataValidade: this.dataValidadeISO,
+  subTotal: this.subtotal,
+  totalDescontos: this.descontoValor,
+  totalImpostos: this.iva,
+  total: this.totalGeral,
+  descontoPercentual: this.desconto,
+  criadoPor: 'Usuário Atual',
+  itensFactura: this.itens
+    .filter(item => item.artigoSelecionado?.id !== undefined)
+    .map(item => {
+      const artigoId = item.artigoSelecionado!.id;
+      const quantidade = item.quantidade;
+      const total = item.total;
+
+      console.log('Item para envio:', { artigoId, quantidade, total });
+
+      return {
+        artigoId,
+        quantidade,
+        total
+      };
+    })
+};
 
   console.log('Factura montada:', factura);
 
