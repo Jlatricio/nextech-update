@@ -12,6 +12,10 @@ import { FacturaRecibo } from '../fatura-recibo/interface/facturarecibo';
 import { FacturareciboService } from '../fatura-recibo/service/facturarecibo.service';
 import { forkJoin } from 'rxjs';
 import { FormGroup } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { DocumentoService } from '../../service/documento.service';
+import { DocumentoContextService } from './../../../../core/services/documento-context.service';
+
 
 
 @Component({
@@ -34,13 +38,16 @@ export class DocumentosComponent implements AfterViewInit {
   facturasRecibo: FacturaRecibo[] = [];
 form!: FormGroup;
 
+
   constructor(
+         private DocumentoService: DocumentoService,
     private router: Router,
     private titleService: TitleService,
     private ProformaService: ProformaService,
     private FaturaService: FaturaService,
     private FacturaReciboService: FacturareciboService,
     private route: ActivatedRoute,
+      private contextService: DocumentoContextService
   ) {}
 
   tipoDocumentoSelecionado(): string {
@@ -53,6 +60,7 @@ form!: FormGroup;
 }
 
   ngOnInit(): void {
+
      this.carregarDocumentos();
     this.listarProformas();
     this.titleService.setTitle('Documentos');
@@ -249,6 +257,30 @@ updateIndicator() {
     this.indicatorLeft = `${rect.left - parentRect.left}px`;
     this.indicatorWidth = `${rect.width}px`;
   }
+
+}
+
+criarDocumento(tipo: 'FACTURA' | 'FACTURA_PROFORMA' | 'FACTURA_RECIBO'): void {
+  const payload = { tipo };
+this.DocumentoService.gerarCodigoReferencia(payload).subscribe({
+  next: (codigo) => {
+    console.log('Código retornado pelo backend:', codigo);
+    this.contextService.numeroGerado = codigo;
+    this.contextService.tipoDocumento = tipo;
+
+    const rota = tipo === 'FACTURA_PROFORMA' ? `/proforma/${encodeURIComponent(codigo)}` :
+                 tipo === 'FACTURA_RECIBO' ? `/factura-recibo/${encodeURIComponent(codigo)}` :
+                `/factura/${encodeURIComponent(codigo)}`;
+    this.router.navigate([rota]);
+  },
+  error: () => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Erro',
+      text: 'Não foi possível gerar o número. Tente novamente.'
+    });
+  }
+});
 
 }
 
