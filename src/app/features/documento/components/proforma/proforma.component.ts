@@ -11,7 +11,7 @@
   import { EmpresaService } from '../../../configuracao/services/empresa.service';
   import { Empresa } from '../../../configuracao/interface/empresa';
   import { ToastrService } from 'ngx-toastr';
-  import { Router } from '@angular/router';
+  import { ActivatedRoute, Router } from '@angular/router';
   import Swal from 'sweetalert2';
   import { Proforma } from './interface/proforma';
   import { ProformaService } from './service/proforma.service';
@@ -44,6 +44,7 @@
     isLoading: boolean = false;
 
     constructor(
+      private route: ActivatedRoute,
       private proformaService: ProformaService,
       private ClienteService: ClienteService,
       private artigoService: ArtigoService,
@@ -273,11 +274,7 @@
     });
   }
 
-  gerarNumeroFatura(): void {
-    const ano = new Date().getFullYear();
-    const sequencial = Math.floor(Math.random() * 9000) + 1000; // Ex: 4372
-    this.numeroFatura = `PF ${ano}/${sequencial}`;
-  }
+
 
   definirValidade(): void {
     const hoje = new Date();
@@ -295,25 +292,38 @@
 
 
     ngOnInit(): void {
-    this.dados();
-        this.gerarNumeroFatura();
-    this.definirValidade();
-        this.carregarClientes();
-      this.titleService.setTitle('Criar uma Proforma');
+  this.route.paramMap.subscribe(params => {
+    const numero = params.get('numero'); // se /proforma/:numero for usado
 
-      this.categoriaService.listarCategorias().subscribe({
-        next: categorias => {
-          this.ngZone.run(() => {
-            this.categorias = categorias;
-            this.carregarArtigos();
-            this.adicionarItem();
-            this.cdr.markForCheck();
-            this.cdr.detectChanges();
-          });
-        },
-        error: err => console.error('Erro ao carregar categorias:', err)
-      });
+    if (numero) {
+      this.numeroFatura = decodeURIComponent(numero);
+      console.log('Número recebido (Proforma):', this.numeroFatura);
+    } else {
+      console.warn('Nenhum número recebido. Redirecionando...');
+      this.router.navigate(['/documento']);
+      return;
     }
+
+    this.dados();
+    this.definirValidade();
+    this.carregarClientes();
+    this.titleService.setTitle('Criar uma Proforma');
+
+    this.categoriaService.listarCategorias().subscribe({
+      next: categorias => {
+        this.ngZone.run(() => {
+          this.categorias = categorias;
+          this.carregarArtigos();
+          this.adicionarItem();
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+        });
+      },
+      error: err => console.error('Erro ao carregar categorias:', err)
+    });
+  });
+}
+
 
     carregarArtigos(): void {
       this.artigoService.listarArtigo().subscribe({
@@ -447,4 +457,5 @@
     item.total = (artigo.preco ?? 0) * item.quantidade;
     this.recalcularTotais?.();
   }
+
   }

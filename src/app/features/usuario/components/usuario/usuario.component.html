@@ -41,7 +41,8 @@
         </thead>
         <tbody>
           <tr *ngFor="let usuario of usuariosFiltrados">
-            <td>{{ usuario.nome }}
+            <td>{{ getPrimeiroEUltimoNome(usuario.nome) }}
+
 
             </td>
             <td>{{ usuario.email }}</td>

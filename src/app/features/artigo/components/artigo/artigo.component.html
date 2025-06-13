@@ -86,7 +86,7 @@
         <th>Imposto</th>
         <th>Preço Unitário</th>
         <th>Data de Criação</th>
-        <th>CriadoPor</th>
+        <th>Criado Por</th>
         <th>Acções</th>
       </tr>
     </thead>
@@ -107,7 +107,7 @@
         <td>{{ artigo.preco | currency: 'Kz' }}</td>
         <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy' }}</td>
         <td>
-          {{ artigo.criadoPor }}
+          {{ getPrimeiroEUltimoNome(artigo.criadoPor) }}
         </td>
         <td>
          <div class="bnt-action"> <button class="btn btn-outline-primary"

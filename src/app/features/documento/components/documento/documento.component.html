@@ -16,17 +16,17 @@
 
     <ul class="dropdown-menu custom-dropdown shadow-lg p-2 border-0">
       <li>
-        <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/proforma']">
+        <a class="dropdown-item d-flex align-items-center gap-2" (click)="criarDocumento('FACTURA_PROFORMA')">
           <i class="bi bi-file-earmark-text"></i> Proforma
         </a>
       </li>
       <li>
-        <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura']">
+        <a class="dropdown-item d-flex align-items-center gap-2" (click)="criarDocumento('FACTURA')">
           <i class="bi bi-receipt"></i> Factura
         </a>
       </li>
       <li>
-        <a class="dropdown-item d-flex align-items-center gap-2" [routerLink]="['/factura-recibo']">
+        <a class="dropdown-item d-flex align-items-center gap-2" (click)="criarDocumento('FACTURA_RECIBO')">
           <i class="bi bi-cash-stack"></i> Factura/Recibo
         </a>
       </li>
