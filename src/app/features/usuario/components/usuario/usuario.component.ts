@@ -560,4 +560,13 @@ export class UsuariosComponent implements OnInit {
     // Somente isOwner pode desativar, exceto a si mesmo
     return this.usuarioLogado.isOwner && usuario.id !== this.usuarioLogado.id;
   }
+
+
+getPrimeiroEUltimoNome(nomeCompleto: string): string {
+  const nomes = nomeCompleto.trim().split(/\s+/);
+  if (nomes.length === 1) return nomes[0];
+  return `${nomes[0]} ${nomes[nomes.length - 1]}`;
+}
+
+
 }
