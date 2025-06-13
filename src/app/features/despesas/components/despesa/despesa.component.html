@@ -70,7 +70,7 @@
 
           <td>{{ despesa.nome }}</td>
           <td>{{ despesa.CriadoPor }}</td>
-          <td>{{ despesa.fornecedorId}}</td>
+          <td>{{ despesa.fornecedorId?.nome}}</td>
           <td>{{ despesa.motivo}}</td>
           <td>{{ despesa.valor| currency: 'Kz' }}</td>
           <td>{{ despesa.retencaoFonte}}</td>
@@ -119,9 +119,10 @@
           <div class="mb-3">
             <label for="fornecedorId">Fornecedor<span class="text-danger">*</span></label>
             <select name="fornecedorId" id="fornecedorId" class="form-select" formControlName="fornecedorId" required>
-                <option value=" " title="Nenhum Fernecedor">Nenhum Fornecedor</option>
-                <option value=" " title="">Divaldo Miguel</option>
-            </select>
+              <option value="">Selecione o fornecedor</option>
+              <option *ngFor="let fornecedor of fornecedores" [value]="fornecedor.id">
+                {{ fornecedor.nome }}
+              </option> </select>
           </div>
 
           <div class="mb-3">
