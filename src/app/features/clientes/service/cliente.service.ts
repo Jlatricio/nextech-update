@@ -14,7 +14,7 @@ export class ClienteService {
   private readonly apiUrl = `${environment.apiUrl}/costumers`;
 
   constructor(private httpClient: HttpClient) {}
-  
+
   getCliente(): Observable<Cliente[]> {
     return this.httpClient
       .get<Cliente[]>(this.apiUrl)
@@ -26,15 +26,35 @@ export class ClienteService {
       .post<Cliente>(this.apiUrl, cliente)
       .pipe(tap((newCliente) => console.log('Cliente creado:', newCliente)));
   }
-  deleteCliente(clienteId: number): Observable<void> {
-    return this.httpClient
-      .delete<void>(`${this.apiUrl}/${clienteId}`)
-      .pipe(tap(() => console.log(`Cliente eliminado con id: ${clienteId}`)));
+
+  editarCliente(cliente: Cliente): Observable<Cliente> {
+    const newCliente = {
+      tipo: cliente.tipo,
+      nome: cliente.nome,
+      email: cliente.email,
+      telefone: cliente.telefone,
+      endereco: cliente.endereco,
+    };
+    return this.httpClient.patch<Cliente>(
+      `${this.apiUrl}/${cliente.id}`,
+      newCliente
+    );
   }
 
-  updateCliente(cliente: Cliente): Observable<Cliente> {
+  deleteCliente(cliente: Cliente): Observable<void> {
     return this.httpClient
-      .put<Cliente>(`${this.apiUrl}/${cliente.id}`, cliente)
-      .pipe(tap((updatedCliente) => console.log('Cliente actualizado:', updatedCliente)));
+      .delete<void>(`${this.apiUrl}/${cliente.id}`)
+      .pipe(tap(() => console.log(`Cliente eliminado con id: ${cliente.id}`)));
+  }
+
+
+  checkEmail(email: string): Observable<boolean> {
+    return this.httpClient.get<boolean>( `/api/costumers/check-email?email=${email}`
+    );
+  }
+
+  checkTelefone(telefone: string): Observable<boolean> {
+    return this.httpClient.get<boolean>( `/api/costumers/check-telefone?telefone=${telefone}`
+    );
   }
 }

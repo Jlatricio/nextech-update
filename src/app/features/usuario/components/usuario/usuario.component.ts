@@ -6,10 +6,10 @@ import {
   AbstractControl,
   ValidationErrors,
   ReactiveFormsModule,
-  FormsModule
+  FormsModule,
 } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Usuario } from '../interface/usuario';
+import { Usuario } from '../../../usuario/interface/usuario';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule, Router } from '@angular/router';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
@@ -21,7 +21,13 @@ import { jwtDecode } from 'jwt-decode';
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, ToastrModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
+    ToastrModule,
+  ],
   templateUrl: './usuario.component.html',
   styleUrls: ['./usuario.component.scss'],
 })
@@ -54,214 +60,241 @@ export class UsuariosComponent implements OnInit {
       id: [''],
       nome: ['', Validators.required],
       perfil: ['', Validators.required],
-      telefone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(11)]],
+      telefone: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(11),
+        ],
+      ],
       email: ['', [Validators.required, Validators.email]],
-      senha: ['']
+      senha: [''],
     });
 
-    this.formSenha = this.formBuilder.group({
-      senha: ['', Validators.required],
-      novaSenha: ['', [Validators.required, Validators.minLength(8)]],
-      confirmarSenha: ['', Validators.required]
-    }, {
-      validators: [this.senhasIguaisValidator]
-    });
+    this.formSenha = this.formBuilder.group(
+      {
+        senha: ['', Validators.required],
+        novaSenha: ['', [Validators.required, Validators.minLength(8)]],
+        confirmarSenha: ['', Validators.required],
+      },
+      {
+        validators: [this.senhasIguaisValidator],
+      }
+    );
   }
 
-ngOnInit(): void {
-  this.titleService.setTitle('Usuários');
+  ngOnInit(): void {
+    this.titleService.setTitle('Usuários');
 
-  if (isPlatformBrowser(this.platformId)) {
-    const userData = localStorage.getItem('usuario');
-    const token = localStorage.getItem('token'); // << apenas aqui!
+    if (isPlatformBrowser(this.platformId)) {
+      const userData = localStorage.getItem('usuario');
+      const token = localStorage.getItem('token'); // << apenas aqui!
 
-    if (token) {
-      try {
-        const decoded: any = jwtDecode(token);
-        if (decoded && decoded.id && decoded.perfil) {
-          const id = Number(decoded.id);
-          const perfil = decoded.perfil as string;
-          const isOwner = decoded.isOwner === true || decoded.isOwner === 'true';
-          const nome = decoded.nome || '';
-          const email = decoded.email || '';
-          const telefone = decoded.telefone || '';
+      if (token) {
+        try {
+          const decoded: any = jwtDecode(token);
+          if (decoded && decoded.id && decoded.perfil) {
+            const id = Number(decoded.id);
+            const perfil = decoded.perfil as string;
+            const isOwner =
+              decoded.isOwner === true || decoded.isOwner === 'true';
+            const nome = decoded.nome || '';
+            const email = decoded.email || '';
+            const telefone = decoded.telefone || '';
 
-          this.usuarioLogado = {
-            id,
-            nome,
-            email,
-            telefone,
-            perfil,
-            isActive: true,
-            isOwner
-          };
+            this.usuarioLogado = {
+              id,
+              nome,
+              email,
+              telefone,
+              perfil,
+              isActive: true,
+              isOwner,
+            };
 
-          localStorage.setItem('usuario', JSON.stringify(this.usuarioLogado));
-        } else {
-          console.warn('Token inválido ou incompleto.', decoded);
+            localStorage.setItem('usuario', JSON.stringify(this.usuarioLogado));
+          } else {
+            console.warn('Token inválido ou incompleto.', decoded);
+          }
+        } catch (e) {
+          console.warn('Erro ao decodificar token JWT:', e);
         }
-      } catch (e) {
-        console.warn('Erro ao decodificar token JWT:', e);
       }
-    }
 
-    if (!this.usuarioLogado && token) {
-      try {
-        const decoded: any = jwtDecode(token);
-        if (decoded && decoded.id && decoded.perfil) {
-          const id = typeof decoded.id === 'number' ? decoded.id : Number(decoded.id);
-          const perfil = decoded.perfil as string;
-          const isOwner = decoded.isOwner === true || decoded.isOwner === 'true';
-          const nome = decoded.nome || '';
-          const email = decoded.email || '';
-          const telefone = decoded.telefone || '';
-          this.usuarioLogado = {
-            id,
-            nome,
-            email,
-            telefone,
-            perfil,
-            isActive: true,
-            isOwner
-          };
-          localStorage.setItem('usuario', JSON.stringify(this.usuarioLogado));
-          console.log('Preenchido usuarioLogado a partir do token:', this.usuarioLogado);
-        } else {
-          console.warn('Token JWT não contém claims id/perfil/isOwner adequados', decoded);
+      if (!this.usuarioLogado && token) {
+        try {
+          const decoded: any = jwtDecode(token);
+          if (decoded && decoded.id && decoded.perfil) {
+            const id =
+              typeof decoded.id === 'number' ? decoded.id : Number(decoded.id);
+            const perfil = decoded.perfil as string;
+            const isOwner =
+              decoded.isOwner === true || decoded.isOwner === 'true';
+            const nome = decoded.nome || '';
+            const email = decoded.email || '';
+            const telefone = decoded.telefone || '';
+            this.usuarioLogado = {
+              id,
+              nome,
+              email,
+              telefone,
+              perfil,
+              isActive: true,
+              isOwner,
+            };
+            localStorage.setItem('usuario', JSON.stringify(this.usuarioLogado));
+            console.log(
+              'Preenchido usuarioLogado a partir do token:',
+              this.usuarioLogado
+            );
+          } else {
+            console.warn(
+              'Token JWT não contém claims id/perfil/isOwner adequados',
+              decoded
+            );
+          }
+        } catch (e) {
+          console.warn('Erro ao decodificar token JWT:', e);
         }
-      } catch (e) {
-        console.warn('Erro ao decodificar token JWT:', e);
       }
-    }
 
-    console.log('Usuario logado carregado em ngOnInit:', this.usuarioLogado);
+      console.log('Usuario logado carregado em ngOnInit:', this.usuarioLogado);
 
-    if (token) {
-      try {
-        const decoded2: any = jwtDecode(token);
-        if (decoded2 && decoded2.perfil) {
-          this.perfilUsuario = decoded2.perfil;
+      if (token) {
+        try {
+          const decoded2: any = jwtDecode(token);
+          if (decoded2 && decoded2.perfil) {
+            this.perfilUsuario = decoded2.perfil;
+          }
+          console.log('Perfil de usuário (token):', this.perfilUsuario);
+        } catch (e) {
+          console.warn('Falha ao decodificar token JWT para perfil:', e);
         }
-        console.log('Perfil de usuário (token):', this.perfilUsuario);
-      } catch (e) {
-        console.warn('Falha ao decodificar token JWT para perfil:', e);
       }
-    }
-  } else {
-    this.usuarioLogado = null;
-  }
-
-  this.carregouUsuarioLogado = true;
-  this.listarUsuarios();
-}
-
-
-listarUsuarios(): void {
-  this.usuarioService.listaUsuario().subscribe(usuarios => {
-    const logado = this.usuarioLogado;
-    if (logado && logado.perfil === 'ADMIN' && !logado.isOwner) {
-      this.usuarios = usuarios.filter(u => u.id === logado.id);
     } else {
-      this.usuarios = usuarios;
+      this.usuarioLogado = null;
     }
-  });
-}
 
+    this.carregouUsuarioLogado = true;
+    this.listarUsuarios();
+  }
 
+  listarUsuarios(): void {
+    this.usuarioService.listaUsuario().subscribe((usuarios) => {
+      const logado = this.usuarioLogado;
+      if (logado && logado.perfil === 'ADMIN' && !logado.isOwner) {
+        this.usuarios = usuarios.filter((u) => u.id === logado.id);
+      } else {
+        this.usuarios = usuarios;
+      }
+    });
+  }
 
   getPerfilNome(perfil: string): string {
     switch (perfil) {
-      case 'ADMIN': return 'Administrador';
-      case 'VENDEDOR': return 'Vendedor';
-      default: return perfil;
+      case 'ADMIN':
+        return 'Administrador';
+      case 'VENDEDOR':
+        return 'Vendedor';
+      default:
+        return perfil;
     }
   }
 
   criarOuAtualizarUsuario(): void {
-  const senhaCtrl = this.form.get('senha');
+    const senhaCtrl = this.form.get('senha');
 
-  // Definir validação da senha
-  if (this.editando) {
-    senhaCtrl?.clearValidators(); // Em edição, não é obrigatório
-  } else {
-    senhaCtrl?.setValidators([Validators.required]); // Na criação, é obrigatório
-  }
-  senhaCtrl?.updateValueAndValidity();
+    // Definir validação da senha
+    if (this.editando) {
+      senhaCtrl?.clearValidators(); // Em edição, não é obrigatório
+    } else {
+      senhaCtrl?.setValidators([Validators.required]); // Na criação, é obrigatório
+    }
+    senhaCtrl?.updateValueAndValidity();
 
-  // Verificação de validade
-  if (this.form.invalid) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Atenção!',
-      text: 'Preencha todos os campos obrigatórios.',
-      timer: 2000,
-      showConfirmButton: false
-    });
-    return;
-  }
-
-  this.loading = true;
-
-  const formValues = this.form.value;
-  const telefoneCompleto = formValues.telefone
-    .replace(/\s+/g, '')
-    .replace(/^(\+244)?/, '+244');
-
-  // Montar payload básico
-  const usuarioPayload: any = {
-    nome: formValues.nome,
-    perfil: formValues.perfil,
-    telefone: telefoneCompleto,
-    email: formValues.email
-  };
-
-  // Incluir senha SOMENTE se:
-  // - não estiver editando (criação)
-  // - ou estiver editando E campo senha foi preenchido manualmente
-  if (!this.editando || (this.editando && formValues.senha?.trim())) {
-    usuarioPayload.senha = formValues.senha;
-  }
-
-  // Atualização
-  if (this.editando && this.usuarioEditandoId !== null) {
-    const original = {
-      nome: this.usuarioOriginal?.nome,
-      perfil: this.usuarioOriginal?.perfil,
-      telefone: this.usuarioOriginal?.telefone?.replace(/\s+/g, ''),
-      email: this.usuarioOriginal?.email
-    };
-
-    const atualizado = { ...usuarioPayload };
-    delete atualizado.senha; // ignorar senha na verificação de alteração
-
-    if (JSON.stringify(original) === JSON.stringify(atualizado)) {
+    // Verificação de validade
+    if (this.form.invalid) {
       Swal.fire({
-        icon: 'info',
-        title: 'Sem alterações!',
-        text: 'Nenhuma modificação foi detectada.',
+        icon: 'warning',
+        title: 'Atenção!',
+        text: 'Preencha todos os campos obrigatórios.',
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
-      this.loading = false;
       return;
     }
 
-    this.usuarioService.atualizarUsuario(this.usuarioEditandoId, usuarioPayload).subscribe({
-      next: () => this.afterSave('Usuário atualizado com sucesso!'),
-      error: (error) => this.handleError('Erro ao atualizar usuário.', error)
-    });
+    this.loading = true;
 
-  } else {
-    // Criação
-    this.usuarioService.criarUsuario(usuarioPayload).subscribe({
-      next: () => this.afterSave('Usuário criado com sucesso!'),
-      error: (error) => this.handleError('Erro ao criar usuário.', error)
-    });
+    const formValues = this.form.value;
+    const telefoneCompleto = formValues.telefone
+      .replace(/\s+/g, '')
+      .replace(/^(\+244)?/, '+244');
+
+    // Montar payload básico
+    const usuarioPayload: any = {
+      nome: formValues.nome,
+      perfil: formValues.perfil,
+      telefone: telefoneCompleto,
+      email: formValues.email,
+    };
+
+    // Incluir senha SOMENTE se:
+    // - não estiver editando (criação)
+    // - ou estiver editando E campo senha foi preenchido manualmente
+    if (!this.editando || (this.editando && formValues.senha?.trim())) {
+      usuarioPayload.senha = formValues.senha;
+    }
+
+    // Atualização
+    if (this.editando && this.usuarioEditandoId !== null) {
+      const original = {
+        nome: this.usuarioOriginal?.nome,
+        perfil: this.usuarioOriginal?.perfil,
+        telefone: this.usuarioOriginal?.telefone?.replace(/\s+/g, ''),
+        email: this.usuarioOriginal?.email,
+      };
+
+      const atualizado = { ...usuarioPayload };
+      delete atualizado.senha; // ignorar senha na verificação de alteração
+
+      if (JSON.stringify(original) === JSON.stringify(atualizado)) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Sem alterações!',
+          text: 'Nenhuma modificação foi detectada.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        this.loading = false;
+        return;
+      }
+
+      this.usuarioService
+        .atualizarUsuario(this.usuarioEditandoId, usuarioPayload)
+        .subscribe({
+          next: () => this.afterSave('Usuário atualizado com sucesso!'),
+          error: (error) =>
+            this.handleError('Erro ao atualizar usuário.', error),
+        });
+    } else {
+      // Criação
+      this.usuarioService.criarUsuario(usuarioPayload).subscribe({
+        next: () => this.afterSave('Usuário criado com sucesso!'),
+        error: (error) => this.handleError('Erro ao criar usuário.', error),
+      });
+    }
   }
-}
 
   private afterSave(msg: string): void {
-    Swal.fire({ icon: 'success', title: 'Sucesso!', text: msg, timer: 2000, showConfirmButton: false });
+    Swal.fire({
+      icon: 'success',
+      title: 'Sucesso!',
+      text: msg,
+      timer: 2000,
+      showConfirmButton: false,
+    });
     this.form.reset();
     this.cancelarEdicao();
     this.listarUsuarios();
@@ -275,7 +308,7 @@ listarUsuarios(): void {
       title: 'Erro!',
       text: error.error?.message || defaultMsg,
       timer: 3000,
-      showConfirmButton: false
+      showConfirmButton: false,
     });
     console.error(defaultMsg, error);
     this.loading = false;
@@ -289,33 +322,29 @@ listarUsuarios(): void {
       modal.hide();
       setTimeout(() => {
         document.body.classList.remove('modal-open');
-        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+        document.querySelectorAll('.modal-backdrop').forEach((b) => b.remove());
       }, 300);
     }
   }
 
-editarUsuario(usuario: Usuario): void {
-  this.form.patchValue({
-    nome: usuario.nome,
-    email: usuario.email,
-    telefone: usuario.telefone?.replace('+244', '').replace(/\s+/g, ''),
-    perfil: usuario.perfil,
-    senha: ''
-  });
+  editarUsuario(usuario: Usuario): void {
+    this.form.patchValue({
+      nome: usuario.nome,
+      email: usuario.email,
+      telefone: usuario.telefone?.replace('+244', '').replace(/\s+/g, ''),
+      perfil: usuario.perfil,
+      senha: '',
+    });
 
-  this.editando = true;
-  this.usuarioEditandoId = usuario.id!;
-  this.usuarioOriginal = { ...usuario };
+    this.editando = true;
+    this.usuarioEditandoId = usuario.id!;
+    this.usuarioOriginal = { ...usuario };
 
-  // Remover validação de senha em modo edição
-  const senhaCtrl = this.form.get('senha');
-  senhaCtrl?.clearValidators();
-  senhaCtrl?.updateValueAndValidity();
-}
-
-
-
-
+    // Remover validação de senha em modo edição
+    const senhaCtrl = this.form.get('senha');
+    senhaCtrl?.clearValidators();
+    senhaCtrl?.updateValueAndValidity();
+  }
 
   cancelarEdicao(): void {
     this.form.reset();
@@ -331,7 +360,7 @@ editarUsuario(usuario: Usuario): void {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sim, excluir!',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.usuarioService.deletarUsuario(id).subscribe({
@@ -342,7 +371,7 @@ editarUsuario(usuario: Usuario): void {
           error: (error) => {
             this.toastr.error('Erro ao deletar usuário.');
             console.error('Erro ao deletar usuário:', error);
-          }
+          },
         });
       }
     });
@@ -350,10 +379,11 @@ editarUsuario(usuario: Usuario): void {
 
   get usuariosFiltrados(): Usuario[] {
     const termo = this.filtro.toLowerCase();
-    return this.usuarios.filter(usuario =>
-      usuario.nome.toLowerCase().includes(termo) ||
-      usuario.email.toLowerCase().includes(termo) ||
-      usuario.perfil.toLowerCase().includes(termo)
+    return this.usuarios.filter(
+      (usuario) =>
+        usuario.nome.toLowerCase().includes(termo) ||
+        usuario.email.toLowerCase().includes(termo) ||
+        usuario.perfil.toLowerCase().includes(termo)
     );
   }
 
@@ -364,7 +394,7 @@ editarUsuario(usuario: Usuario): void {
         title: 'Acesso negado',
         text: 'Você não tem permissão para ativar ou desativar este usuário.',
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
       return;
     }
@@ -378,7 +408,7 @@ editarUsuario(usuario: Usuario): void {
           title: 'Sucesso!',
           text: `Usuário ${novoStatus ? 'ativado' : 'desativado'} com sucesso!`,
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       },
       error: (error) => {
@@ -387,17 +417,19 @@ editarUsuario(usuario: Usuario): void {
           title: 'Erro!',
           text: 'Erro ao alterar status do usuário.',
           timer: 3000,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
         console.error('Erro ao ativar/desativar usuário:', error);
-      }
+      },
     });
   }
 
   senhasIguaisValidator(group: AbstractControl): ValidationErrors | null {
     const nova = group.get('novaSenha')?.value;
     const confirma = group.get('confirmarSenha')?.value;
-    return nova && confirma && nova !== confirma ? { senhasDiferentes: true } : null;
+    return nova && confirma && nova !== confirma
+      ? { senhasDiferentes: true }
+      : null;
   }
 
   abrirModalAlterarSenha(usuario: Usuario): void {
@@ -405,74 +437,85 @@ editarUsuario(usuario: Usuario): void {
     this.nomeUsuarioParaSenha = usuario.nome;
     this.formSenha.reset();
   }
-onAlterarSenha(): void {
-  if (this.formSenha.invalid) {
-    if (this.formSenha.errors?.['senhasDiferentes']) {
-      Swal.fire({ icon: 'warning', title: 'Atenção', text: 'A nova senha e a confirmação não coincidem.' });
+  onAlterarSenha(): void {
+    if (this.formSenha.invalid) {
+      if (this.formSenha.errors?.['senhasDiferentes']) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Atenção',
+          text: 'A nova senha e a confirmação não coincidem.',
+        });
+        return;
+      }
+      Swal.fire({
+        icon: 'warning',
+        title: 'Atenção',
+        text: 'Verifique os campos obrigatórios.',
+      });
       return;
     }
-    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Verifique os campos obrigatórios.' });
-    return;
-  }
 
-  const { senha, novaSenha } = this.formSenha.value;
-  const userId = this.usuarioAlterarSenhaId ?? this.usuarioEditandoId ?? this.usuarioLogado?.id;
+    const { senha, novaSenha } = this.formSenha.value;
+    const userId =
+      this.usuarioAlterarSenhaId ??
+      this.usuarioEditandoId ??
+      this.usuarioLogado?.id;
 
-  if (!userId) {
-    this.toastr.error('Usuário não encontrado.');
-    return;
-  }
+    if (!userId) {
+      this.toastr.error('Usuário não encontrado.');
+      return;
+    }
 
-  const isProprioUsuario = this.usuarioLogado?.id === userId;
+    const isProprioUsuario = this.usuarioLogado?.id === userId;
 
-  const prosseguirAlteracao = () => {
-    this.loadingSenha = true;
+    const prosseguirAlteracao = () => {
+      this.loadingSenha = true;
 
-    this.usuarioService.changePassword(userId, senha, novaSenha).subscribe({
-      next: () => {
-        this.loadingSenha = false;
-        Swal.fire({
-          icon: 'success',
-          title: 'Sucesso',
-          text: 'Senha alterada com sucesso!',
-          timer: 2000,
-          showConfirmButton: false
-        });
+      this.usuarioService.changePassword(userId, senha, novaSenha).subscribe({
+        next: () => {
+          this.loadingSenha = false;
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: 'Senha alterada com sucesso!',
+            timer: 2000,
+            showConfirmButton: false,
+          });
 
-        this.formSenha.reset();
-        this.fecharModalSenha();
+          this.formSenha.reset();
+          this.fecharModalSenha();
 
-        if (isProprioUsuario) {
-          localStorage.removeItem('token');
-          this.router.navigate(['/login']);
+          if (isProprioUsuario) {
+            localStorage.removeItem('token');
+            this.router.navigate(['/login']);
+          }
+        },
+        error: (err) => {
+          this.loadingSenha = false;
+          const msg =
+            err.error?.message || err.error?.error || 'Erro ao alterar senha.';
+          Swal.fire({ icon: 'error', title: 'Erro', text: msg });
+        },
+      });
+    };
+
+    if (isProprioUsuario) {
+      Swal.fire({
+        title: 'Tem certeza?',
+        text: 'Ao alterar sua própria senha, você será desconectado!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, alterar e sair',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          prosseguirAlteracao();
         }
-      },
-      error: (err) => {
-        this.loadingSenha = false;
-        const msg = err.error?.message || err.error?.error || 'Erro ao alterar senha.';
-        Swal.fire({ icon: 'error', title: 'Erro', text: msg });
-      }
-    });
-  };
-
-  if (isProprioUsuario) {
-    Swal.fire({
-      title: 'Tem certeza?',
-      text: 'Ao alterar sua própria senha, você será desconectado!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sim, alterar e sair',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        prosseguirAlteracao();
-      }
-    });
-  } else {
-    prosseguirAlteracao(); // admin alterando senha de outro usuário
+      });
+    } else {
+      prosseguirAlteracao(); // admin alterando senha de outro usuário
+    }
   }
-}
-
 
   fecharModalSenha(): void {
     const modalEl = document.getElementById('modalalterarsenha');
@@ -481,7 +524,7 @@ onAlterarSenha(): void {
       modalInstance.hide();
       setTimeout(() => {
         document.body.classList.remove('modal-open');
-        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+        document.querySelectorAll('.modal-backdrop').forEach((b) => b.remove());
       }, 300);
     }
     this.usuarioAlterarSenhaId = null;
@@ -490,29 +533,27 @@ onAlterarSenha(): void {
 
   // ====== LÓGICA DE PERMISSÕES ======
 
- canEditPerfil(usuario: Usuario): boolean {
-  // Só o isOwner pode editar perfis (inclusive o próprio)
-  return this.usuarioLogado?.isOwner ?? false;
-}
+  canEditPerfil(usuario: Usuario): boolean {
+    // Só o isOwner pode editar perfis (inclusive o próprio)
+    return this.usuarioLogado?.isOwner ?? false;
+  }
 
+  canSelectAdmin(): boolean {
+    return !!this.usuarioLogado?.isOwner;
+  }
 
+  canEdit(usuario: Usuario): boolean {
+    if (!this.usuarioLogado) return false;
 
+    // Owner pode editar qualquer um
+    if (this.usuarioLogado.isOwner) return true;
 
- canSelectAdmin(): boolean {
-  return !!this.usuarioLogado?.isOwner;
-}
-
-canEdit(usuario: Usuario): boolean {
-  if (!this.usuarioLogado) return false;
-
-  // Owner pode editar qualquer um
-  if (this.usuarioLogado.isOwner) return true;
-
-  // Admin que não é owner pode editar somente a si mesmo
-  return this.usuarioLogado.perfil === 'ADMIN' && this.usuarioLogado.id === usuario.id;
-}
-
-
+    // Admin que não é owner pode editar somente a si mesmo
+    return (
+      this.usuarioLogado.perfil === 'ADMIN' &&
+      this.usuarioLogado.id === usuario.id
+    );
+  }
 
   canDesativar(usuario: Usuario): boolean {
     if (!this.usuarioLogado) return false;

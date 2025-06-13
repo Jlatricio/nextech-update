@@ -1,156 +1,349 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { Despesa } from '../../interface/despesa';
+
+import { finalize } from 'rxjs';
+import { DespesaService } from '../../service/despesa.service';
 
 import { Modal } from 'bootstrap';
-import { Observable } from 'rxjs';
 
-import { CommonModule } from '@angular/common';
-import { DespesaService } from '../../service/despesa.service';
-import { Despesa } from '../../interface/despesa';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TitleService } from '../../../../core/services/title.service';
 import { RouterModule } from '@angular/router';
 
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
+
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
 @Component({
   selector: 'app-despesa',
-  imports: [NgxMaskDirective,ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
-   providers: [provideNgxMask()],
+  standalone: true,
+  imports: [
+    NgxMaskDirective,
+    ReactiveFormsModule,
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    BsDropdownModule,
+  ],
+  providers: [provideNgxMask()],
   templateUrl: './despesa.component.html',
-  styleUrl: './despesa.component.scss'
+  styleUrls: ['./despesa.component.scss'],
 })
-export class DespesaComponent {
-
-
-  despesa$: Observable<Despesa[]>;
+export class DespesasComponent implements OnInit {
+  loading: boolean = false;
   form: FormGroup;
-  populateForm(despesa: any): void {
-  this.form.patchValue({
-    nome: despesa.nome,
-    motivo: despesa.motivo,
-    fornecedor: despesa.fornecedor,
-    reteencaonafonte: despesa.reteencaonafonte,
-    data: despesa.data,
-    entidade: despesa.entidade,
-    criadopor: despesa.criadopor,
-    valor: despesa.valor,
-    documento: despesa.documento
-  });
-}
 
-  constructor(private formBuilder: FormBuilder, private despesaService: DespesaService,  private titleService: TitleService) {
-    this.despesa$ = this.despesaService.listaDespesas();
+  despesa: Despesa[] = [];
+  despesaSelecionadoId: number | null = null;
 
-    this.form = this.formBuilder.group({
-      nome: ['', Validators.required],
-      fornecedor: ['', Validators.required],
-      motivo: ['', Validators.required],
-      criadopor: ['Admin', Validators.required],
-      data: [new Date().toISOString(), Validators.required], // Capture current date and time
-      rtnc: ['', Validators.required],
-      valor: ['', Validators.required]
-    });
-  }
-
-  ngOnInit(): void {
-    this.titleService.setTitle('Nextech - Despesas');
-  }
-
-
-  onSubmit() {
-    if (this.form.valid) {
-      this.despesaService.salvarDespesa(this.form.value).subscribe(result => {
-        console.log(result);
-        this.form.reset(); // Clear the form
-        const modal = document.getElementById('exampleModal');
-        if (modal) {
-          const bootstrapModal = Modal.getInstance(modal);
-          bootstrapModal?.hide(); // Close the modal
-        }
-        this.despesa$ = this.despesaService.listaDespesas();
-      });
-    }
-  }
-
-  deleteArtigo(id: number | undefined) {
-    if (id !== undefined) {
-      this.despesaService.deletarDespesa(id).subscribe(() => {
-        console.log(`Artigo with ID ${id} deleted`);
-        this.despesa$ = this.despesaService.listaDespesas();
-      });
-    }
-  }
-
-  updateArtigo(id: number) {
-    if (this.form.valid) {
-      this.despesaService.atualizarDespesa(id, this.form.value).subscribe(updatedArtigo => {
-        console.log(`Artigo with ID ${id} updated`, updatedArtigo);
-        this.form.reset(); // Clear the form
-        const modal = document.getElementById('exampleModal');
-        if (modal) {
-          const bootstrapModal = Modal.getInstance(modal);
-          bootstrapModal?.hide(); // Close the modal
-        }
-        this.despesa$ = this.despesaService.listaDespesas();
-      });
-    }
-  }
-
-  cards = [
-    {
-      title: 'Facturado',
-      value: 'Kz 0,00',
-      info: '8 transações',
-      percentage: '0,00%',
-      icon: 'fas fa-file-invoice',
-      style: ''
-    },
-    {
-      title: 'Despesas',
-      value: 'Kz 0,00',
-      info: '8 registos',
-      percentage: '0,00%',
-      icon: 'fas fa-money-bill-wave',
-      style: 'warning'
-    },
-    {
-      title: 'Recibos',
-      value: 'Kz 0,00',
-      info: '8 emitidos',
-      percentage: '0,00%',
-      icon: 'fas fa-receipt',
-      style: ''
-    },
-    {
-      title: 'Reembolso',
-      value: 'Kz 0,00',
-      info: '8 pedidos',
-      percentage: '0,00%',
-      icon: 'fas fa-undo',
-      style: 'danger'
-    }
-  ];
-
+  mostrarCampoNovaCategoria = false;
+  modoEdicao = false;
+  modalModo: 'criar' | 'editar' = 'criar';
 
   filtro = {
     Categorias: '',
     mes: '',
-    tipo: ''
+    tipo: '',
   };
 
-  Categorias = ['Serviço','Produto'];
+  filtroNomeCategoriaSelecionada = 'Todos';
 
-  filtrar() {
-    console.log('Filtro aplicado:', this.filtro);
-    // aqui você pode fazer um filtro real nos dados ou chamada a um serviço/backend
+  selecionarCategoria(id: string, nome: string) {
+    this.filtro.Categorias = id;
+    this.filtroNomeCategoriaSelecionada = nome;
   }
 
   searchTerm: string = '';
 
-filteredCards() {
-  if (!this.searchTerm) return this.cards;
+  get despesaFiltrados(): Despesa[] {
+    let resultado = this.despesa;
 
-  return this.cards.filter(card =>
-    card.title.toLowerCase().includes(this.searchTerm.toLowerCase())
-  );
-}
+    const termo = this.searchTerm?.trim().toLowerCase();
+    const categoriaSelecionada = this.filtro?.Categorias;
+
+    if (termo) {
+      resultado = resultado.filter((a) =>
+        a.nome?.toLowerCase().includes(termo)
+      );
+    }
+
+    if (categoriaSelecionada) {
+      resultado = resultado.filter(
+        (a) => a.categoria?.id === +categoriaSelecionada
+      );
+    }
+
+    return resultado;
+  }
+
+  filtrar(): void {
+    this.loading = true;
+  }
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private despesaService: DespesaService,
+    private titleService: TitleService,
+    private toastr: ToastrService
+  ) {
+    this.form = this.formBuilder.group({
+      nome: ['', Validators.required],
+      motivo: ['', Validators.required],
+      fornecedorId: ['', Validators.required],
+      valor: ['', Validators.required],
+      retencaoFonte: ['', Validators.required],
+      descricao: [''],
+    });
+  }
+
+  ngOnInit(): void {
+    this.titleService.setTitle('despesa');
+    this.inicializarFormulario();
+    this.carregarDespesa();
+
+    this.form.addControl(
+      'descricao',
+      this.formBuilder.control('', [Validators.maxLength(300)])
+    );
+    this.form.get('descricao')?.valueChanges.subscribe((value: string) => {
+      this.descricao = value;
+      this.descricaoRestante = 300 - (value?.length || 0);
+    });
+  }
+
+  inicializarFormulario(): void {
+    this.form = this.formBuilder.group({
+      nome: ['', Validators.required],
+      valor: ['', Validators.required],
+      fornecedorId: ['', Validators.required],
+      motivo: ['', Validators.required],
+      retencaoFonte: ['', Validators.required],
+      descricao: [''],
+    });
+  }
+
+  carregarDespesa(): void {
+    this.despesaService.listarDespesa().subscribe({
+      next: () => {},
+    });
+  }
+
+  despesaSelecionado: any = null;
+  abrirCriarModal() {
+    this.modalModo = 'criar';
+    this.despesaSelecionado = {}; // ou zere o form como preferir
+  }
+
+  salvarDespesa(): void {
+    this.loading = true;
+    this.modalModo = 'criar';
+
+    // Garante que a descrição nunca seja vazia
+    let descricao = this.form.value.descricao?.trim();
+    if (!descricao) {
+      descricao = 'N/A';
+    }
+
+    const despesa: Partial<Despesa> = {
+      nome: this.form.value.nome,
+      valor: parseFloat(
+        String(this.form.value.valor)
+          .replace('Kz ', '')
+          .replace(/\./g, '')
+          .replace(',', '.')
+      ),
+      categoriaId: Number(this.form.value.categoria),
+      descricao: descricao,
+    };
+
+    if (this.despesaSelecionadoId) {
+      this.despesaService
+        .atualizarDespesa(this.despesaSelecionadoId, despesa)
+        .subscribe({
+          next: () => {
+            this.carregarDespesa();
+            this.resetarFormulario();
+            Swal.fire({
+              icon: 'success',
+              title: 'Sucesso!',
+              text: 'Despesa atualizado com sucesso!',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.fecharModal();
+          },
+          error: (err) => {
+            console.error('Erro ao atualizar:', err);
+          },
+          complete: () => {
+            this.loading = false;
+          },
+        });
+    } else {
+      this.despesaService.criarDespesa(despesa).subscribe({
+        next: (res: any) => {
+          console.log('Despesa criado!', res);
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso!',
+            text: 'Despesa criado com sucesso!',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.fecharModal();
+        },
+        error: (err: any) => {
+          console.error('Erro:', err.error);
+        },
+        complete: () => {
+          this.carregarDespesa();
+          this.resetarFormulario();
+          this.loading = false;
+        },
+      });
+    }
+  }
+
+  fecharModal(): void {
+    const modalElement = document.getElementById('exampleModal');
+
+    if (modalElement) {
+      let modal = Modal.getInstance(modalElement);
+      if (!modal) {
+        modal = new Modal(modalElement);
+      }
+
+      modal.hide();
+
+      // Espera o modal terminar a animação e remove o backdrop manualmente
+      setTimeout(() => {
+        // Remove classe que trava o scroll da página
+        document.body.classList.remove('modal-open');
+
+        // Remove o backdrop (fundo escuro)
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach((b) => b.remove());
+      }, 300); // 300ms é o tempo padrão do fade-out no Bootstrap
+    }
+  }
+
+  editarDespesa(despesa: Despesa): void {
+    this.modalModo = 'editar';
+    this.modalModo = 'editar';
+    this.despesaSelecionado = despesa;
+    this.despesaSelecionadoId = despesa.id;
+
+    this.form.patchValue({
+      nome: despesa.nome,
+      valor: despesa.valor.toString(),
+      retencaoFonte: despesa.retencaoFonte,
+      criadoPor: despesa.CriadoPor,
+
+      categoria: despesa.categoriaId.toString(),
+      descricao: despesa.descricao,
+    });
+    this.modoEdicao = true;
+
+    const modalElement = document.getElementById(
+      'exampleModal'
+    ) as HTMLElement | null;
+    if (modalElement) {
+      const modal = new Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  atualizarDespesa(): void {
+    if (!this.despesaSelecionadoId) return;
+
+    const payload: Partial<Despesa> = {
+      nome: this.form.value.nome,
+      valor: parseFloat(
+        String(this.form.value.valor)
+          .replace('Kz ', '')
+          .replace(/\./g, '')
+          .replace(',', '.')
+      ),
+      categoriaId: Number(this.form.value.categoria),
+
+      descricao: this.form.value.descricao || 'N/A',
+    };
+
+    this.loading = true;
+    this.despesaService
+      .atualizarDespesa(this.despesaSelecionadoId, payload)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Atualizado!',
+            text: 'Despesa atualizado com sucesso!',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.fecharModal();
+          this.carregarDespesa();
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar Despesa:', err);
+        },
+      });
+  }
+
+  excluirDespesa(id: number): void {
+    Swal.fire({
+      title: 'Tem certeza?',
+      text: 'Deseja realmente excluir este Despesa?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir!',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.despesaService.deletarDespesa(id).subscribe({
+          next: () => {
+            this.carregarDespesa();
+            this.toastr.success('Despesa excluído com sucesso!');
+          },
+          error: (err) => {
+            console.error('Erro ao excluir Despesa:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erro!',
+              text: 'Erro ao excluir Despesa. Tente novamente.',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          },
+        });
+      }
+    });
+  }
+
+  resetarFormulario(): void {
+    this.form.reset();
+    this.despesaSelecionadoId = null;
+  }
+
+  toggleNovaCategoria() {
+    this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
+  }
+
+  descricao: string = '';
+  descricaoRestante: number = 300;
+
+  ngAfterViewInit(): void {
+    this.descricaoRestante = 300 - (this.descricao?.length || 0);
+  }
 }

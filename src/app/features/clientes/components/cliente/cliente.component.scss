@@ -459,3 +459,49 @@ tbody tr button {
     }
   }
 }
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  font-family: 'Inter', sans-serif;
+
+  button {
+    background: #fff;
+    border: 1.5px solid #ced4da;
+    color: #495057;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      background: #f1f3f5;
+      border-color: #1d3557;
+      color: #1d3557;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+      box-shadow: none;
+      border-color: #dee2e6;
+      color: #adb5bd;
+      background: #fff;
+    }
+
+    &.active {
+      background: #2b2b2b;
+      color: #fff;
+      border-color: transparent;
+      cursor: default;
+      pointer-events: none;
+      transform: none;
+    }
+  }
+}

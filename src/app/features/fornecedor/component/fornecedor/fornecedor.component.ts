@@ -2,12 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 import { Observable } from 'rxjs/internal/Observable';
 
 
 import { FornecedorService} from '../../services/fornecedor.service'
 import { Fornecedor} from '../../interface/fornecedor';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-fornecedores',
@@ -20,59 +23,102 @@ export class FornecedoresComponent {
   fornecedor$!: Observable<Fornecedor[]>;
 
   form: FormGroup;
-    fornecedor: Fornecedor = {
-          id: 0,
-          nome: '',
-          nif: '',
-          endereco: '',
-          telefone: '',
-          email: ''
-    };
+  fornecedores: Fornecedor[] = [];
+  editando: boolean = false;
+  fornecedorEditandoId: number | null = null;
+  fornecedorOriginal: Fornecedor | null = null;
+  loading: boolean = false;
 
-    constructor(
-      private formBuilder: FormBuilder,
-      private fornecedorService: FornecedorService,
-      
-    ) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private fornecedorService: FornecedorService,
+    private toastr: ToastrService
+  ) {
     this.form = this.formBuilder.group({
-      id: [this.fornecedor.id],
-      nome: [this.fornecedor.nome, Validators.required],  
-      nif: [this.fornecedor.nif, Validators.required],
-      endereco: [this.fornecedor.endereco, Validators.required],
-      telefone: [this.fornecedor.telefone,[Validators.required,Validators.minLength(9),],],
-      email: [this.fornecedor.email, [Validators.required, Validators.email]],
+      id: [''],
+      nome: ['', Validators.required],
+      nif: ['', Validators.required],
+      endereco: ['', Validators.required],
+      telefone: ['', [Validators.required, Validators.minLength(9)]],
+      email: ['', [Validators.required, Validators.email]],
     });
   }
 
   ngOnInit(): void {
     this.fornecedor$ = this.fornecedorService.getFornecedores();
-  }       
-  onSubmit() {
-    console.log(this.form.value);
-    if (this.form.valid) {
-      this.fornecedorService.createFornecedor(this.form.value).subscribe(
-        (response) => {
+    this.fornecedor$.subscribe((fornecedores: Fornecedor[]) => {
+      this.fornecedores = fornecedores;
+    });
+  }
 
-          // Exibir mensagem de sucesso
-          alert('Fornecedor criado com sucesso');
-          console.log(response)
-          this.form.reset();
-          // Atualizar a lista de fornecedores
-          this.fornecedor$ = this.fornecedorService.getFornecedores();
-        },
-        (error) => {
-          // Exibir mensagem de erro
-          alert('Erro ao criar fornecedor');
-          console.log(error)
-        }
-      );
+  criarOuAtualizarUsuario(): void {
+    if (this.form.invalid) {
+      // Exibir mensagem de alerta se o formulário for inválido
+      Swal.fire({
+        icon: 'success',
+        title: 'Atenção!',
+        text: 'Preencha todos os campos obrigatórios.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    if (this.editando && this.fornecedorEditandoId !== null) {
+      this.fornecedorService
+        .updateFornecedor(this.fornecedorEditandoId, this.form.value)
+        .subscribe({
+          next: () => {
+            Swal.fire({
+                      icon: 'success',
+                      title: 'Sucesso!',
+                      text: 'Fornecedor atualizado com sucesso!',
+                      timer: 2000,
+                      showConfirmButton: false
+                    });
+            this.cancelarEdicao();
+            this.fornecedor$ = this.fornecedorService.getFornecedores();
+            this.fecharModal();
+          },
+          error: (error) => {
+            console.error('Erro ao atualizar fornecedor:', error);
+          },
+          complete: () => {
+            this.loading = false;
+          }
+        });
+       
     } else {
-      console.log('Form is invalid');
-      Object.entries(this.form.controls).forEach(([key, control]) => {
-        console.log(
-          `${key} - valor: ${control.value}, válido: ${control.valid}, erros:`,
-          control.errors
-        );
+      this.fornecedorService.createFornecedor(this.form.value).subscribe({
+        next: () => {
+          Swal.fire({
+                   icon: 'success',
+                   title: 'Sucesso!',
+                   text: 'Fornecedor criado com sucesso!',
+                   timer: 2000,
+                   showConfirmButton: false
+                 });
+                 
+          this.fecharModal();
+          this.form.reset();
+          this.fornecedor$ = this.fornecedorService.getFornecedores();
+          this.fecharModal();
+        },
+        error: (error: Error) => {
+          console.error('Erro:', error.message);
+        },
+        complete: () => {
+          this.fornecedorService.getFornecedores().subscribe({
+            next: (fornecedores: Fornecedor[]) => {
+              this.fornecedores = fornecedores;
+            },
+            error: (error) => {
+              console.error('Erro ao buscar fornecedores:', error);
+            }
+          })
+          this.form.reset();
+          this.loading = false;
+        }
       });
     }
   }
@@ -81,41 +127,99 @@ export class FornecedoresComponent {
     this.fornecedorService.deleteFornecedor(fornecedor.id).subscribe(
       () => {
         // Exibir mensagem de sucesso
-        alert('Fornecedor excluído com sucesso');
-
+          Swal.fire({
+          title: 'Tem certeza?',
+          text: 'Deseja realmente excluir este  fornecedor?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sim, excluir!',
+          cancelButtonText: 'Cancelar'
+        })
         // Atualizar a lista de fornecedores
         this.fornecedor$ = this.fornecedorService.getFornecedores();
       },
       (error) => {
         // Exibir mensagem de erro
-        alert('Erro ao excluir fornecedor:' + error.message);
-      } 
-    );
-  }
-  updateFornecedor(fornecedor: Fornecedor) {
-    this.fornecedorService.updateFornecedor(fornecedor).subscribe(
-      (response) => {
-        // Exibir mensagem de sucesso
-        alert('Fornecedor atualizado com sucesso');
-        console.log(response);
-        // Atualizar a lista de fornecedores
-        this.fornecedor$ = this.fornecedorService.getFornecedores();
-      },
-      (error) => {
-        // Exibir mensagem de erro
-        alert('Erro ao atualizar fornecedor:' + error.message);
+        console.log(error.message)
+        Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Erro ao excluir fornecedor. Tente novamente.',
+                    timer: 2000,
+                    showConfirmButton: false
+                    });
       }
     );
   }
-  populateForm(fornecedor: Fornecedor) {
-    this.form.patchValue({
-      id: fornecedor.id,
-      nome: fornecedor.nome,
-      nif: fornecedor.nif,
-      endereco: fornecedor.endereco,
-      telefone: fornecedor.telefone,
-      email: fornecedor.email
-    });
+
+  updateFornecedor(fornecedor: Fornecedor) {
+    this.fornecedorService
+      .updateFornecedor(fornecedor.id, fornecedor)
+      .subscribe(
+        (response) => {
+          // Exibir mensagem de sucesso
+          Swal.fire({
+              title: 'Sucesso!',
+              text: 'Fornecedor atualizado com sucesso!',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          console.log(response);
+          // Atualizar a lista de fornecedores
+          this.fornecedor$ = this.fornecedorService.getFornecedores();
+          this.cancelarEdicao();
+          this.fecharModal();
+        },
+        (error) => {
+          // Exibir mensagem de erro
+          console.error('Erro ao atualizar fornecedor:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro!',
+            text: 'Erro ao atualizar fornecedor. Tente novamente.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      );
   }
- 
+
+   populateForm(fornecedor: Fornecedor) {
+    this.form.patchValue({
+      ...fornecedor,
+    });
+    this.editando = true;
+    this.fornecedorEditandoId = fornecedor.id!;
+    this.fornecedorOriginal = { ...fornecedor };
+  }
+
+  fecharModal(): void {
+    const modalElement = document.getElementById('exampleModal');
+
+    if (modalElement) {
+      let modal = Modal.getInstance(modalElement);
+      if (!modal) {
+        modal = new Modal(modalElement);
+      }
+
+      modal.hide();
+
+      // Espera o modal terminar a animação e remove o backdrop manualmente
+      setTimeout(() => {
+        // Remove classe que trava o scroll da página
+        document.body.classList.remove('modal-open');
+
+        // Remove o backdrop (fundo escuro)
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach((b) => b.remove());
+      }, 300); // 300ms é o tempo padrão do fade-out no Bootstrap
+    }
+  }
+  cancelarEdicao() {
+    this.form.reset({ id: 0 });
+    this.editando = false;
+    this.fornecedorEditandoId = null;
+    this.fornecedorOriginal = null;
+  }
 }
