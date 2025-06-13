@@ -21,7 +21,7 @@
   <!-- Campo Senha -->
   <div class="input-field" [ngClass]="{'has-error': loginsenha?.invalid && (loginsenha?.dirty || loginsenha?.touched)}">
     <i class="fas fa-lock"></i>
-    <input type="password" formControlName="senha" placeholder="Senha" />
+    <input type="password" formControlName="senha" placeholder="Senha" autocomplete="new-password" />
   </div>
   <div *ngIf="loginsenha?.invalid && (loginsenha?.dirty || loginsenha?.touched)" class="error">
     <small *ngIf="loginsenha?.errors?.['required']">Senha é obrigatória.</small>
@@ -86,7 +86,7 @@
         <!-- Senha -->
         <div class="input-field" [ngClass]="{'has-error': registerPassword?.invalid && (registerPassword?.dirty || registerPassword?.touched)}">
           <i class="fas fa-lock"></i>
-          <input type="password" formControlName="senha" placeholder="Senha" />
+          <input type="password" formControlName="senha" placeholder="Senha" autocomplete="new-password" />
         </div>
         <div *ngIf="registerPassword?.invalid && (registerPassword?.dirty || registerPassword?.touched)" class="error">
           <small *ngIf="registerPassword?.errors?.['required']">Senha é obrigatória.</small>

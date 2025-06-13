@@ -1,5 +1,7 @@
+<app-top-loading-bar></app-top-loading-bar>
 
 <div *ngIf="mostrarLayout && !carregando" class="body">
+
   <div class="header">
     <app-header></app-header>
     <div class="content">
@@ -15,6 +17,5 @@
 <footer class="dock-menu"></footer>
 
 
-<!-- Se não mostrar layout, ainda precisa do router-outlet para login -->
  <app-startup-component *ngIf="carregando"></app-startup-component>
 <router-outlet *ngIf="!mostrarLayout"></router-outlet>
