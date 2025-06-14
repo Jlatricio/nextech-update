@@ -272,7 +272,7 @@ isPositive(percentage: string): boolean {
     return percent.replace(',', '.');
   }
 
-  getPrimeiroEUltimoNome(nomeCompleto: string): string {
+getPrimeiroEUltimoNome(nomeCompleto: string): string {
   const nomes = nomeCompleto.trim().split(/\s+/);
   if (nomes.length === 1) return nomes[0];
   return `${nomes[0]} ${nomes[nomes.length - 1]}`;

@@ -1,107 +1,187 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators,} from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import {  Observable} from 'rxjs';
+import { BehaviorSubject, combineLatest, finalize, map, Observable, switchMap } from 'rxjs';
 
 import { ClienteService } from '../../service/cliente.service';
 import { Cliente } from '../../interface/cliente';
 import Swal from 'sweetalert2';
 import Modal from 'bootstrap/js/dist/modal';
-
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @Component({
   selector: 'app-cliente',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, BsDropdownModule, FormsModule],
   templateUrl: './cliente.component.html',
   styleUrl: './cliente.component.scss',
 })
 export class ClienteComponent implements OnInit {
-
-  clientes$: Observable<Cliente[]>;
-  form: FormGroup;
-
+  clienteOriginal: Cliente | null = null;
   editando = false;
   clienteIdEditando: number | null = null;
   loading: boolean = false;
+
+  private refreshClientes$ = new BehaviorSubject<void>(undefined);
+
+  searchTerm$ = new BehaviorSubject<string>('');
+  selectedTipo$ = new BehaviorSubject<string>('');
+
+  clientes$: Observable<Cliente[]>;
+  clientesFiltrados$!: Observable<Cliente[]>;
+
+  form: FormGroup;
+
+  tipos = [
+    { value: 'PESSOA_FISICA', label: 'Pessoa Física' },
+    { value: 'PESSOA_JURIDICA', label: 'Pessoa Jurídica' },
+    { value: 'EMPRESA_PUBLICA', label: 'Empresa Pública' },
+    { value: 'EMPRESA_PRIVADA', label: 'Empresa Privada' },
+    { value: 'ONG', label: 'ONG' },
+  ];
 
   constructor(
     private formBuilder: FormBuilder,
     private clienteService: ClienteService
   ) {
     this.form = this.createForm();
-    this.clientes$ = this.clienteService.getCliente();
+
+    // clientes$ recarrega via refreshClientes$
+    this.clientes$ = this.refreshClientes$.pipe(
+      switchMap(() => this.clienteService.getCliente())
+    );
+
+    // combinamos para filtragem
+    this.clientesFiltrados$ = combineLatest([
+      this.clientes$,
+      this.searchTerm$,
+      this.selectedTipo$
+    ]).pipe(
+      map(([clientes, termo, tipo]) => {
+        termo = termo.toLowerCase().trim();
+        return clientes.filter(c => {
+          const correspondeNome = termo ? c.nome.toLowerCase().includes(termo) : true;
+          const correspondeTipo = tipo ? c.tipo === tipo : true;
+          return correspondeNome && correspondeTipo;
+        });
+      })
+    );
   }
 
   ngOnInit(): void {
     this.loadClientes();
   }
 
-  private createForm(): FormGroup {
-    return this.formBuilder.group({
-      nome: ['', Validators.required],
-      tipo: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      telefone: ['', [Validators.required]],
-      endereco: ['', Validators.required],
+private createForm(): FormGroup {
+  return this.formBuilder.group({
+    nome: ['', [Validators.required, Validators.minLength(3)]],
+    tipo: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    telefone: ['', [Validators.required, Validators.minLength(9)]],
+    endereco: ['', Validators.required],
+  });
+}
+
+
+  // Getters para template
+ get nome(): FormControl { return this.form.get('nome') as FormControl; }
+get email(): FormControl { return this.form.get('email') as FormControl; }
+get telefone(): FormControl { return this.form.get('telefone') as FormControl; }
+get endereco(): FormControl { return this.form.get('endereco') as FormControl; }
+get tipoCtrl(): FormControl { return this.form.get('tipo') as FormControl; }
+
+  private loadClientes(): void {
+    this.refreshClientes$.next();
+  }
+
+  onSearchChange(valor: string): void {
+    this.searchTerm$.next(valor);
+  }
+
+  onTipoChange(tipo: string): void {
+    this.selectedTipo$.next(tipo);
+  }
+
+  abrirModalParaCriar(): void {
+    this.resetForm();
+    this.editando = false;
+    this.clienteIdEditando = null;
+    this.clienteOriginal = null;
+    setTimeout(() => {
+      const modalEl = document.getElementById('modalCliente');
+      if (modalEl) {
+        const modalRef = Modal.getInstance(modalEl) || new Modal(modalEl);
+        modalRef.show();
+      }
+    }, 0);
+  }
+
+  editarCliente(cliente: Cliente): void {
+    this.populateForm(cliente);
+    this.editando = true;
+    this.clienteIdEditando = cliente.id!;
+    this.clienteOriginal = { ...cliente };
+    const modalEl = document.getElementById('modalCliente');
+    if (modalEl) {
+      const modalRef = Modal.getInstance(modalEl) || new Modal(modalEl);
+      modalRef.show();
+    }
+  }
+
+  populateForm(cliente: Cliente): void {
+    this.form.patchValue({
+      nome: cliente.nome,
+      email: cliente.email,
+      telefone: cliente.telefone,
+      endereco: cliente.endereco,
+      tipo: cliente.tipo,
+    });
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity();
+    this.editando = true;
+    this.clienteIdEditando = cliente.id!;
+    this.clienteOriginal = { ...cliente };
+  }
+
+  resetForm(): void {
+    this.form.reset();
+    this.editando = false;
+    this.clienteIdEditando = null;
+    this.clienteOriginal = null;
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.form.updateValueAndValidity();
+    Object.keys(this.form.controls).forEach(key => {
+      const ctrl = this.form.get(key);
+      if (ctrl) ctrl.setErrors(null);
     });
   }
 
-  getTipoClienteNome(tipo: string): string {
-    switch (tipo) {
-      case 'PESSOA_FISICA':
-        return 'Pessoa Física';
-      case 'PESSOA_JURIDICA':
-        return 'Pessoa Jurídica';
-      case 'EMPRESA_PUBLICA':
-        return 'Empresa Pública';
-      case 'EMPRESA_PRIVADA':
-        return 'Empresa Privada';
-      case 'ONG':
-        return 'ONG';
-      default:
-        return tipo;
-    }
-  }
-
-  private loadClientes(): void {
-    this.clientes$ = this.clienteService.getCliente();
-  }
-
-  // Variável para armazenar o valor selecionado
-  selectedTipo: string = '';
-
-  // Lista com valores formatados
-  tipos = [
-    { value: 'PESSOA_FISICA', label: 'Pessoa  Física' },
-    { value: 'PESSOA_JURIDICA', label: 'Pessoa  Jurídica' },
-    { value: 'EMPRESA_PUBLICA', label: 'Empresa Pública' },
-    { value: 'EMPRESA_PRIVADA', label: 'Empresa Privada' },
-    { value: 'ONG', label: 'ONG' },
-  ];
-
+  // Aqui implementamos onSubmit, que faltava
   onSubmit(): void {
     if (this.form.invalid) {
-      console.warn('Formulário inválido:', this.form.value);
-      this.logValidationErrors();
+      this.form.markAllAsTouched();
       return;
     }
-
-    const cliente: Cliente = {
+    const clienteData: Cliente = {
       id: this.editando ? this.clienteIdEditando! : 0,
       ...this.form.value,
     };
-
     if (this.editando) {
-      this.updateCliente(cliente);
+      this.updateCliente(clienteData);
     } else {
-      this.createCliente(cliente); // Pass Cliente with id
+      this.createCliente(clienteData);
     }
   }
-  
+
   private createCliente(cliente: Cliente): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.clienteService.createCliente(cliente).subscribe({
       next: () => {
         Swal.fire({
@@ -111,51 +191,78 @@ export class ClienteComponent implements OnInit {
           timer: 2000,
           showConfirmButton: false,
         });
-        // Limpa o formulário e reseta o estado de edição
-        this.form.reset();
-
-        this.editando = false;
-        this.clienteIdEditando = null;
-        // Reseta o formulário
+        const modalEl = document.getElementById('modalCliente');
+        if (modalEl) {
+          const modalRef = Modal.getInstance(modalEl) || new Modal(modalEl);
+          modalRef.hide();
+        }
         this.resetForm();
         this.loadClientes();
       },
       error: (error) => {
         let msg = 'Erro ao criar cliente.';
-
         if (error?.status === 400) {
-          msg =
-            error.error?.message || 'Dados inválidos. Verifique o formulário.';
+          msg = error.error?.message || 'Dados inválidos. Verifique o formulário.';
         } else if (error?.status === 403) {
-          msg =
-            error.error?.message || 'E-mail ou telefone já estão cadastrados.';
+          msg = error.error?.message || 'E-mail ou telefone já estão cadastrados.';
         } else if (error?.status === 500) {
           msg = 'Erro interno no servidor. Tente novamente mais tarde.';
         } else if (error?.status === 0) {
           msg = 'Não foi possível conectar ao servidor.';
         }
-
         Swal.fire({
           icon: 'error',
-          title: 'Verifica o formulario ',
+          title: 'Verifique o formulário',
           text: msg,
           timer: 2000,
           showConfirmButton: false,
         });
-      },
+      }
     });
   }
-  
+
   private updateCliente(cliente: Cliente): void {
-    this.clienteService
-      .editarCliente({
-        ...cliente,
-        id: this.clienteIdEditando !== null ? this.clienteIdEditando : 0, // Certifique-se de que o ID está sendo passado corretamente
-      })
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    if (!this.clienteIdEditando) {
+      return;
+    }
+    const clienteAtualizado: Cliente = {
+      id: this.clienteIdEditando,
+      ...this.form.value,
+    };
+    // comparar com original
+    const originalComparable = {
+      nome: this.clienteOriginal?.nome,
+      email: this.clienteOriginal?.email,
+      telefone: this.clienteOriginal?.telefone,
+      endereco: this.clienteOriginal?.endereco,
+      tipo: this.clienteOriginal?.tipo,
+    };
+    const atualizadoComparable = {
+      nome: clienteAtualizado.nome,
+      email: clienteAtualizado.email,
+      telefone: clienteAtualizado.telefone,
+      endereco: clienteAtualizado.endereco,
+      tipo: clienteAtualizado.tipo,
+    };
+    if (JSON.stringify(originalComparable) === JSON.stringify(atualizadoComparable)) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sem alterações!',
+        text: 'Nenhuma modificação foi detectada nos dados do cliente.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
+    }
+    this.loading = true;
+    this.clienteService.editarCliente(clienteAtualizado)
+      .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: () => {
-          this.loadClientes();
-          this.resetForm();
           Swal.fire({
             icon: 'success',
             title: 'Sucesso!',
@@ -163,105 +270,30 @@ export class ClienteComponent implements OnInit {
             timer: 2000,
             showConfirmButton: false,
           });
-          // Atualiza o formulário após salvar
-          this.loadClientes();
+          const modalEl = document.getElementById('modalCliente');
+          if (modalEl) {
+            const modalRef = Modal.getInstance(modalEl) || new Modal(modalEl);
+            modalRef.hide();
+          }
           this.resetForm();
-
-          this.form.reset();
-          this.editando = false;
-          this.clienteIdEditando = null;
-          // Marca o formulário como limpo e não tocado
-          this.form.markAsPristine();
-          this.form.markAsUntouched();
-          this.form.updateValueAndValidity();
+          this.loadClientes();
         },
         error: (error) => {
           Swal.fire({
             icon: 'error',
             title: 'Erro!',
-            text: 'Erro ao atualizar cliente.',
+            text: error.error?.message || 'Erro ao atualizar cliente.',
             timer: 2000,
             showConfirmButton: false,
           });
-          // Loga os erros de validação
           console.warn('Erro ao atualizar cliente:', error);
-          this.logValidationErrors();
-          this.form.markAsPristine();
-          this.form.markAsUntouched();
-          this.form.updateValueAndValidity();
-          // Define loading como false para indicar que a operação foi concluída
-          this.loading = false;
-        },
-        complete: () => {
-          this.loading = false;
-        },
+        }
       });
-  }
-
-  populateForm(cliente: Cliente): void {
-    // Preenche o formulário com os dados do cliente selecionado
-    if (!cliente) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Atenção!',
-        text: 'Cliente não encontrado ou inválido.',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-
-      return;
-    }
-    // Preenche o formulário com os dados do cliente
-    this.form.markAsDirty();
-    this.form.markAsTouched();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
-    this.form.updateValueAndValidity();
-    this.logValidationErrors();
-
-    this.form.patchValue({
-      nome: cliente.nome,
-      email: cliente.email,
-      telefone: cliente.telefone,
-      endereco: cliente.endereco,
-      tipo: cliente.tipo,
-    });
-    this.editando = true;
-    this.clienteIdEditando = cliente.id;
-  }
-
-  resetForm(): void {
-    // Reseta o formulário para o estado inicial
-    this.form.reset();
-    this.editando = false;
-    this.clienteIdEditando = null;
-
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
-    this.form.updateValueAndValidity();
-    this.logValidationErrors();
-    // Limpa os erros de validação
-    Object.keys(this.form.controls).forEach((key) => {
-      const control = this.form.get(key);
-      if (control) {
-        control.setErrors(null); // Limpa os erros de validação
-      }
-    });
-    // Limpa os campos do formulário
-    this.form.patchValue({
-      nome: '',
-      email: '',
-      telefone: '',
-      endereco: '',
-      tipo: '',
-    });
   }
 
   deleteCliente(cliente: Cliente): void {
-    // Call your service to delete the client by id
     this.clienteService.deleteCliente(cliente).subscribe({
       next: () => {
-        // Refresh the list or update the observable
         Swal.fire({
           icon: 'success',
           title: 'Sucesso!',
@@ -272,14 +304,9 @@ export class ClienteComponent implements OnInit {
         this.resetForm();
         this.editando = false;
         this.clienteIdEditando = null;
-        // Atualiza a lista de clientes
-        this.form.markAsPristine();
-        this.form.markAsUntouched();
-        this.form.updateValueAndValidity();
         this.loadClientes();
       },
       error: (err) => {
-        // Handle error (optional)
         Swal.fire({
           icon: 'error',
           title: 'Erro!',
@@ -287,50 +314,45 @@ export class ClienteComponent implements OnInit {
           timer: 2000,
           showConfirmButton: false,
         });
-        this.logValidationErrors();
-        this.form.markAsPristine();
-        this.form.markAsUntouched();
-        this.form.updateValueAndValidity();
-        this.loadClientes();
         console.error('Erro ao deletar cliente:', err);
-      },
+        this.loadClientes();
+      }
     });
   }
+
   cancelarEdicao(): void {
     this.resetForm();
     this.editando = false;
     this.clienteIdEditando = null;
-    // Fecha o modal se estiver usando Bootstrap
-    const modalElement = document.querySelector('.modal');
-    if (modalElement) {
-      const modalInstance = Modal.getInstance(modalElement);
-      if (modalInstance) {
-        modalInstance.hide();
-      }
+    const modalEl = document.getElementById('modalCliente');
+    if (modalEl) {
+      const modalRef = Modal.getInstance(modalEl);
+      modalRef?.hide();
     }
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
-    this.form.updateValueAndValidity();
-    this.logValidationErrors();
   }
 
   fecharModal(): void {
     this.resetForm();
     this.editando = false;
     this.clienteIdEditando = null;
-    // Fecha o modal se estiver usando Bootstrap
-    const modalElement = document.querySelector('.modal');
-    if (modalElement) {
-      const modalInstance = Modal.getInstance(modalElement);
-      if (modalInstance) {
-        modalInstance.hide();
-      }
+    const modalEl = document.getElementById('modalCliente');
+    if (modalEl) {
+      const modalRef = Modal.getInstance(modalEl) || new Modal(modalEl);
+      modalRef.hide();
     }
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
-    this.form.updateValueAndValidity();
-    this.logValidationErrors();
   }
+
+  getTipoClienteNome(tipo: string): string {
+    switch (tipo) {
+      case 'PESSOA_FISICA': return 'Pessoa Física';
+      case 'PESSOA_JURIDICA': return 'Pessoa Jurídica';
+      case 'EMPRESA_PUBLICA': return 'Empresa Pública';
+      case 'EMPRESA_PRIVADA': return 'Empresa Privada';
+      case 'ONG': return 'ONG';
+      default: return tipo;
+    }
+  }
+
   private logValidationErrors(): void {
     Object.entries(this.form.controls).forEach(([key, control]) => {
       console.warn(`${key}:`, {

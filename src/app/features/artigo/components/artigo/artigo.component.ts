@@ -29,6 +29,8 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
   styleUrls: ['./artigo.component.scss'],
 })
 export class ArtigoComponent implements OnInit, AfterViewInit {
+
+
   loading: boolean = false;
   form: FormGroup;
   categoriaForm!: FormGroup;
@@ -210,42 +212,31 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     });
   }
 
-  abrirCriarModal() {
+    // Chama abrirModal para criar:
+  abrirCriarArtigo(): void {
     this.modalModo = 'criar';
     this.artigoSelecionado = null;
     this.artigoSelecionadoId = null;
     this.artigoOriginal = null;
     this.modoEdicao = false;
-    // Limpa form se necessário:
-    this.form.reset();
-    // Ajusta valores iniciais se quiser:
+    this.resetarFormulario();
+    // Ajustes iniciais, p.ex. imposto padrão:
     this.form.get('imposto')?.setValue(0);
     this.descricaoRestante = 300;
-    // Abre modal
-    const modalElement = document.getElementById(
-      'exampleModal'
-    ) as HTMLElement | null;
-    if (modalElement) {
-      const modal = new Modal(modalElement);
-      modal.show();
-    }
+    // Abre modal após garantir renderização:
+    setTimeout(() => this.abrirModal('exampleModal'), 0);
   }
 
-  salvarArtigo(): void {
-    // Caso use salvarArtigo também para edição, poderia delegar a atualizarArtigo se modoEdicao = true.
+    salvarArtigo(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
     this.loading = true;
-    // Garante descrição nunca vazia
+    // Prepara objeto parcial:
     let descricao = this.form.value.descricao?.trim();
-    if (!descricao) {
-      descricao = 'N/A';
-    }
-    // Prepara objeto parcial
-    const artigo: Partial<Artigo> = {
+    if (!descricao) descricao = 'N/A';
+    const artigoPayload: Partial<Artigo> = {
       nome: this.form.value.nome.trim(),
       preco: parseFloat(
         String(this.form.value.precoUnitario)
@@ -256,54 +247,46 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       categoriaId: Number(this.form.value.categoria),
       impostoAplicado: parseFloat(String(this.form.value.imposto)),
       tipo: this.form.value.tipo,
-      descricao: descricao,
+      descricao,
     };
-
-    if (this.artigoSelecionadoId) {
-      // Se preferir, aí aplica a mesma lógica de comparação antes de chamar, mas como temos método separado, podemos chamar:
-      this.atualizarArtigo(); // atualizarArtigo já faz validação e comparação
-    } else {
-      // Criação de novo artigo
-      this.artigoService.criarArtigo(artigo).subscribe({
-        next: (res) => {
-          console.log('Artigo criado!', res);
-          Swal.fire({
-            icon: 'success',
-            title: 'Sucesso!',
-            text: 'Artigo criado com sucesso!',
-            timer: 2000,
-            showConfirmButton: false,
-          });
-          this.fecharModal();
-          this.carregarArtigos();
-          this.resetarFormulario();
-        },
-        error: (err) => {
-          console.error('Erro ao criar artigo:', err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Erro!',
-            text: err.error?.message || 'Erro ao criar artigo.',
-            timer: 3000,
-            showConfirmButton: false,
-          });
-        },
-        complete: () => {
-          this.loading = false;
-        },
-      });
-    }
+    this.artigoService.criarArtigo(artigoPayload).subscribe({
+      next: res => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Artigo criado com sucesso!',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        // Fecha modal, limpa e recarrega
+        this.fecharModal('exampleModal');
+        this.resetarFormulario();
+        this.carregarArtigos();
+      },
+      error: err => {
+        console.error('Erro ao criar artigo:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro!',
+          text: err.error?.message || 'Erro ao criar artigo.',
+          timer: 3000,
+          showConfirmButton: false,
+        });
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   editarArtigo(artigo: Artigo): void {
-    // Salva o objeto original para comparação
     this.artigoOriginal = { ...artigo };
     this.artigoSelecionado = artigo;
     this.artigoSelecionadoId = artigo.id!;
     this.modoEdicao = true;
     this.modalModo = 'editar';
 
-    // Preenche o form com valores do artigo
+    // Preenche o form:
     this.form.patchValue({
       nome: artigo.nome,
       precoUnitario: artigo.preco.toString(),
@@ -312,21 +295,13 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       tipo: artigo.tipo,
       descricao: artigo.descricao,
     });
-    // Ajusta contagem de caracteres
-    this.descricao = artigo.descricao || '';
-    this.descricaoRestante = 300 - (this.descricao?.length || 0);
+    this.descricaoRestante = artigo.descricao ? 300 - artigo.descricao.length : 300;
 
-    // Abre modal
-    const modalElement = document.getElementById(
-      'exampleModal'
-    ) as HTMLElement | null;
-    if (modalElement) {
-      const modal = new Modal(modalElement);
-      modal.show();
-    }
+    // Abre modal:
+    setTimeout(() => this.abrirModal('exampleModal'), 0);
   }
 
-  atualizarArtigo(): void {
+ atualizarArtigo(): void {
     if (this.form.invalid) {
       Swal.fire('Atenção', 'Preencha todos os campos obrigatórios.', 'warning');
       return;
@@ -336,9 +311,8 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       this.loading = false;
       return;
     }
-
-    // Extrai e parseia valores do formulário
-    const nomeForm: string = this.form.value.nome?.trim();
+    // Pega valores do form:
+    const nomeForm = this.form.value.nome?.trim();
     const precoParsed = parseFloat(
       String(this.form.value.precoUnitario)
         .replace('Kz ', '')
@@ -348,9 +322,9 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     const categoriaIdParsed = Number(this.form.value.categoria);
     const impostoParsed = parseFloat(String(this.form.value.imposto));
     const tipoForm: string = this.form.value.tipo;
-    const descricaoForm: string = this.form.value.descricao?.trim() || 'N/A';
+    const descricaoForm = this.form.value.descricao?.trim() || 'N/A';
 
-    // Se em modo edição, compara com o original
+    // Compara com original:
     if (this.modoEdicao && this.artigoOriginal) {
       const originalComparable = {
         nome: this.artigoOriginal.nome,
@@ -368,10 +342,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
         tipo: tipoForm,
         descricao: descricaoForm,
       };
-      if (
-        JSON.stringify(originalComparable) ===
-        JSON.stringify(atualizadoComparable)
-      ) {
+      if (JSON.stringify(originalComparable) === JSON.stringify(atualizadoComparable)) {
         Swal.fire({
           icon: 'info',
           title: 'Sem alterações!',
@@ -384,7 +355,6 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       }
     }
 
-    // Monta payload final
     const payload: Partial<Artigo> = {
       nome: nomeForm,
       preco: precoParsed,
@@ -395,8 +365,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     };
 
     this.loading = true;
-    this.artigoService
-      .atualizarArtigo(this.artigoSelecionadoId, payload)
+    this.artigoService.atualizarArtigo(this.artigoSelecionadoId, payload)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
@@ -407,17 +376,11 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
             timer: 2000,
             showConfirmButton: false,
           });
-          this.fecharModal();
-          this.carregarArtigos();
-          // Reseta estado de edição
-          this.artigoOriginal = null;
-          this.artigoSelecionadoId = null;
-          this.artigoSelecionado = null;
-          this.modoEdicao = false;
+          this.fecharModal('exampleModal');
           this.resetarFormulario();
+          this.carregarArtigos();
         },
-        error: (err) => {
-          // Tratar caso o backend ainda retorne “No changes detected to update.”
+        error: err => {
           if (err.error?.message?.includes('No changes detected')) {
             Swal.fire({
               icon: 'info',
@@ -436,9 +399,23 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
               showConfirmButton: false,
             });
           }
-        },
+        }
       });
   }
+
+
+  abrirModalParaCriarArtigo(): void {
+    this.resetarFormulario(); // limpa o formulário de artigo
+    this.modoEdicao = false;
+    this.artigoSelecionadoId = null;
+    this.artigoSelecionado = null;
+    this.artigoOriginal = null;
+    this.modalModo = 'criar';
+    this.form.get('imposto')?.setValue(0);
+    this.descricaoRestante = 300;
+    // Abre modal de artigo
+  }
+
 
   excluirArtigo(id: number): void {
     Swal.fire({
@@ -470,15 +447,17 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     });
   }
 
+
   resetarFormulario(): void {
     this.form.reset();
     this.artigoSelecionadoId = null;
+    this.artigoSelecionado = null;
+    this.artigoOriginal = null;
   }
 
   onCategoriaSubmit(): void {
     if (this.categoriaForm.valid) {
       console.log('Categoria Form Data:', this.categoriaForm.value);
-      // Lógica para salvar categoria (futura implementação)
       this.categoriaForm.reset();
       const modal = document.getElementById('categoriaModal');
       if (modal) {
@@ -507,20 +486,26 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
       },
     });
   }
-  fecharModal(): void {
- 
-    // Fecha o modal se estiver usando Bootstrap
-    const modalElement = document.querySelector('.modal');
+  // Métodos utilitários:
+  abrirModal(id: string): void {
+    // Garante instância única ou cria nova
+    const modalElement = document.getElementById(id);
+    if (modalElement) {
+      const modalInstance = Modal.getInstance(modalElement) || new Modal(modalElement);
+      modalInstance.show();
+    } else {
+      console.warn(`Modal com id="${id}" não encontrado no DOM.`);
+    }
+  }
+
+  fecharModal(id: string): void {
+    const modalElement = document.getElementById(id);
     if (modalElement) {
       const modalInstance = Modal.getInstance(modalElement);
-      if (modalInstance) {
-        modalInstance.hide();
-      }
+      modalInstance?.hide();
+    } else {
+      console.warn(`Modal com id="${id}" não encontrado no DOM.`);
     }
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
-    this.form.updateValueAndValidity();
-    
   }
 
   getNomesImpostos(valor: number): string[] {
@@ -532,4 +517,13 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   if (nomes.length === 1) return nomes[0];
   return `${nomes[0]} ${nomes[nomes.length - 1]}`;
 }
+
+
+  onSubmitArtigo(): void {
+    if (this.modalModo === 'criar') {
+      this.salvarArtigo();
+    } else {
+      this.atualizarArtigo();
+    }
+  }
 }
