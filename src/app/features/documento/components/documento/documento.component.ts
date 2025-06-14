@@ -61,8 +61,8 @@ form!: FormGroup;
 
   ngOnInit(): void {
 
-     this.carregarDocumentos();
-    this.listarProformas();
+
+
     this.titleService.setTitle('Documentos');
 
     const id = this.route.snapshot.paramMap.get('id');
