@@ -11,11 +11,12 @@ import { Observable } from 'rxjs/internal/Observable';
 import { FornecedorService} from '../../services/fornecedor.service'
 import { Fornecedor} from '../../interface/fornecedor';
 import { Modal } from 'bootstrap';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @Component({
   selector: 'app-fornecedores',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, BsDropdownModule],
   templateUrl: './fornecedor.component.html',
   styleUrl: './fornecedor.component.scss',
 })
@@ -87,7 +88,7 @@ export class FornecedoresComponent {
             this.loading = false;
           }
         });
-       
+
     } else {
       this.fornecedorService.createFornecedor(this.form.value).subscribe({
         next: () => {
@@ -98,7 +99,7 @@ export class FornecedoresComponent {
                    timer: 2000,
                    showConfirmButton: false
                  });
-                 
+
           this.fecharModal();
           this.form.reset();
           this.fornecedor$ = this.fornecedorService.getFornecedores();
