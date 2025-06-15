@@ -15,6 +15,7 @@ import { FormGroup } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { DocumentoService } from '../../service/documento.service';
 import { DocumentoContextService } from './../../../../core/services/documento-context.service';
+import { ComunicacaoService } from '../../../../core/services/comunicacao.service';
 
 
 
@@ -37,6 +38,7 @@ export class DocumentosComponent implements AfterViewInit {
   proformas: Proforma[] = [];
   facturasRecibo: FacturaRecibo[] = [];
 form!: FormGroup;
+mostrarOpcoes: boolean = false;
 
 
   constructor(
@@ -47,7 +49,8 @@ form!: FormGroup;
     private FaturaService: FaturaService,
     private FacturaReciboService: FacturareciboService,
     private route: ActivatedRoute,
-      private contextService: DocumentoContextService
+      private contextService: DocumentoContextService,
+      private comunicacaoService: ComunicacaoService
   ) {}
 
   tipoDocumentoSelecionado(): string {
@@ -62,6 +65,10 @@ form!: FormGroup;
   ngOnInit(): void {
 
 
+
+  this.comunicacaoService.anularDocumento$.subscribe(id => {
+    this.acaoAnular(id);
+  });
 
     this.titleService.setTitle('Documentos');
 
@@ -192,11 +199,28 @@ listarProformas() {
     }
   }
 
-  acaoAnular(id: number) {
-  console.log('Anulação acionada para o documento com ID:', id);
-  // lógica da anulação
+acaoAnular(id: number) {
+  this.DocumentoService.gerarCodigoReferencia({
+    tipo: 'FACTURA',
+    motivo: 'ANULAÇÃO'
+  }).subscribe({
+    next: (codigoReferencia: string) => {
+      this.router.navigate(['/factura', encodeURIComponent(codigoReferencia)], {
+        queryParams: {
+          documentoId: id,
+          tipo: 'ANULAÇÃO'
+        }
+      });
+    },
+    error: (error) => {
+      console.error('Erro ao gerar código:', error);
+    }
+  });
+
   this.modalInstance?.hide();
 }
+
+
 
 acaoRectificar(id: number) {
   console.log('Retificação acionada para o documento com ID:', id);

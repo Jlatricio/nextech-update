@@ -450,3 +450,13 @@ flex-wrap: wrap;
     opacity: 0.7;
   }
 }
+
+.pointer {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.opcao-nota:hover {
+  transform: scale(1.05);
+  background-color: #f9f9f9;
+}

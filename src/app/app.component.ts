@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { filter } from 'rxjs';
 import { StartupComponentComponent } from "./shared/startup-component/startup-component.component";
 import { TopLoadingBarComponent } from './shared/top-loading-bar/top-loading-bar/top-loading-bar.component';
+import { NetworkService } from './core/services/network.service';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -15,14 +17,9 @@ import { TopLoadingBarComponent } from './shared/top-loading-bar/top-loading-bar
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   carregando = true;
-
-ngOnInit() {
-  setTimeout(() => {
-    this.carregando = false;
-  }, 1500);
-}
+    private alertShown = false;
 
 
   title = 'nextech-front';
@@ -30,6 +27,7 @@ ngOnInit() {
   mostrarLayout = true;
 
   constructor(private router: Router,
+    private networkService: NetworkService
 
   ) {
     this.router.events
@@ -40,4 +38,34 @@ ngOnInit() {
       });
   }
 
+
+
+ngOnInit() {
+  setTimeout(() => {
+    this.carregando = false;
+  }, 1500);
+
+   this.networkService.isOnline.subscribe(status => {
+      if (!status && !this.alertShown) {
+        this.alertShown = true;
+        Swal.fire({
+          icon: 'warning',
+          title: 'Sem Conexão',
+          text: 'Você está offline. Verifique sua conexão com a internet.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false
+        });
+      } else if (status && this.alertShown) {
+        this.alertShown = false;
+        Swal.fire({
+          icon: 'success',
+          title: 'Conectado!',
+          text: 'A conexão com a internet foi restabelecida.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      }
+    });
+  }
 }

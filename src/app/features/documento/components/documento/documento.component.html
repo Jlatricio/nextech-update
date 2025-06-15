@@ -104,34 +104,48 @@
     </section>
   </main>
 
-  <!-- Modal de Ações -->
-  <div class="modal fade" id="modalAcoes" tabindex="-1" aria-labelledby="modalAcoesLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center">
-        <div class="modal-header border-0">
-          <h5 class="modal-title w-100" id="modalAcoesLabel">Ações</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="d-flex justify-content-around flex-wrap gap-3">
-            <div (click)="acaoAnular(documentoSelecionadoId!)" class="text-center pointer">
-              <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
-              <div>Anulação</div>
-            </div>
-            <div (click)="acaoRectificar(documentoSelecionadoId!)" class="text-center pointer">
-              <i class="bi bi-pencil-square fs-2 text-primary"></i>
-              <div>Retificação</div>
-            </div>
-            <div (click)="acaoDownload(documentoSelecionadoId!)" class="text-center pointer">
-              <i class="bi bi-printer-fill fs-2 text-success me-1"></i>
-              <i class="bi bi-download fs-2 text-success"></i>
-              <div>Imprimir / Download</div>
-            </div>
+ <!-- Modal de Ações -->
+<div class="modal fade" id="modalAcoes" tabindex="-1" aria-labelledby="modalAcoesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100" id="modalAcoesLabel">Ações</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
 
+      <div class="modal-body">
+        <!-- Botão Nota Fiscal -->
+        <div class="mb-3">
+          <button class="btn btn-outline-dark d-flex mx-auto align-items-center gap-2" (click)="mostrarOpcoes = !mostrarOpcoes">
+            <i class="bi bi-receipt-cutoff fs-5"></i> Nota Fiscal
+          </button>
+        </div>
+
+        <!-- Opções: Anulação e Retificação -->
+        <div *ngIf="mostrarOpcoes" class="d-flex justify-content-center gap-4 flex-wrap animate__animated animate__fadeIn mb-4">
+          <div (click)="acaoAnular(documentoSelecionadoId!)"
+               class="text-center pointer p-3 shadow-sm border rounded-3 opcao-nota">
+            <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
+            <div class="fw-semibold mt-1">Anulação</div>
           </div>
+
+          <div (click)="acaoRectificar(documentoSelecionadoId!)"
+               class="text-center pointer p-3 shadow-sm border rounded-3 opcao-nota">
+            <i class="bi bi-pencil-square fs-2 text-primary"></i>
+            <div class="fw-semibold mt-1">Retificação</div>
+          </div>
+        </div>
+
+        <!-- Ação: Imprimir / Download -->
+        <div (click)="acaoDownload(documentoSelecionadoId!)"
+             class="text-center pointer p-3 shadow-sm border rounded-3 opcao-nota mx-auto" style="width: fit-content;">
+          <div>
+            <i class="bi bi-printer-fill fs-2 text-success me-1"></i>
+            <i class="bi bi-download fs-2 text-success"></i>
+          </div>
+          <div class="fw-semibold mt-1">Imprimir / Download</div>
         </div>
       </div>
     </div>
   </div>
 </div>
-

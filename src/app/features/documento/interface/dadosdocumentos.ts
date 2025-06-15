@@ -86,4 +86,5 @@ export interface DadosDocumento {
   empresa: Empresa;
   itensFactura: ItemFactura[];
     categoria?: string;
+  anulado: boolean;
 }
