@@ -19,7 +19,7 @@
     <div class="search-group">
       <i class="bi bi-search search-icon"></i>
       <input type="text" class="search-input" placeholder="Pesquisar..." />
-      
+
     </div>
 
     <div class="filtros-selects">
@@ -39,7 +39,7 @@
 
     </div>
   </div>
- 
+
 
   <section class="table__body">
     <table>
@@ -59,13 +59,13 @@
         <tr *ngFor="let despesa of despesa">
 
           <td>{{ despesa.nome }}</td>
-          <td>{{ despesa.CriadoPor }}</td>
-          <td>{{ despesa.fornecedorId?.nome}}</td>
-          <td>{{ despesa.motivo}}</td>
+          <td>{{ getPrimeiroEUltimoNome( despesa.criadoPor) }}</td>
+          <td>{{ despesa.fornecedor?.nome}}</td>
+          <td>{{ getTipoDespesaDescricao(despesa.motivo) }}</td>
           <td>{{ despesa.valor| currency: 'Kz' }}</td>
-          <td>{{ despesa.retencaoFonte}}</td>
-          <td>{{ despesa.dataCriacao | date: 'dd/MM/yyyy' }}</td>
-      
+          <td>{{ getretencaoFonteDescricao(despesa.retencaoFonte) }}</td>
+            <td>{{ despesa.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</td>
+
 
           <td>
             <div class="bnt-action"> <button class="btn btn-outline-primary" (click)="editarDespesa(despesa)">
@@ -108,14 +108,14 @@
 
           <div class="mb-3">
             <label for="fornecedorId">Fornecedor<span class="text-danger">*</span></label>
-            <select formControlName="fornecedorId" class="form-select">
+            <select formControlName="fornecedor" class="form-select">
               <option [ngValue]="null">Selecione o fornecedor</option>
               <option *ngFor="let fornecedor of fornecedores" [value]="fornecedor.id">
                 {{ fornecedor.nome }}
-              </option>   
+              </option>
             </select>
             <small *ngIf="form.get('fornecedorId')?.invalid && form.get('fornecedorId')?.touched" class="text-danger">
-              Fornecedor é obrigatório      
+              Fornecedor é obrigatório
             </small>
           </div>
 
@@ -124,10 +124,10 @@
             <select formControlName="retencaoFonte" class="form-select">
               <option [ngValue]="null">Selecione</option>
               <option [value]="true">Sim</option>
-              <option [value]="false">Não</option>   
+              <option [value]="false">Não</option>
             </select>
             <small *ngIf="form.get('retencaoFonte')?.invalid && form.get('retencaoFonte')?.touched" class="text-danger">
-              Retenção na fonte é obrigatória      
+              Retenção na fonte é obrigatória
             </small>
           </div>
 
@@ -155,9 +155,9 @@
          </div>
 
           <div class="mb-3">
-            <button type="submit" class="btn btn-success" 
+            <button type="submit" class="btn btn-success"
               (click)="modalModo === 'criar' ? salvarDespesa() : atualizarDespesa()">
-            
+
               {{ modalModo === 'criar' ? 'Salvar' : 'Atualizar' }}
             </button>
           </div>
