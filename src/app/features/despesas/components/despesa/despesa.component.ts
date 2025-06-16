@@ -59,7 +59,7 @@ export class DespesasComponent implements OnInit {
   ) {
     this.form = this.formBuilder.group({
       nome: ['', Validators.required],
-      fornecedorId: [null, Validators.required],
+      fornecedor: [null, Validators.required],
       valor: [0, [Validators.required, Validators.min(0)]],
       retencaoFonte: [null, Validators.required],
       motivo: ['', Validators.required],
@@ -114,7 +114,7 @@ export class DespesasComponent implements OnInit {
           .replace(',', '.')
       ),
       motivo: this.form.value.motivo,
-      fornecedorId: this.form.value.fornecedorId,
+      fornecedor: this.form.value.fornecedor,
       retencaoFonte: this.form.value.retencaoFonte,
     };
 
@@ -193,7 +193,7 @@ export class DespesasComponent implements OnInit {
 
     this.form.patchValue({
       nome: despesa.nome,
-      fornecedorId: despesa.fornecedorId,
+      fornecedorId: despesa.fornecedor,
       retencaoFonte: despesa.retencaoFonte,
       valor: despesa.valor.toString(),
       motivo: despesa.motivo,
@@ -282,4 +282,26 @@ export class DespesasComponent implements OnInit {
   toggleNovaCategoria() {
     this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
   }
+
+  getTipoDespesaDescricao(tipo: string): string {
+    const tipos: { [key: string]: string } = {
+      COMPRA_PRODUTO: 'Compra de Produto',
+      PAGAMENTO_SERVICO: 'Pagamento de Serviço',
+      DESPESA_INTERNA: 'Despesa Interna',
+      AMORTIZACOES: 'Amortizações',
+      PAGAMENTO_CREDITO: 'Pagamento de Crédito',
+      DESPESAS_BANCARIAS: 'Despesas Bancárias',
+    };
+    return tipos[tipo] || tipo;
+  }
+
+  getretencaoFonteDescricao(retencaoFonte: boolean): string {
+    return retencaoFonte ? 'Sim' : 'Não';
+  }
+
+  getPrimeiroEUltimoNome(nomeCompleto: string): string {
+  const nomes = nomeCompleto.trim().split(/\s+/);
+  if (nomes.length === 1) return nomes[0];
+  return `${nomes[0]} ${nomes[nomes.length - 1]}`;
+}
 }
