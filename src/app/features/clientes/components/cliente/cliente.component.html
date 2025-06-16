@@ -110,4 +110,85 @@
     </section>
   </main>
 
- 
+  <!-- Modal de criação/edição -->
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="modalClienteLabel">
+            {{ editando ? 'Editar Cliente' : 'Criar Cliente' }}
+          </h1>
+          <button type="button" (click)="fecharModal()" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Nome -->
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input id="nome" class="form-control" type="text" formControlName="nome"
+                   [class.is-invalid]="nome.touched && nome.invalid" />
+            <div class="invalid-feedback" *ngIf="nome.touched && nome.invalid">
+              <span *ngIf="nome.errors?.['required']">Nome é obrigatório.</span>
+              <span *ngIf="nome.errors?.['minlength']">Nome deve ter ao menos 3 caracteres.</span>
+            </div>
+          </div>
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" type="email" class="form-control" formControlName="email"
+                   [class.is-invalid]="email.touched && email.invalid" />
+            <div class="invalid-feedback" *ngIf="email.touched && email.invalid">
+              <span *ngIf="email.errors?.['required']">Email é obrigatório.</span>
+              <span *ngIf="email.errors?.['email']">Formato de email inválido.</span>
+            </div>
+          </div>
+          <!-- Telefone -->
+          <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />&nbsp;+244
+              </span>
+              <input id="telefone" type="text" class="form-control" formControlName="telefone"
+                     mask="000 000 000" placeholder="Ex: 9XX XXX XXX" maxlength="9"
+                     [class.is-invalid]="telefone.touched && telefone.invalid" />
+              <div class="invalid-feedback" *ngIf="telefone.touched && telefone.invalid">
+                <span *ngIf="telefone.errors?.['required']">Telefone é obrigatório.</span>
+                <span *ngIf="telefone.errors?.['minlength']">Telefone deve ter 9 caracteres.</span>
+              </div>
+            </div>
+          </div>
+          <!-- Endereço -->
+          <div class="mb-3">
+            <label for="endereco" class="form-label">Endereço</label>
+            <input id="endereco" type="text" class="form-control" formControlName="endereco"
+                   [class.is-invalid]="endereco.touched && endereco.invalid" />
+            <div class="invalid-feedback" *ngIf="endereco.touched && endereco.invalid">
+              <span *ngIf="endereco.errors?.['required']">Endereço é obrigatório.</span>
+            </div>
+          </div>
+          <!-- Tipo -->
+          <div class="mb-3">
+            <label for="tipo" class="form-label">Tipo de Pessoa</label>
+            <select id="tipo" class="form-select" formControlName="tipo"
+                    [class.is-invalid]="tipoCtrl.touched && tipoCtrl.invalid">
+              <option value="" disabled>Selecione o tipo</option>
+              <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="tipoCtrl.touched && tipoCtrl.invalid">
+              <span *ngIf="tipoCtrl.errors?.['required']">Tipo é obrigatório.</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="fecharModal()">Cancelar</button>
+        <button type="submit" class="btn btn-success" [disabled]="form.invalid || loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ editando ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
