@@ -97,6 +97,7 @@
   <select [(ngModel)]="item.categoriaId" (change)="onCategoriaChange(item)" #categoriaCtrl="ngModel" required>
     <option [ngValue]="null">Selecione...</option>
     <option *ngFor="let categoria of categorias" [ngValue]="categoria.id">{{ categoria.nome }}</option>
+
   </select>
   <div *ngIf="categoriaCtrl.invalid && categoriaCtrl.touched" class="text-danger">
     Selecione uma categoria.
@@ -112,8 +113,8 @@
     required
     [disabled]="!item.categoriaId"> <!-- Aqui -->
     <option [ngValue]="null">Selecione...</option>
-    <option *ngFor="let artigo of getArtigosFiltradosPorCategoria(item.categoriaId)" [ngValue]="artigo.id">{{ artigo.nome }}</option>
-  </select>
+   <option *ngFor="let artigo of getArtigosFiltradosPorCategoria(item.categoriaId)" [ngValue]="artigo.id">{{ artigo.nome }}</option>
+ </select>
   <div *ngIf="artigoCtrl.invalid && artigoCtrl.touched" class="text-danger">
     Selecione um artigo.
   </div>

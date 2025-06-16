@@ -104,7 +104,7 @@
 </td>
 
         <td>{{ artigo.preco | currency: 'Kz' }}</td>
-        <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ artigo.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</td>
         <td>
           {{ getPrimeiroEUltimoNome(artigo.criadoPor) }}
         </td>
