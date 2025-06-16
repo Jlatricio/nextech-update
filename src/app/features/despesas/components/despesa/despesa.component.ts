@@ -81,7 +81,12 @@ export class DespesasComponent implements OnInit {
 
   carregarDespesa(): void {
     this.despesaService.listarDespesa().subscribe({
-      next: () => {},
+      next: (dados) => {
+        this.despesa = dados;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar despesas', err);
+      },
     });
   }
 
@@ -109,8 +114,8 @@ export class DespesasComponent implements OnInit {
           .replace(',', '.')
       ),
       motivo: this.form.value.motivo,
-      fornecedorId: this.form.value.fornecedorId, 
-      retencaoFonte: this.form.value.retencaoFonte, 
+      fornecedorId: this.form.value.fornecedorId,
+      retencaoFonte: this.form.value.retencaoFonte,
     };
 
     if (this.despesaSelecionadoId) {
