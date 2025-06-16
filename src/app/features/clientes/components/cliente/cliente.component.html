@@ -20,12 +20,12 @@
       <div class="search-group">
         <i class="bi bi-search search-icon"></i>
         <input
-  type="text"
-  class="search-input"
-  placeholder="Pesquisar..."
-  [value]="(searchTerm$ | async) || ''"
-  (input)="onSearchChange($any($event.target).value)"
-/>
+            type="text"
+            class="search-input"
+            placeholder="Pesquisar..."
+            [value]="(searchTerm$ | async) || ''"
+            (input)="onSearchChange($any($event.target).value)"
+          />
 
         <i
         *ngIf="(searchTerm$ | async) as searchTerm"
@@ -40,13 +40,13 @@
           <div class="dropdown filtro-item" dropdown>
             <label>Tipo</label>
            <button
-  dropdownToggle
-  type="button"
-  class="btn btn-light d-flex justify-content-between w-100 align-items-center"
->
-  {{ (selectedTipo$ | async) ? getTipoClienteNome((selectedTipo$ | async) ?? '') : 'Todos' }}
-  <i class="bi bi-chevron-down ms-auto"></i>
-</button>
+            dropdownToggle
+            type="button"
+            class="btn btn-light d-flex justify-content-between w-100 align-items-center"
+          >
+            {{ (selectedTipo$ | async) ? getTipoClienteNome((selectedTipo$ | async) ?? '') : 'Todos' }}
+            <i class="bi bi-chevron-down ms-auto"></i>
+          </button>
 
             <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
               <li>
@@ -89,11 +89,11 @@
             <td>
               <div class="bnt-action">
                <button
-  type="button"
-  class="btn btn-outline-primary"
-  (click)="editarCliente(cliente)">
-  <i class="bi bi-pencil"></i> Editar
-</button>
+                  type="button"
+                  class="btn btn-outline-primary"
+                  (click)="editarCliente(cliente)">
+                  <i class="bi bi-pencil"></i> Editar
+                </button>
 
                 <button
                   type="button"
@@ -111,7 +111,7 @@
   </main>
 
   <!-- Modal de criação/edição -->
-<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel" aria-hidden="true">
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel">
   <div class="modal-dialog">
     <div class="modal-content">
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -183,9 +183,9 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="fecharModal()">Cancelar</button>
         <button type="submit" class="btn btn-success" [disabled]="form.invalid || loading">
-  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
-  {{ editando ? 'Atualizar' : 'Salvar' }}
-</button>
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ editando ? 'Atualizar' : 'Salvar' }}
+        </button>
 
         </div>
       </form>
