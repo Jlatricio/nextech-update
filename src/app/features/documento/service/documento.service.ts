@@ -34,6 +34,14 @@ gerarCodigoReferencia(payload: { tipo: string; motivo?: string }): Observable<st
 
 
 
+// documento.service.ts
+visualizarNotaCredito(): Observable<DadosDocumento[]> {
+  return this.httpClient.get<{ data: DadosDocumento[] }>(`${this.apiUrl}//documents?tipo=NOTA_CREDITO`).pipe(
+    map(res => res.data)
+  );
+}
+
+
 
 
 }

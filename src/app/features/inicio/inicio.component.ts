@@ -141,9 +141,11 @@ ngOnInit(): void {
   atualizarEstatisticas(documentos: DadosDocumento[], contexto: 'geral' | 'filtrado' = 'geral'): void {
     const facturas = documentos.filter(doc => doc.tipo === 'FACTURA');
     const facturasRecibo = documentos.filter(doc => doc.tipo === 'FACTURA_RECIBO');
+    const reembolso = documentos.filter(doc => doc.anulado === true);
 
-    const totalFacturado = facturas.reduce((soma, doc) => soma + (doc.total || 0), 0);
-    const transacoes = facturas.length;
+    const facturasValidas = facturas.filter(doc => !doc.anulado);
+    const totalFacturado = facturasValidas.reduce((soma, doc) => soma + (doc.total || 0), 0);
+    const transacoes = facturasValidas.length;
     const totalAnterior = 100000;
     const crescimento = totalAnterior > 0 ? ((totalFacturado - totalAnterior) / totalAnterior) * 100 : 0;
 
@@ -165,7 +167,7 @@ ngOnInit(): void {
         icon: 'fas fa-file-invoice-dollar',
         style: styleFacturado
       },
-      // Despesas (placeholder, será atualizado no subscribe)
+
       {
         title: 'Despesas',
         value: 'Kz 0,00',
@@ -244,6 +246,32 @@ ngOnInit(): void {
           percentage: `${crescimentoDespesas.toFixed(2)}%`,
           icon: 'fas fa-money-bill-wave',
           style: styleDespesas
+        };
+
+        // Reembolso
+        const totalReembolso = reembolso.reduce((soma, doc) => soma + (doc.total || 0), 0);
+        const totalPedidos = reembolso.length;
+        const totalAnteriorReembolso = 20000;
+        const crescimentoReembolso = totalAnteriorReembolso > 0
+          ? ((totalReembolso - totalAnteriorReembolso) / totalAnteriorReembolso) * 100
+          : 0;
+
+        let styleReembolso = '';
+        if (crescimentoReembolso > 5) {
+          styleReembolso = 'positivo';
+        } else if (crescimentoReembolso < -5) {
+          styleReembolso = 'negativo';
+        } else {
+          styleReembolso = 'warning';
+        }
+
+        cardsTemp[3] = {
+          title: 'Reembolso',
+          value: `Kz ${totalReembolso.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+          info: `${totalPedidos} pedidos`,
+          percentage: `${crescimentoReembolso.toFixed(2)}%`,
+          icon: 'fas fa-undo-alt',
+          style: styleReembolso
         };
 
         if (contexto === 'geral') {

@@ -5,5 +5,5 @@ import { Injectable } from '@angular/core';
 })
 export class DocumentoContextService {
   numeroGerado: string = '';
-  tipoDocumento: 'FACTURA' | 'FACTURA_PROFORMA' | 'FACTURA_RECIBO' | '' = '';
+  tipoDocumento: 'FACTURA' | 'FACTURA_PROFORMA' | 'FACTURA_RECIBO' | 'NOTA_CREDITO' | '' = '';
 }

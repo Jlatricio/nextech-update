@@ -64,6 +64,12 @@
        (click)="selecionarAba('fr', $event)">
       <i class="bi bi-credit-card-2-back"></i> Factura/Recibo
     </a>
+    <a #tab
+       class="tab-link"
+       [class.active]="aba === 'nota_credito'"
+       (click)="selecionarAba('nota_credito', $event)">
+      <i class="bi bi-arrow-counterclockwise"></i> Nota de Crédito
+    </a>
   </div>
 </nav>
 
@@ -80,24 +86,31 @@
             <th>Valor</th>
             <th>Criado em</th>
             <th>Impostos</th>
-            <th>Ação</th>
+            <th *ngIf="aba !== 'nota_credito'">Ação</th>
+<th *ngIf="aba === 'nota_credito'">Motivo</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let doc of DadosDocumentos" [hidden]="doc.tipo !== tipoDocumentoSelecionado()">
+<tr *ngFor="let doc of documentosFiltrados">
+
             <td>{{ doc.numero }}</td>
-            <td>{{ doc.cliente.nome }}</td>
+          <td>{{ doc.cliente.nome }}</td>
             <td>{{ doc.criadoPor }}</td>
             <td>{{ doc.total | currency:'Kz':'symbol':'1.2-2' }}</td>
             <td>{{ doc.dataEmissao | date:'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ doc.totalImpostos | currency:'Kz':'symbol':'1.2-2' }}</td>
-            <td>
-              <div class="bnt-action dropdown">
-                <button type="button" class="btn" (click)="openModal(doc.id)">
-                  <i class="bi bi-three-dots"></i>
-                </button>
-              </div>
-            </td>
+          <td *ngIf="aba !== 'nota_credito'">
+  <div class="bnt-action dropdown">
+    <button type="button" class="btn" (click)="openModal(doc.id)">
+      <i class="bi bi-three-dots"></i>
+    </button>
+  </div>
+</td>
+
+<td *ngIf="aba === 'nota_credito'">
+  {{ doc.motivo }}
+</td>
+
           </tr>
         </tbody>
       </table>

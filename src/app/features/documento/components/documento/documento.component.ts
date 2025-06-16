@@ -32,7 +32,7 @@ export class DocumentosComponent implements AfterViewInit {
   desativarBotoes = true;
   dropdownInstance: Dropdown | null = null;
   modalInstance: Modal | null = null;
-  aba: 'facturas' | 'proformas' | 'fr' = 'facturas';
+  aba: 'facturas' | 'proformas' | 'fr' | 'nota_credito' = 'facturas';
   documentoSelecionadoId: number | null = null;
   facturas: factura[] = [];
   proformas: Proforma[] = [];
@@ -58,6 +58,7 @@ mostrarOpcoes: boolean = false;
     case 'facturas': return 'FACTURA';
     case 'proformas': return 'FACTURA_PROFORMA';
     case 'fr': return 'FACTURA_RECIBO';
+    case 'nota_credito': return 'NOTA_CREDITO';
     default: return '';
   }
 }
@@ -125,19 +126,41 @@ mostrarOpcoes: boolean = false;
       console.error('Erro ao listar facturas recibo:', err);
       }
     });
+
+   this.DocumentoService.visualizarNotaCredito().subscribe({
+  next: (notaCredito: DadosDocumento[]) => {
+  
+    console.log('Nota de crédito:', notaCredito);
+    this.DadosDocumentos = [...this.DadosDocumentos, ...notaCredito];
+  },
+  error: (err) => {
+    console.error('Erro ao carregar nota de crédito:', err);
   }
+});
+
+  }
+
+
+get documentosFiltrados() {
+  return this.DadosDocumentos.filter(doc => doc.tipo === this.tipoDocumentoSelecionado());
+}
+
+
+
 
   carregarDocumentos() {
   forkJoin({
     facturas: this.FaturaService.listarFacturas(),
     proformas: this.ProformaService.listarProformas(),
-    facturasRecibo: this.FacturaReciboService.listarFaturaRecibos()
+    facturasRecibo: this.FacturaReciboService.listarFaturaRecibos(),
+    nota_credito: this.DocumentoService.visualizarNotaCredito()
   }).subscribe({
-    next: ({ facturas, proformas, facturasRecibo }) => {
+    next: ({ facturas, proformas, facturasRecibo, nota_credito }) => {
+        console.log('Nota de crédito:', nota_credito);
       this.facturas = facturas;
       this.proformas = proformas;
       this.facturasRecibo = facturasRecibo;
-      this.DadosDocumentos = [...facturas, ...proformas, ...facturasRecibo];
+this.DadosDocumentos = [...facturas, ...proformas, ...facturasRecibo, ...nota_credito];
     },
     error: (err) => {
       console.error('Erro ao carregar documentos:', err);
@@ -262,16 +285,16 @@ indicatorWidth = '0px';
 
 
 
-selecionarAba(aba: 'facturas' | 'proformas' | 'fr', event: Event) {
+selecionarAba(aba: 'facturas' | 'proformas' | 'fr' | 'nota_credito', event: Event) {
   this.aba = aba;
 
-  // Aguarda DOM atualizar para então calcular posição do background
+
   setTimeout(() => this.updateIndicator(), 0);
 }
 
 
 updateIndicator() {
-  const activeIndex = ['proformas', 'facturas', 'fr'].indexOf(this.aba);
+ const activeIndex = ['proformas', 'facturas', 'fr', 'nota_credito'].indexOf(this.aba);
   const tabElements = this.tabs.toArray();
   const activeTab = tabElements[activeIndex]?.nativeElement;
 
@@ -284,7 +307,7 @@ updateIndicator() {
 
 }
 
-criarDocumento(tipo: 'FACTURA' | 'FACTURA_PROFORMA' | 'FACTURA_RECIBO'): void {
+criarDocumento(tipo: 'FACTURA' | 'FACTURA_PROFORMA' | 'FACTURA_RECIBO' | 'NOTA_CREDITO'): void {
   const payload = { tipo };
 this.DocumentoService.gerarCodigoReferencia(payload).subscribe({
   next: (codigo) => {

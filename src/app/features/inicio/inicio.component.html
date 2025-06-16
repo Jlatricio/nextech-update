@@ -152,7 +152,7 @@
       </td>
       <td>{{ getPrimeiroEUltimoNome(doc.cliente.nome) }}</td>
       <td>{{ getPrimeiroEUltimoNome( doc.criadoPor) }}</td>
-      <td>{{ doc.dataEmissao | date:'dd/MM/yyyy' }}</td>
+      <td>{{ doc.dataEmissao | date:'dd/MM/yyyy HH:mm' }}</td>
       <td>{{ doc.total | currency:'Kz':'symbol':'1.2-2' }}</td>
     </tr>
   </tbody>
