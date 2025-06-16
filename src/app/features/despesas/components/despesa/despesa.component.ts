@@ -59,8 +59,8 @@ export class DespesasComponent implements OnInit {
   ) {
     this.form = this.formBuilder.group({
       nome: ['', Validators.required],
-      fornecedor: [null, Validators.required],
-      valor: [0, [Validators.required, Validators.min(0)]],
+      fornecedorId: [null, Validators.required],
+    valor: [null, [Validators.required, Validators.min(0)]],
       retencaoFonte: [null, Validators.required],
       motivo: ['', Validators.required],
     });
@@ -82,6 +82,7 @@ export class DespesasComponent implements OnInit {
   carregarDespesa(): void {
     this.despesaService.listarDespesa().subscribe({
       next: (dados) => {
+        console.log('Despesas carregadas:', dados);
         this.despesa = dados;
       },
       error: (err) => {
@@ -114,7 +115,7 @@ export class DespesasComponent implements OnInit {
           .replace(',', '.')
       ),
       motivo: this.form.value.motivo,
-      fornecedor: this.form.value.fornecedor,
+    fornecedorId: this.form.value.fornecedorId,
       retencaoFonte: this.form.value.retencaoFonte,
     };
 

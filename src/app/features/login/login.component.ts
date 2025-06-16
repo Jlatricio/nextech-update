@@ -78,6 +78,12 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      this.errorMessage = 'Preencha todos os campos do login corretamente.';
+      return;
+    }
+
     const emailLogin = this.loginForm.value.email;
     const senhaLogin = this.loginForm.value.senha;
 
@@ -178,4 +184,12 @@ onRegister(): void {
   ngOnInit() {
     this.titleService.setTitle('Login');
   }
+
+  permitirApenasNumeros(event: KeyboardEvent): void {
+  const charCode = event.key;
+  if (!/^\d$/.test(charCode)) {
+    event.preventDefault();
+  }
+}
+
 }

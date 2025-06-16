@@ -14,7 +14,7 @@ import { DespesaService } from '../despesas/service/despesa.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, BsDropdownModule],
   templateUrl: './inicio.component.html',
-  styleUrls: ['./inicio.component.scss'],  // Corrigido aqui
+  styleUrls: ['./inicio.component.scss'],
 })
 export class InicioComponent {
   DadosDocumentos: DadosDocumento[] = [];
@@ -90,8 +90,8 @@ ngOnInit(): void {
   this.DocumentoService.listarDocumentos().subscribe({
     next: (documentos: DadosDocumento[]) => {
       this.documentosOriginais = documentos;
-      this.DadosDocumentos = documentos; // dados visíveis na tabela
-      this.atualizarEstatisticas(documentos); // totais com base em todos os dados
+      this.DadosDocumentos = documentos;
+      this.atualizarEstatisticas(documentos);
       this.inicializarFiltros(documentos);
       this.atualizarTotalPages();
     },
@@ -324,7 +324,7 @@ ngOnInit(): void {
 this.atualizarEstatisticas(this.DadosDocumentos, 'filtrado');
 
     this.atualizarTotalPages();
-    this.currentPage = 1; // Resetar página ao filtrar
+    this.currentPage = 1;
   }
 
 
@@ -374,6 +374,7 @@ goToPage(page: number) {
       case 'FACTURA': return 'tipo-factura';
       case 'FACTURA_RECIBO': return 'tipo-factura-recibo';
       case 'FACTURA_PROFORMA': return 'tipo-factura-proforma';
+      case 'NOTA_CREDITO': return 'tipo-nota-credito';
       default: return '';
     }
   }
@@ -383,6 +384,7 @@ goToPage(page: number) {
       case 'FACTURA': return 'Factura';
       case 'FACTURA_RECIBO': return 'Factura Recibo';
       case 'FACTURA_PROFORMA': return 'Factura Proforma';
+       case 'NOTA_CREDITO': return 'Nota de credito';
       default: return tipo;
     }
   }
