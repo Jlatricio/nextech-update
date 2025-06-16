@@ -28,10 +28,11 @@
   </div>
 
 
-  <!-- Botão Login -->
-<button class="btn solid" type="submit" [disabled]="isLoading">
-    {{ isLoading ? 'Entrando...' : 'Entrar' }}
-  </button>
+ <!-- Corrigido: usar loginForm -->
+<button class="btn solid" type="submit" [disabled]="loginForm.invalid || isLoading">
+  {{ isLoading ? 'Entrando...' : 'Entrar' }}
+</button>
+
 
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
@@ -69,15 +70,18 @@
         </div>
 
         <!-- Telefone -->
-        <div class="input-field" [ngClass]="{'has-error': registerTelefone?.invalid && (registerTelefone?.dirty || registerTelefone?.touched)}">
-          <i class="fas fa-phone"></i>
-          <input type="text"
-          formControlName="telefone"
-           mask="000 000 000"
-      placeholder="9XX XXX XXX"
-      maxlength="9"
-          />
-        </div>
+     <div class="input-field"
+     [ngClass]="{'has-error': registerTelefone?.invalid && (registerTelefone?.dirty || registerTelefone?.touched)}">
+  <i class="fas fa-phone"></i>
+<input type="text"
+       formControlName="telefone"
+       placeholder="Telefone (9 dígitos)"
+       inputmode="numeric"
+       required
+       (keypress)="permitirApenasNumeros($event)" />
+
+</div>
+
         <div *ngIf="registerTelefone?.invalid && (registerTelefone?.dirty || registerTelefone?.touched)" class="error">
           <small *ngIf="registerTelefone?.errors?.['required']">Telefone é obrigatório.</small>
           <small *ngIf="registerTelefone?.errors?.['pattern']">Telefone inválido. Insira 9 dígitos.</small>
@@ -92,7 +96,9 @@
           <small *ngIf="registerPassword?.errors?.['required']">Senha é obrigatória.</small>
         </div>
 
-        <input type="submit" class="btn" value="Cadastre-se" [disabled]="registerForm.invalid" />
+        <button class="btn" type="submit" [disabled]="registerForm.invalid || isLoading">
+          {{ isLoading ? 'Cadastrando...' : 'Cadastre-se' }}
+        </button>
       </form>
 
     </div>
