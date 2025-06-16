@@ -89,7 +89,7 @@
             <td>{{ doc.cliente.nome }}</td>
             <td>{{ doc.criadoPor }}</td>
             <td>{{ doc.total | currency:'Kz':'symbol':'1.2-2' }}</td>
-            <td>{{ doc.dataEmissao | date:'short' }}</td>
+            <td>{{ doc.dataEmissao | date:'dd/MM/yyyy HH:mm' }}</td>
             <td>{{ doc.totalImpostos | currency:'Kz':'symbol':'1.2-2' }}</td>
             <td>
               <div class="bnt-action dropdown">

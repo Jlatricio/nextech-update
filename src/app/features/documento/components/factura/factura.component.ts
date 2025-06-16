@@ -14,10 +14,12 @@ import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { FaturaService } from './service/fatura.service';
-import { factura } from './interface/factura';
+import { factura, ItemFactura } from './interface/factura';
 import { DocumentoService } from '../../service/documento.service';
 import { DocumentoContextService } from '../../../../core/services/documento-context.service';
 import { ComunicacaoService } from '../../../../core/services/comunicacao.service';
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { Categoria } from '../../../artigo/interface/categoria';
 
 
 
@@ -47,6 +49,8 @@ tituloFatura = 'Fatura';
 
 form: FormGroup;
   isLoading: boolean = false;
+  referenciaDocumentoId!: number;
+
 
   constructor(
     private FaturaService: FaturaService,
@@ -193,10 +197,11 @@ salvarFatura(): void {
   this.recalcularTotais();
 
     console.log('Itens da fatura a enviar:', this.itens);
+const tipoDocumento = this.tituloFatura === 'Nota de Credito' ? 'NOTA_CREDITO' : 'FACTURA';
 
   // Monta objeto Factura
   const factura: factura = {
-  tipo: 'FACTURA',
+  tipo: tipoDocumento,
   numero: this.numeroFatura,
   clienteId: this.clienteSelecionado.id,
   dataValidade: this.dataValidadeISO,
@@ -222,6 +227,12 @@ salvarFatura(): void {
       };
     })
 };
+
+// Adiciona os campos obrigatórios para NOTA_CREDITO
+if (tipoDocumento === 'NOTA_CREDITO' && this.referenciaDocumentoId) {
+  factura.referenciaDocumentoId = Number(this.referenciaDocumentoId);
+  factura.motivo = 'ANULAÇÃO';
+}
 
   console.log('Factura montada:', factura);
 
@@ -327,7 +338,7 @@ ngOnInit(): void {
     console.log('DEBUG >>> tipo:', tipo);
     console.log('DEBUG >>> numeroFatura:', this.numeroFatura);
 
-    if (documentoId && (tipo === 'RETIFICAÇÃO' || tipo === 'ANULAÇÃO')) {
+    if (documentoId && (tipo === 'NOTA_CREDITO')) {
       this.emitirReembolso(documentoId);
     } else {
       console.log('Criando nova fatura...');
@@ -341,6 +352,8 @@ ngOnInit(): void {
           this.ngZone.run(() => {
             this.categorias = categorias;
             this.carregarArtigos();
+            console.log('Todos os artigos carregados:', this.artigos);
+
             this.adicionarItem();
             this.cdr.markForCheck();
             this.cdr.detectChanges();
@@ -350,6 +363,25 @@ ngOnInit(): void {
       });
     }
   });
+}
+
+async carregarCategoriasEArtigos(): Promise<void> {
+  try {
+    const [categorias, artigos] = await firstValueFrom(
+      forkJoin([
+        this.categoriaService.listarCategorias(),
+        this.artigoService.listarArtigo()
+      ])
+    );
+
+    this.categorias = categorias;
+    this.artigos = artigos.map((a: Artigo) => ({
+      ...a,
+      categoria: categorias.find((c: Categoria) => c.id === a.categoriaId)
+    }));
+  } catch (err) {
+    console.error('Erro ao carregar categorias e artigos:', err);
+  }
 }
 
 
@@ -415,11 +447,13 @@ ngOnInit(): void {
 }
 
 
- onArtigoChange(item: any) {
-  item.artigoSelecionado = this.getArtigoById(item.artigoId);
+onArtigoChange(item: any) {
+  const artigosFiltrados = this.getArtigosFiltradosPorCategoria(item.categoriaId);
+  item.artigoSelecionado = artigosFiltrados.find(art => art.id === item.artigoId);
   this.atualizarTotalItem(item);
   this.recalcularTotais();
 }
+
 
 atualizarQuantidade(item: any, delta: number) {
   const novaQuantidade = item.quantidade + delta;
@@ -476,67 +510,78 @@ recalcularTotais() {
     return item.artigoId ?? index;
   }
 
-
-  emitirReembolso(documentoId: number): void {
+  async emitirReembolso(documentoId: number): Promise<void> {
     this.isLoading = true;
-    this.tituloFatura = 'Nota Fiscal de Reembolso';
+    this.tituloFatura = 'Nota de Credito';
 
-    this.DocumentoService.visualizarDocumento(documentoId).subscribe({
-      next: (doc: any) => {
-        // Preenche os dados do cliente
-        this.clienteSelecionado = doc.cliente;
-        this.dataValidade = new Date().toISOString().split('T')[0];
+    try {
+      await this.carregarCategoriasEArtigos();
 
-        // Preenche os itens com base no documento original
-      const itensOriginais = doc.itens || [];
-      console.log('Itens recebidos:', doc.itens);
+      this.DocumentoService.visualizarDocumento(documentoId).subscribe({
+        next: (doc: any) => {
+          console.log('Documento recebido:', doc);
+          this.clienteSelecionado = doc.cliente;
+          this.empresa = doc.empresa;
+          this.dataValidade = new Date(doc.dataValidade).toISOString();
+          this.dataValidadeISO = this.dataValidade;
 
+          // Adiciona a referência original aqui
+          this.referenciaDocumentoId = doc.id;
 
-  this.itens = itensOriginais.map((item: any): ItemProforma => ({
-  artigoId: item.artigoId,
-  categoriaId: item.categoriaId,
-  quantidade: item.quantidade,
-  artigoSelecionado: {
-    ...(item.artigo || {}),
-    preco: item.precoUnitario,
-  },
-  total: item.total,
-  imposto: 0
-}));
-
-
-        this.desconto = doc.desconto || 0;
-        this.recalcularTotais();
-
-        // Só gera o código se ainda não tiver sido definido na rota
-        if (!this.numeroFatura) {
-          this.DocumentoService.gerarCodigoReferencia({
-            tipo: 'FACTURA',
-            motivo: 'ANULAÇÃO'
-          }).subscribe({
-            next: (ref: string) => {
-              this.numeroFatura = ref;
-              this.isLoading = false;
-
-              this.comunicacaoService.emitirAnulacao(doc.id);
-            },
-            error: (error: any) => {
-              this.isLoading = false;
-              console.error('Erro ao gerar código de referência:', error);
-            }
+          const itensOriginais = doc.itensFactura || [];
+          this.itens = itensOriginais.map((item: any): ItemFactura => {
+            const artigo = this.getArtigoById(item.artigoId);
+            return {
+              artigoId: item.artigoId,
+              quantidade: item.quantidade,
+              total: item.total,
+              artigoSelecionado: artigo,
+              nomeArtigo: artigo?.nome,
+              tipoArtigo: artigo?.tipo,
+              categoriaId: artigo?.categoriaId
+            };
           });
-        } else {
+
+          this.desconto = doc.descontoPercentual ?? 0;
+
+          this.recalcularTotais();
+
+          if (!this.numeroFatura) {
+            this.DocumentoService.gerarCodigoReferencia({
+              tipo: 'NOTA_CREDITO',
+              motivo: 'ANULAÇÃO'
+            }).subscribe({
+              next: ref => {
+                this.numeroFatura = ref;
+                this.isLoading = false;
+                this.comunicacaoService.emitirAnulacao(doc.id);
+              },
+              error: err => {
+                this.isLoading = false;
+                console.error('Erro ao gerar referência:', err);
+              }
+            });
+          } else {
+            this.isLoading = false;
+            this.comunicacaoService.emitirAnulacao(doc.id);
+          }
+        },
+        error: (error: any) => {
           this.isLoading = false;
-          this.comunicacaoService.emitirAnulacao(doc.id);
+          console.error('Erro ao carregar documento:', error);
         }
-      },
-      error: (error: any) => {
-        this.isLoading = false;
-        console.error('Erro ao carregar documento:', error);
-      }
-    });
+      });
+    } catch (err) {
+      this.isLoading = false;
+      console.error('Erro geral no reembolso:', err);
+    }
   }
 
+
+formatarData(data: string): string {
+  const date = new Date(data);
+  return date.toLocaleDateString('pt-PT');
+}
 
 
 }

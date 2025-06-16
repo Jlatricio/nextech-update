@@ -201,14 +201,14 @@ listarProformas() {
 
 acaoAnular(id: number) {
   this.DocumentoService.gerarCodigoReferencia({
-    tipo: 'FACTURA',
+    tipo: 'NOTA_CREDITO',
     motivo: 'ANULAÇÃO'
   }).subscribe({
     next: (codigoReferencia: string) => {
       this.router.navigate(['/factura', encodeURIComponent(codigoReferencia)], {
         queryParams: {
           documentoId: id,
-          tipo: 'ANULAÇÃO'
+          tipo: 'NOTA_CREDITO'
         }
       });
     },

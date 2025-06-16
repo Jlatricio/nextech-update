@@ -85,10 +85,22 @@ export class InicioComponent {
     private DespesaService: DespesaService
   ) {}
 
-  ngOnInit(): void {
-    this.titleService.setTitle('Dashboard');
-    this.visualizarTodosDocumentos();
-  }
+ngOnInit(): void {
+  this.titleService.setTitle('Dashboard');
+  this.DocumentoService.listarDocumentos().subscribe({
+    next: (documentos: DadosDocumento[]) => {
+      this.documentosOriginais = documentos;
+      this.DadosDocumentos = documentos; // dados visíveis na tabela
+      this.atualizarEstatisticas(documentos); // totais com base em todos os dados
+      this.inicializarFiltros(documentos);
+      this.atualizarTotalPages();
+    },
+    error: (err) => {
+      console.error('Erro ao listar documentos:', err);
+    }
+  });
+}
+
 
   listarFacturas() {
     this.FaturaService.listarFacturas().subscribe({
@@ -123,7 +135,10 @@ export class InicioComponent {
     this.tipos = [...new Set(documentos.map(doc => doc.tipo))];
   }
 
-  atualizarEstatisticas(documentos: DadosDocumento[]): void {
+  cardsGerais: any[] = [];
+  cardsFiltrados: any[] = [];
+
+  atualizarEstatisticas(documentos: DadosDocumento[], contexto: 'geral' | 'filtrado' = 'geral'): void {
     const facturas = documentos.filter(doc => doc.tipo === 'FACTURA');
     const facturasRecibo = documentos.filter(doc => doc.tipo === 'FACTURA_RECIBO');
 
@@ -141,50 +156,43 @@ export class InicioComponent {
       styleFacturado = 'warning';
     }
 
-    this.cards[0] = {
-      title: 'Facturado',
-      value: `Kz ${totalFacturado.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
-      info: `${transacoes} transações`,
-      percentage: `${crescimento.toFixed(2)}%`,
-      icon: 'fas fa-file-invoice-dollar',
-      style: styleFacturado
-    };
-
-    // Despesas
-    this.DespesaService.listarDespesa().subscribe({
-
-      next: (despesas: any[]) => {
-        console.log('Despesas recebidas:', despesas);
-        const totalDespesas = despesas.reduce((soma, despesa) => soma + (despesa.valor || 0), 0);
-        const totalRegistos = despesas.length;
-        const totalAnteriorDespesas = 50000;
-        const crescimentoDespesas = totalAnteriorDespesas > 0
-          ? ((totalDespesas - totalAnteriorDespesas) / totalAnteriorDespesas) * 100
-          : 0;
-
-        let styleDespesas = '';
-        if (crescimentoDespesas > 5) {
-          styleDespesas = 'positivo';
-        } else if (crescimentoDespesas < -5) {
-          styleDespesas = 'negativo';
-        } else {
-          styleDespesas = 'warning';
-        }
-
-        this.cards[1] = {
-          title: 'Despesas',
-          value: `Kz ${totalDespesas.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
-          info: `${totalRegistos} registos`,
-          percentage: `${crescimentoDespesas.toFixed(2)}%`,
-          icon: 'fas fa-money-bill-wave',
-          style: styleDespesas
-        };
+    const cardsTemp: any[] = [
+      {
+        title: 'Facturado',
+        value: `Kz ${totalFacturado.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+        info: `${transacoes} transações`,
+        percentage: `${crescimento.toFixed(2)}%`,
+        icon: 'fas fa-file-invoice-dollar',
+        style: styleFacturado
       },
-      error: (err) => {
-        console.error('Erro ao listar despesas:', err);
+      // Despesas (placeholder, será atualizado no subscribe)
+      {
+        title: 'Despesas',
+        value: 'Kz 0,00',
+        info: '0 registos',
+        percentage: '0,00%',
+        icon: 'fas fa-money-bill-wave',
+        style: 'warning'
+      },
+      {
+        title: 'Recibos',
+        value: 'Kz 0,00',
+        info: '0 emitidos',
+        percentage: '0,00%',
+        icon: 'fas fa-receipt',
+        style: ''
+      },
+      {
+        title: 'Reembolso',
+        value: 'Kz 0,00',
+        info: '0 pedidos',
+        percentage: '0,00%',
+        icon: 'fas fa-undo-alt',
+        style: 'danger'
       }
-    });
+    ];
 
+    // Recibos
     const totalFacturadoRecibo = facturasRecibo.reduce((soma, doc) => soma + (doc.total || 0), 0);
     const transacoesRecibo = facturasRecibo.length;
     const totalAnteriorRecibo = 50000;
@@ -201,7 +209,7 @@ export class InicioComponent {
       styleRecibo = 'warning';
     }
 
-    this.cards[2] = {
+    cardsTemp[2] = {
       title: 'Recibos',
       value: `Kz ${totalFacturadoRecibo.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
       info: `${transacoesRecibo} emitidos`,
@@ -209,6 +217,57 @@ export class InicioComponent {
       icon: 'fas fa-receipt',
       style: styleRecibo
     };
+
+    // Despesas (async)
+    this.DespesaService.listarDespesa().subscribe({
+      next: (despesas: any[]) => {
+        const totalDespesas = despesas.reduce((soma, despesa) => soma + (despesa.valor || 0), 0);
+        const totalRegistos = despesas.length;
+        const totalAnteriorDespesas = 50000;
+        const crescimentoDespesas = totalAnteriorDespesas > 0
+          ? ((totalDespesas - totalAnteriorDespesas) / totalAnteriorDespesas) * 100
+          : 0;
+
+        let styleDespesas = '';
+        if (crescimentoDespesas > 5) {
+          styleDespesas = 'positivo';
+        } else if (crescimentoDespesas < -5) {
+          styleDespesas = 'negativo';
+        } else {
+          styleDespesas = 'warning';
+        }
+
+        cardsTemp[1] = {
+          title: 'Despesas',
+          value: `Kz ${totalDespesas.toLocaleString('pt-AO', { minimumFractionDigits: 2 })}`,
+          info: `${totalRegistos} registos`,
+          percentage: `${crescimentoDespesas.toFixed(2)}%`,
+          icon: 'fas fa-money-bill-wave',
+          style: styleDespesas
+        };
+
+        if (contexto === 'geral') {
+          this.cardsGerais = [...cardsTemp];
+        } else {
+          this.cardsFiltrados = [...cardsTemp];
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao listar despesas:', err);
+        if (contexto === 'geral') {
+          this.cardsGerais = [...cardsTemp];
+        } else {
+          this.cardsFiltrados = [...cardsTemp];
+        }
+      }
+    });
+
+    // Atualiza cards imediatamente (sem despesas)
+    if (contexto === 'geral') {
+      this.cardsGerais = [...cardsTemp];
+    } else {
+      this.cardsFiltrados = [...cardsTemp];
+    }
   }
 
   filtrar() {
@@ -233,7 +292,9 @@ export class InicioComponent {
              correspondeBusca;
     });
 
-    this.atualizarEstatisticas(this.DadosDocumentos);
+   this.atualizarEstatisticas(this.documentosOriginais, 'geral');
+this.atualizarEstatisticas(this.DadosDocumentos, 'filtrado');
+
     this.atualizarTotalPages();
     this.currentPage = 1; // Resetar página ao filtrar
   }
