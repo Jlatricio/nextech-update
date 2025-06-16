@@ -62,6 +62,7 @@ export interface ItemFactura {
   total: number;
   documentoId: number;
   artigo: Artigo;
+
 }
 
 export interface DadosDocumento {
@@ -87,4 +88,5 @@ export interface DadosDocumento {
   itensFactura: ItemFactura[];
     categoria?: string;
   anulado: boolean;
+    motivo: string;
 }
