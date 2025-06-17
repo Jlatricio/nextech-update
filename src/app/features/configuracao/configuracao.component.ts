@@ -9,6 +9,7 @@ import { Empresa } from './interface/empresa';
 import { provideNgxMask } from 'ngx-mask';
 import { UploadsService } from '../../core/services/uploads.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -135,7 +136,11 @@ isInvalid(controlName: string): boolean {
 dados(): void {
   this.empresaService.empresadados().subscribe({
     next: (res) => {
+
       if (res) {
+          if (res.telefone?.startsWith('+244')) {
+          res.telefone = res.telefone.replace('+244', '');
+        }
         this.empresa = res;
         this.form.patchValue(this.empresa);
 
@@ -151,43 +156,93 @@ dados(): void {
 }
 
 
- salvarEmpresa(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    // Se o arquivo for obrigatório, descomente:
-    // if (!this.selectedFile) {
-    //   this.fileError = 'Selecione uma imagem de logo.';
-    //   return;
-    // }
-
-    if (this.selectedFile) {
-      this.uploadLogoEAtualizarEmpresa();
-    } else {
-
-      this.atualizarEmpresaSemLogo();
-    }
+salvarEmpresa(): void {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
 
-  private atualizarEmpresaSemLogo(): void {
-    const empresa: Empresa = { ...this.form.value };
+  const formData = this.form.value;
 
-    if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
-      empresa.telefone = `+244${empresa.telefone}`;
-    }
+  const dadosInalterados =
+    JSON.stringify({
+      ...this.empresa,
+      telefone: this.empresa?.telefone?.replace('+244', '')
+    }) === JSON.stringify(formData);
 
-    this.empresaService.atualizadados(empresa).subscribe({
-      next: res => {
-        console.log('Empresa salva com sucesso (sem logo):', res);
-        this.dados();
-      },
-      error: err => {
-        console.error('Erro ao salvar empresa (sem logo):', err);
-      }
+  if (!this.selectedFile && dadosInalterados) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Nada para salvar',
+      text: 'Nenhuma alteração foi detectada.',
     });
+    return;
   }
+
+  if (this.selectedFile) {
+    this.uploadLogoEAtualizarEmpresa();
+  } else {
+    this.atualizarEmpresaSemLogo();
+  }
+}
+
+
+atualizarEmpresaSemLogo(): void {
+  const formData = this.form.value;
+  const camposParaComparar: (keyof Empresa)[] = [
+    'nome', 'email', 'telefone', 'nif', 'endereco', 
+  ];
+
+  let houveAlteracao = false;
+
+  for (const campo of camposParaComparar) {
+    let valorForm = formData[campo];
+    let valorOriginal = this.empresa[campo];
+
+    // Tratar telefone: remove +244 antes de comparar
+    if (campo === 'telefone') {
+      valorForm = valorForm?.replace('+244', '');
+      valorOriginal = valorOriginal?.replace('+244', '');
+    }
+
+    if (valorForm !== valorOriginal) {
+      houveAlteracao = true;
+      break;
+    }
+  }
+
+  if (!houveAlteracao) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Nenhuma alteração detectada',
+      text: 'Os dados informados são iguais aos já salvos.',
+    });
+    return;
+  }
+
+  // Se houver alteração, monta o objeto atualizado
+  const empresaAtualizada: Empresa = {
+    ...this.empresa,
+    ...formData,
+    telefone: formData.telefone.startsWith('+244')
+      ? formData.telefone
+      : `+244${formData.telefone}`
+  };
+
+  this.empresaService.atualizadados(empresaAtualizada).subscribe({
+    next: (res) => {
+      Swal.fire('Sucesso', 'Empresa atualizada com sucesso!', 'success');
+      this.dados(); // Atualiza os dados na tela
+    },
+    error: (err) => {
+      console.error('Erro ao salvar empresa (sem logo):', err);
+      Swal.fire('Erro', 'Erro ao salvar os dados da empresa.', 'error');
+    }
+  });
+}
+
+
+
 
 private uploadLogoEAtualizarEmpresa(): void {
   if (!this.selectedFile) {
