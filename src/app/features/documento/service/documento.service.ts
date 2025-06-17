@@ -42,6 +42,12 @@ visualizarNotaCredito(): Observable<DadosDocumento[]> {
 }
 
 
-
+// Torna um documento do tipo factura
+acaoTornarFactura(documentoSelecionadoId: number): Observable<DadosDocumento> {
+  return this.httpClient.post<DadosDocumento>(
+    `${this.apiUrl}/documents/${documentoSelecionadoId}/tornar-factura`, 
+    {}
+  );
+}
 
 }

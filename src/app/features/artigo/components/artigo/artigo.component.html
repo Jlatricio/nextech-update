@@ -97,9 +97,8 @@
         <td>{{ artigo.categoria?.nome || 'Sem categoria' }}</td>
        <td>
   <ul>
-    <li *ngFor="let nome of getNomesImpostos(artigo.impostoAplicado)">
-      {{ nome }}
-    </li>
+    <li>{{ getNomeImposto(artigo.impostoAplicado) }}</li>
+
   </ul>
 </td>
 

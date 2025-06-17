@@ -86,9 +86,10 @@
             <th>Valor</th>
             <th>Criado em</th>
             <th>Impostos</th>
-            <th *ngIf="aba !== 'nota_credito'">Ação</th>
-<th *ngIf="aba === 'nota_credito'">Motivo</th>
-          </tr>
+            <th *ngIf="aba === 'proformas'">Tornar Factura</th>
+            <th *ngIf="aba !== 'nota_credito' && aba !== 'proformas'">Ação</th>
+            <th *ngIf="aba === 'nota_credito'">Motivo</th>
+            </tr>
         </thead>
         <tbody>
 <tr *ngFor="let doc of documentosFiltrados">
@@ -134,7 +135,7 @@
           </button>
         </div>
 
-        <!-- Opções: Anulação e Retificação -->
+        <!-- Opções: Anulação, Tornar Factura e Retificação -->
         <div *ngIf="mostrarOpcoes" class="d-flex justify-content-center gap-4 flex-wrap animate__animated animate__fadeIn mb-4">
           <div (click)="acaoAnular(documentoSelecionadoId!)"
                class="text-center pointer p-3 shadow-sm border rounded-3 opcao-nota">
@@ -147,6 +148,11 @@
             <i class="bi bi-pencil-square fs-2 text-primary"></i>
             <div class="fw-semibold mt-1">Retificação</div>
           </div>
+            <div *ngIf="aba === 'proformas'" (click)="acaoTornarFactura(documentoSelecionadoId!)"
+               class="text-center pointer p-3 shadow-sm border rounded-3 opcao-nota">
+            <i class="bi bi-arrow-right-circle-fill fs-2 text-success"></i>
+            <div class="fw-semibold mt-1">Tornar Factura</div>
+            </div>
         </div>
 
         <!-- Ação: Imprimir / Download -->
