@@ -1,2 +1,13 @@
- 
- 
+
+ .update-progress {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: #1d1d1d;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}

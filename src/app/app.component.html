@@ -1,4 +1,7 @@
 <app-top-loading-bar></app-top-loading-bar>
+<div *ngIf="updateMessage" class="update-progress">
+  {{ updateMessage }}
+</div>
 
 <div *ngIf="mostrarLayout && !carregando" class="body">
 

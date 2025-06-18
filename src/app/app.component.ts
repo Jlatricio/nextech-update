@@ -9,6 +9,13 @@ import { TopLoadingBarComponent } from './shared/top-loading-bar/top-loading-bar
 import { NetworkService } from './core/services/network.service';
 import Swal from 'sweetalert2';
 
+declare global {
+  interface Window {
+    electronAPI?: {
+      onUpdateProgress: (callback: (message: string) => void) => void;
+    };
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -17,9 +24,12 @@ import Swal from 'sweetalert2';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+
+
 export class AppComponent implements OnInit {
   carregando = true;
     private alertShown = false;
+      updateMessage: string = '';
 
 
   title = 'nextech-front';
@@ -67,5 +77,14 @@ ngOnInit() {
         });
       }
     });
+
+     if (window.electronAPI?.onUpdateProgress) {
+      window.electronAPI.onUpdateProgress((msg) => {
+        this.updateMessage = msg;
+        console.log('Atualização:', msg);
+      });
+    }
   }
-}
+
+  }
+
