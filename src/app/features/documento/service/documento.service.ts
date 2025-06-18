@@ -16,9 +16,10 @@ export class DocumentoService {
 
   // Lista todos os documentos
  listarDocumentos(): Observable<DadosDocumento[]> {
-  return this.httpClient.get<{ data: DadosDocumento[] }>(`${this.apiUrl}/documents`)
+  return this.httpClient.get<{ data: DadosDocumento[] }>(`${this.apiUrl}/documents?limit=9999`)
     .pipe(map(response => response.data));
 }
+
 
   //documento por ID
 visualizarDocumento(id: number): Observable<DadosDocumento> {
@@ -45,7 +46,7 @@ visualizarNotaCredito(): Observable<DadosDocumento[]> {
 // Torna um documento do tipo factura
 acaoTornarFactura(documentoSelecionadoId: number): Observable<DadosDocumento> {
   return this.httpClient.post<DadosDocumento>(
-    `${this.apiUrl}/documents/${documentoSelecionadoId}/tornar-factura`, 
+    `${this.apiUrl}/documents/${documentoSelecionadoId}/tornar-factura`,
     {}
   );
 }
