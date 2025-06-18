@@ -143,12 +143,12 @@ export class FornecedoresComponent {
         // Exibir mensagem de erro
         console.log(error.message)
         Swal.fire({
-                    icon: 'error',
-                    title: 'Erro!',
-                    text: 'Erro ao excluir fornecedor. Tente novamente.',
-                    timer: 2000,
-                    showConfirmButton: false
-                    });
+          icon: 'warning',
+          title: 'Atenção!',
+          html: 'Este fornecedor está <b>associado a uma despesa</b> e não pode ser excluído neste momento.',
+          confirmButtonText: 'Entendi',
+          confirmButtonColor: '#f0ad4e', // cor de atenção (laranja)
+        });
       }
     );
   }
