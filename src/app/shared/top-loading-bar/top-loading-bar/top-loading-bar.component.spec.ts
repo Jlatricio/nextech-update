@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+<<<<<<<< HEAD:src/app/shared/top-loading-bar/top-loading-bar/top-loading-bar.component.spec.ts
 import { TopLoadingBarComponent } from './top-loading-bar.component';
 
 describe('TopLoadingBarComponent', () => {
@@ -13,6 +14,21 @@ describe('TopLoadingBarComponent', () => {
     .compileComponents();
 
     fixture = TestBed.createComponent(TopLoadingBarComponent);
+========
+import { RectificacaoComponent } from './rectificacao.component';
+
+describe('RectificacaoComponent', () => {
+  let component: RectificacaoComponent;
+  let fixture: ComponentFixture<RectificacaoComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [RectificacaoComponent]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(RectificacaoComponent);
+>>>>>>>> 1cf9653bea8691ed5a2c7327c02906873e0e2c45:src/app/features/documento/components/rectificacao/rectificacao.component.spec.ts
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

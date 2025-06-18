@@ -121,6 +121,8 @@
 
   <div class="dados-atuais" *ngIf="empresa">
   <h3>Dados atuais</h3>
+<<<<<<< HEAD
+=======
   <div class="dado">
    <span *ngIf="empresa?.logoURL; else semLogo">
   <img [src]="empresa.logoURL" alt="Logo da empresa" style="max-width: 120px; max-height: 120px;" />
@@ -131,6 +133,7 @@
 
 
   </div>
+>>>>>>> 1cf9653bea8691ed5a2c7327c02906873e0e2c45
   <div class="dado"><strong>Nome:</strong> <span>{{ empresa.nome }}</span></div>
   <div class="dado"><strong>NIF:</strong> <span>{{ empresa.nif }}</span></div>
   <div class="dado"><strong>Telefone:</strong> <span>{{ empresa.telefone }}</span></div>

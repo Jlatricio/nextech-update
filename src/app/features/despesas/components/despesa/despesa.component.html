@@ -50,7 +50,7 @@
           <th>Fornecedor</th>
           <th>Motivo</th>
           <th>Valor</th>
-           <th>Retenção na fonte</th>
+          <th>Retenção na fonte</th>
           <th>Data de Criação</th>
 
           <th>Acções</th>
@@ -107,12 +107,12 @@
             <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
           </div>
 
-   <select formControlName="fornecedorId" class="form-select">
-  <option [ngValue]="null">Selecione o fornecedor</option>
-  <option *ngFor="let fornecedor of fornecedores" [ngValue]="fornecedor.id">
-    {{ fornecedor.nome }}
-  </option>
-</select>
+            <select formControlName="fornecedorId" class="form-select">
+            <option [ngValue]="null">Selecione o fornecedor</option>
+            <option *ngFor="let fornecedor of fornecedores" [ngValue]="fornecedor.id">
+              {{ fornecedor.nome }}
+            </option>
+          </select>
 
 <small *ngIf="form.get('fornecedorId')?.invalid && form.get('fornecedorId')?.touched" class="text-danger">
   Fornecedor é obrigatório

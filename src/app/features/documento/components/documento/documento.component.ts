@@ -129,7 +129,6 @@ mostrarOpcoes: boolean = false;
 
    this.DocumentoService.visualizarNotaCredito().subscribe({
   next: (notaCredito: DadosDocumento[]) => {
-
     console.log('Nota de crédito:', notaCredito);
     this.DadosDocumentos = [...this.DadosDocumentos, ...notaCredito];
   },

@@ -15,13 +15,12 @@ export class EmpresaService {
 
   //Mostra os dados da empresa
   empresadados(): Observable<Empresa>{
- return this.httpClient.get<Empresa>(`${this.apiUrl}/me`);
+  return this.httpClient.get<Empresa>(`${this.apiUrl}/me`);
   }
 
   //Atualiza os dados da empresa
   atualizadados(dados: Partial<Empresa>): Observable<Empresa>{
     return this.httpClient.patch<Empresa>(this.apiUrl, dados);
   }
-
 
 }
