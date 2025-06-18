@@ -9,3 +9,15 @@ export interface Empresa{
  endereco?: string;
 
 }
+export interface ArquivoUpload {
+  savedFile: {
+    id: number;
+    nomeArquivo: string;
+    url: string;
+    tipo: string;
+    tamanho: number;
+    empresaId: number;
+    dataUpload: string;
+  };
+  url: string; 
+}

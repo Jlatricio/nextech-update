@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -39,21 +39,17 @@ import { FornecedorService } from '../../service/fornecedorService';
   templateUrl: './despesa.component.html',
   styleUrls: ['./despesa.component.scss'],
 })
-// ... (mantém todos os imports como estão)
 export class DespesasComponent implements OnInit {
   form: FormGroup;
+
   despesa: Despesa[] = [];
   fornecedores: Fornecedor[] = [];
 
   despesaSelecionadoId: number | null = null;
-  despesaSelecionado: any = null;
 
   mostrarCampoNovaCategoria = false;
   modoEdicao = false;
   modalModo: 'criar' | 'editar' = 'criar';
-
-  @ViewChild('closeModalBtn', { static: false })
-  closeModalBtn!: ElementRef<HTMLButtonElement>;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -64,12 +60,26 @@ export class DespesasComponent implements OnInit {
     this.form = this.formBuilder.group({
       nome: ['', Validators.required],
       fornecedorId: [null, Validators.required],
-      valor: [null, [Validators.required, Validators.min(0)]],
+    valor: [null, [Validators.required, Validators.min(0)]],
       retencaoFonte: [null, Validators.required],
       motivo: ['', Validators.required],
     });
   }
 
+  filtroFornecedorId: number | null = null;
+
+  get despesasFiltradas(): Despesa[] {
+    if (!this.filtroFornecedorId) {
+      return this.despesa;
+    }
+    return this.despesa.filter(
+      (d) => d.fornecedor?.id === this.filtroFornecedorId
+    );
+  }
+
+  onFiltroFornecedorChange(fornecedorId: number | null) {
+    this.filtroFornecedorId = fornecedorId;
+  }
   ngOnInit(): void {
     this.titleService.setTitle('despesa');
     this.carregarDespesa();
@@ -95,18 +105,103 @@ export class DespesasComponent implements OnInit {
     });
   }
 
-  abrirCriarModal(): void {
-    this.resetarFormulario(); // limpa tudo antes de abrir
+  despesaSelecionado: any = null;
+  abrirCriarModal() {
+    this.modalModo = 'criar';
+    this.despesaSelecionado = {}; 
+  }
+
+  salvarDespesa(): void {
     this.modalModo = 'criar';
 
+    // Garante que a descrição nunca seja vazia
+    let motivo = this.form.value.motivo?.trim();
+    if (!motivo) {
+      motivo = 'N/A';
+    }
+
+    const despesa: Partial<Despesa> = {
+      nome: this.form.value.nome,
+      valor: parseFloat(
+        String(this.form.value.valor)
+          .replace('Kz ', '')
+          .replace(/\./g, '')
+          .replace(',', '.')
+      ),
+      motivo: this.form.value.motivo,
+    fornecedorId: this.form.value.fornecedorId,
+      retencaoFonte: this.form.value.retencaoFonte,
+    };
+
+    if (this.despesaSelecionadoId) {
+      this.despesaService
+        .atualizarDespesa(this.despesaSelecionadoId, despesa)
+        .subscribe({
+          next: () => {
+            this.carregarDespesa();
+            this.resetarFormulario();
+            Swal.fire({
+              icon: 'success',
+              title: 'Sucesso!',
+              text: 'Despesa atualizado com sucesso!',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.fecharModal();
+          },
+          error: (err) => {
+            console.error('Erro ao atualizar:', err);
+          },
+        });
+    } else {
+      this.despesaService.criarDespesa(despesa).subscribe({
+        next: (res: any) => {
+          console.log('Despesa criado!', res);
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso!',
+            text: 'Despesa criado com sucesso!',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.fecharModal();
+        },
+        error: (err: any) => {
+          console.error('Erro:', err.error);
+        },
+        complete: () => {
+          this.carregarDespesa();
+          this.resetarFormulario();
+        },
+      });
+    }
+  }
+
+  fecharModal(): void {
     const modalElement = document.getElementById('exampleModal');
+
     if (modalElement) {
-      const modal = Modal.getOrCreateInstance(modalElement);
-      modal.show();
+      let modal = Modal.getInstance(modalElement);
+      if (!modal) {
+        modal = new Modal(modalElement);
+      }
+
+      modal.hide();
+
+      // Espera o modal terminar a animação e remove o backdrop manualmente
+      setTimeout(() => {
+        // Remove classe que trava o scroll da página
+        document.body.classList.remove('modal-open');
+
+        // Remove o backdrop (fundo escuro)
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach((b) => b.remove());
+      }, 300); // 300ms é o tempo padrão do fade-out no Bootstrap
     }
   }
 
   editarDespesa(despesa: Despesa): void {
+    this.modalModo = 'editar';
     this.modalModo = 'editar';
     this.despesaSelecionado = despesa;
     this.despesaSelecionadoId = despesa.id;
@@ -118,77 +213,14 @@ export class DespesasComponent implements OnInit {
       valor: despesa.valor.toString(),
       motivo: despesa.motivo,
     });
-
     this.modoEdicao = true;
 
-    const modalElement = document.getElementById('exampleModal');
+    const modalElement = document.getElementById(
+      'exampleModal'
+    ) as HTMLElement | null;
     if (modalElement) {
-      const modal = Modal.getOrCreateInstance(modalElement);
+      const modal = new Modal(modalElement);
       modal.show();
-    }
-  }
-
-  salvarDespesa(): void {
-    const motivo = this.form.value.motivo?.trim() || 'N/A';
-
-    const despesa: Partial<Despesa> = {
-      nome: this.form.value.nome,
-      valor: parseFloat(
-        String(this.form.value.valor)
-          .replace('Kz ', '')
-          .replace(/\./g, '')
-          .replace(',', '.')
-      ),
-      motivo,
-      fornecedorId: this.form.value.fornecedorId,
-      retencaoFonte: this.form.value.retencaoFonte,
-    };
-
-    if (this.despesaSelecionadoId) {
-      this.despesaService
-        .atualizarDespesa(this.despesaSelecionadoId, despesa)
-        .subscribe({
-          next: () => {
-            this.carregarDespesa();
-            Swal.fire({
-              icon: 'success',
-              title: 'Sucesso!',
-              text: 'Despesa atualizada com sucesso!',
-              timer: 2000,
-              showConfirmButton: false,
-            });
-            this.fecharModal('exampleModal');
-          },
-          error: (err) => {
-            console.error('Erro ao atualizar:', err);
-          },
-        });
-    } else {
-      this.despesaService.criarDespesa(despesa).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Sucesso!',
-            text: 'Despesa criada com sucesso!',
-            timer: 2000,
-            showConfirmButton: false,
-          });
-          this.fecharModal('exampleModal');
-        },
-        error: (err) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Erro!',
-            text: 'Erro ao criar Despesa. Tente novamente.',
-            timer: 2000,
-            showConfirmButton: false,
-          });
-          console.error('Erro:', err.error);
-        },
-        complete: () => {
-          this.carregarDespesa();
-        },
-      });
     }
   }
 
@@ -203,8 +235,8 @@ export class DespesasComponent implements OnInit {
           .replace(/\./g, '')
           .replace(',', '.')
       ),
-      retencaoFonte: this.form.value.retencaoFonte,
-      fornecedorId: this.form.value.fornecedorId,
+      // categoriaId: Number(this.form.value.categoria),
+
       motivo: this.form.value.motivo || 'N/A',
     };
 
@@ -215,20 +247,14 @@ export class DespesasComponent implements OnInit {
           Swal.fire({
             icon: 'success',
             title: 'Atualizado!',
-            text: 'Despesa atualizada com sucesso!',
+            text: 'Despesa atualizado com sucesso!',
             timer: 2000,
             showConfirmButton: false,
           });
-          this.fecharModal('exampleModal');
+          this.fecharModal();
+          this.carregarDespesa();
         },
         error: (err) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Erro!',
-            text: 'Erro ao atualizar Despesa. Tente novamente.',
-            timer: 2000,
-            showConfirmButton: false,
-          });
           console.error('Erro ao atualizar Despesa:', err);
         },
       });
@@ -237,7 +263,7 @@ export class DespesasComponent implements OnInit {
   excluirDespesa(id: number): void {
     Swal.fire({
       title: 'Tem certeza?',
-      text: 'Deseja realmente excluir esta Despesa?',
+      text: 'Deseja realmente excluir este Despesa?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sim, excluir!',
@@ -245,7 +271,9 @@ export class DespesasComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.despesaService.deletarDespesa(id).subscribe({
-          next: () => this.carregarDespesa(),
+          next: () => {
+            this.carregarDespesa();
+          },
           error: (err) => {
             console.error('Erro ao excluir Despesa:', err);
             Swal.fire({
@@ -261,26 +289,12 @@ export class DespesasComponent implements OnInit {
     });
   }
 
-  fecharModal(id: string): void {
-    this.resetarFormulario(); // <- Limpa ANTES de fechar
-    const modalElement = document.getElementById(id);
-    if (modalElement) {
-      const modalInstance = Modal.getOrCreateInstance(modalElement);
-      modalInstance?.hide();
-    } else {
-      console.warn(`Modal com id="${id}" não encontrado no DOM.`);
-    }
-  }
-
   resetarFormulario(): void {
     this.form.reset();
-    this.despesaSelecionado = null;
     this.despesaSelecionadoId = null;
-    this.modoEdicao = false;
-    this.modalModo = 'criar';
   }
 
-  toggleNovaCategoria(): void {
+  toggleNovaCategoria() {
     this.mostrarCampoNovaCategoria = !this.mostrarCampoNovaCategoria;
   }
 
@@ -301,13 +315,8 @@ export class DespesasComponent implements OnInit {
   }
 
   getPrimeiroEUltimoNome(nomeCompleto: string): string {
-    const nomes = nomeCompleto.trim().split(/\s+/);
-    return nomes.length === 1
-      ? nomes[0]
-      : `${nomes[0]} ${nomes[nomes.length - 1]}`;
-  }
-
-  onSubmitArtigo(): void {
-    this.modalModo === 'criar' ? this.salvarDespesa() : this.atualizarDespesa();
-  }
+  const nomes = nomeCompleto.trim().split(/\s+/);
+  if (nomes.length === 1) return nomes[0];
+  return `${nomes[0]} ${nomes[nomes.length - 1]}`;
+}
 }

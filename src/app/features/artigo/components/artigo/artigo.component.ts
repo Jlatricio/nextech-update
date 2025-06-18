@@ -55,31 +55,22 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   descricao: string = '';
   descricaoRestante: number = 300;
 
-  impostos = [
-    { valor: 0, nome: 'Nenhum imposto' },
-    // IVA
-    { valor: 0.14, nome: ' 14% (taxa geral)' },
-    { valor: 0.07, nome: ' 7% (reduzida)' },
-    { valor: 0.05, nome: ' 5% (cesta básica)' },
-    { valor: 0.01, nome: ' 1% (Cabinda)' },
-    // Imposto Industrial
-    { valor: 0.25, nome: ' 25% (geral)' },
-    { valor: 0.1, nome: ' 10% (agropecuária)' },
-    { valor: 0.35, nome: ' 35% (setores especiais)' },
-    // IRT
-    { valor: 0.25, nome: ' 25% (Grupos B e C)' },
-    // IAC
-    { valor: 0.15, nome: ' 15% (juros)' },
-    { valor: 0.1, nome: ' 10% (dividendos)' },
-    { valor: 0.05, nome: ' 5%' },
-    // IP
-    { valor: 0.005, nome: ' 0,5% (padrão)' },
-    { valor: 0.001, nome: ' 0,1% (residencial)' },
-    { valor: 0.006, nome: ' 0,6% (terrenos)' },
-    { valor: 0.25, nome: ' 25% (renda)' },
-    // Outros
-    { valor: 0.02, nome: ' Sisa – 2%' },
-  ];
+ impostosMap = new Map<number, string>([
+  [0, 'Nenhum imposto'],
+  [0.14, '14% (IVA geral)'],
+  [0.07, '7% (IVA reduzida)'],
+  [0.05, '5% (IVA ou IAC)'],
+  [0.01, '1% (Cabinda)'],
+  [0.25, '25%'], // você escolhe qual significado quer priorizar
+  [0.10, '10%'],
+  [0.35, '35%'],
+  [0.15, '15%'],
+  [0.005, '0,5%'],
+  [0.001, '0,1%'],
+  [0.006, '0,6%'],
+  [0.02, 'Sisa – 2%'],
+]);
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -213,7 +204,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   }
 
     // Chama abrirModal para criar:
-    abrirCriarArtigo(): void {
+  abrirCriarArtigo(): void {
     this.modalModo = 'criar';
     this.artigoSelecionado = null;
     this.artigoSelecionadoId = null;
@@ -301,7 +292,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     setTimeout(() => this.abrirModal('exampleModal'), 0);
   }
 
-    atualizarArtigo(): void {
+ atualizarArtigo(): void {
     if (this.form.invalid) {
       Swal.fire('Atenção', 'Preencha todos os campos obrigatórios.', 'warning');
       return;
@@ -508,9 +499,10 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getNomesImpostos(valor: number): string[] {
-    return this.impostos.filter((i) => i.valor === valor).map((i) => i.nome);
-  }
+ getNomeImposto(valor: number): string {
+  return this.impostosMap.get(valor) ?? 'Imposto não identificado';
+}
+
 
     getPrimeiroEUltimoNome(nomeCompleto: string): string {
   const nomes = nomeCompleto.trim().split(/\s+/);

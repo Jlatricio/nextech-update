@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 import { Observable } from 'rxjs/internal/Observable';
 
@@ -31,7 +32,8 @@ export class FornecedoresComponent {
 
   constructor(
     private formBuilder: FormBuilder,
-    private fornecedorService: FornecedorService
+    private fornecedorService: FornecedorService,
+    private toastr: ToastrService
   ) {
     this.form = this.formBuilder.group({
       id: [''],
@@ -52,8 +54,9 @@ export class FornecedoresComponent {
 
   criarOuAtualizarUsuario(): void {
     if (this.form.invalid) {
+      // Exibir mensagem de alerta se o formulário for inválido
       Swal.fire({
-        icon: 'warning',
+        icon: 'success',
         title: 'Atenção!',
         text: 'Preencha todos os campos obrigatórios.',
         timer: 2000,
@@ -63,106 +66,44 @@ export class FornecedoresComponent {
     }
 
     if (this.editando && this.fornecedorEditandoId !== null) {
-      const originalComparable = {
-        nome: this.fornecedorOriginal?.nome,
-        nif: this.fornecedorOriginal?.nif,
-        endereco: this.fornecedorOriginal?.endereco,
-        telefone: this.fornecedorOriginal?.telefone,
-        email: this.fornecedorOriginal?.email,
-      };
-
-      const atualizadoComparable = {
-        nome: this.form.value.nome,
-        nif: this.form.value.nif,
-        endereco: this.form.value.endereco,
-        telefone: this.form.value.telefone,
-        email: this.form.value.email,
-      };
-
-      if (
-        JSON.stringify(originalComparable) === JSON.stringify(atualizadoComparable)
-      ) {
-        Swal.fire({
-          icon: 'info',
-          title: 'Sem alterações!',
-          text: 'Nenhuma modificação foi detectada nos dados do fornecedor.',
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        return;
-      }
-
       this.fornecedorService
-        .updateFornecedor({
-          ...this.form.value,
-          id: this.fornecedorEditandoId
-        })
+        .updateFornecedor(this.fornecedorEditandoId, this.form.value)
         .subscribe({
           next: () => {
             Swal.fire({
-              icon: 'success',
-              title: 'Sucesso!',
-              text: 'Fornecedor atualizado com sucesso!',
-              timer: 2000,
-              showConfirmButton: false,
-            });
+                      icon: 'success',
+                      title: 'Sucesso!',
+                      text: 'Fornecedor atualizado com sucesso!',
+                      timer: 2000,
+                      showConfirmButton: false
+                    });
             this.cancelarEdicao();
             this.fornecedor$ = this.fornecedorService.getFornecedores();
             this.fecharModal();
           },
           error: (error) => {
-            let msg = 'Erro ao criar Fornecedor.';
-                      if (error?.status === 400) {
-                        msg =
-                          error.error?.message ||
-                          'Dados inválidos. Verifique os campos e tente novamente.';
-                      } else if (error?.status === 409) {
-                        msg =
-                          error.error?.message ||
-                          'Fornecedor com o mesmo NIF, email ou telefone já existe.';
-                      } else if (error?.status === 403) {
-                        msg =
-                          error.error?.message ||
-                          'ou telefone já estão cadastrados.';
-                      } else if (error?.status === 500) {
-                        msg = 'Erro interno no servidor. Tente novamente mais tarde.';
-                      } else if (error?.status === 0) {
-                        msg = 'Não foi possível conectar ao servidor.';
-                      }
-            Swal.fire({
-              icon: 'error',
-              title: 'Erro!',
-              text: msg,
-              timer: 2000,
-              showConfirmButton: false,
-            });
+            console.error('Erro ao atualizar fornecedor:', error);
           },
           complete: () => {
-            this.fornecedorService.getFornecedores().subscribe({
-              next: (fornecedores: Fornecedor[]) => {
-                this.fornecedores = fornecedores;
-              },
-              error: (error) => {
-                console.error('Erro ao buscar fornecedores:', error);
-              },
-            });
-            this.form.reset();
             this.loading = false;
-          },
+          }
         });
+
     } else {
       this.fornecedorService.createFornecedor(this.form.value).subscribe({
         next: () => {
           Swal.fire({
-            icon: 'success',
-            title: 'Sucesso!',
-            text: 'Fornecedor criado com sucesso!',
-            timer: 2000,
-            showConfirmButton: false,
-          });
+                   icon: 'success',
+                   title: 'Sucesso!',
+                   text: 'Fornecedor criado com sucesso!',
+                   timer: 2000,
+                   showConfirmButton: false
+                 });
+
           this.fecharModal();
           this.form.reset();
           this.fornecedor$ = this.fornecedorService.getFornecedores();
+          this.fecharModal();
         },
         error: (error: Error) => {
           console.error('Erro:', error.message);
@@ -174,124 +115,57 @@ export class FornecedoresComponent {
             },
             error: (error) => {
               console.error('Erro ao buscar fornecedores:', error);
-            },
-          });
+            }
+          })
           this.form.reset();
           this.loading = false;
-        },
+        }
       });
     }
   }
 
   deleteFornecedor(fornecedor: Fornecedor) {
-    this.fornecedorService.deleteFornecedor(fornecedor).subscribe(
+    this.fornecedorService.deleteFornecedor(fornecedor.id).subscribe(
       () => {
         // Exibir mensagem de sucesso
-        this.fornecedor$ = this.fornecedorService.getFornecedores();
-        Swal.fire({
+          Swal.fire({
           title: 'Tem certeza?',
           text: 'Deseja realmente excluir este  fornecedor?',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Sim, excluir!',
-          cancelButtonText: 'Cancelar',
-        });
-        // Atualizar a lista de fornecedores 
-        this.fornecedores = this.fornecedores.filter(
-          (f) => f.id !== fornecedor.id
-        );
-        this.cancelarEdicao();
-        this.fecharModal();
-        // Exibir mensagem de sucesso
-        Swal.fire({
-          icon: 'success',
-          title: 'Sucesso!',
-          text: 'Fornecedor excluído com sucesso!',
-          timer: 2000,
-          showConfirmButton: false,
-        });
+          cancelButtonText: 'Cancelar'
+        })
+        // Atualizar a lista de fornecedores
+        this.fornecedor$ = this.fornecedorService.getFornecedores();
       },
       (error) => {
         // Exibir mensagem de erro
-        console.log(error.message);
+        console.log(error.message)
         Swal.fire({
-          icon: 'warning',
-          title: 'Atenção!',
-          text: 'Não é possível eliminar este fornecedor porque ele possui uma despesa associada.',
-          showConfirmButton: true,
-        });
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: 'Erro ao excluir fornecedor. Tente novamente.',
+                    timer: 2000,
+                    showConfirmButton: false
+                    });
       }
-
     );
   }
 
-  updateFornecedor(fornecedor: Fornecedor)
-   {
-
-    // Verifica se o fornecedor a ser editado é o mesmo que está sendo editado
-    if (this.editando && this.fornecedorEditandoId === fornecedor.id) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Atenção!',
-        text: 'Você já está editando este fornecedor.',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      return;
-    }
-    // Verifica se o formulário é válido antes de prosseguir
-    this.form.patchValue({
-      id: fornecedor.id,
-      nome: fornecedor.nome,
-      nif: fornecedor.nif,
-      endereco: fornecedor.endereco,
-      telefone: fornecedor.telefone,
-      email: fornecedor.email,
-    });
-    this.editando = true;
-    this.fornecedorEditandoId = fornecedor.id;
-    this.fornecedorOriginal = { ...fornecedor };
-    
-    if (this.form.invalid) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Atenção!',
-        text: 'Preencha todos os campos obrigatórios.',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      this.fecharModal();
-      console.error('Formulário inválido:', this.form.errors);
-      // Retorna para evitar a execução do código de atualização
-
-      this.cancelarEdicao();
-      this.fecharModal();
-      return;
-    }
+  updateFornecedor(fornecedor: Fornecedor) {
     this.fornecedorService
-      .updateFornecedor(fornecedor)
+      .updateFornecedor(fornecedor.id, fornecedor)
       .subscribe(
         (response) => {
-          // Verifica se o formulário é válido antes de prosseguir
-          if (this.form.invalid) {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Atenção!',
-              text: 'Preencha todos os campos obrigatórios.',
-              timer: 2000,
-              showConfirmButton: false,
-            });
-          }
-            this.fecharModal();
-            console.error('Formulário inválido:', this.form.errors);
           // Exibir mensagem de sucesso
           Swal.fire({
-            title: 'Sucesso!',
-            text: 'Fornecedor atualizado com sucesso!',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false,
-          });
+              title: 'Sucesso!',
+              text: 'Fornecedor atualizado com sucesso!',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            });
           console.log(response);
           // Atualizar a lista de fornecedores
           this.fornecedor$ = this.fornecedorService.getFornecedores();
@@ -299,7 +173,6 @@ export class FornecedoresComponent {
           this.fecharModal();
         },
         (error) => {
-
           // Exibir mensagem de erro
           console.error('Erro ao atualizar fornecedor:', error);
           Swal.fire({
@@ -307,13 +180,13 @@ export class FornecedoresComponent {
             title: 'Erro!',
             text: 'Erro ao atualizar fornecedor. Tente novamente.',
             timer: 2000,
-            showConfirmButton: false,
+            showConfirmButton: false
           });
         }
       );
   }
 
-  populateForm(fornecedor: Fornecedor) {
+   populateForm(fornecedor: Fornecedor) {
     this.form.patchValue({
       ...fornecedor,
     });

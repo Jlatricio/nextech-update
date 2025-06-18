@@ -13,9 +13,8 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-login(email: string, senha: string): Observable<any> {
-  const payload = { email, senha };
-  return this.http.post(`${this.apiUrl}/auth/signin`, payload).pipe(
+login(credenciais: { email?: string; telefone?: string; senha: string }): Observable<any> {
+  return this.http.post(`${this.apiUrl}/auth/signin`, credenciais).pipe(
     tap((response: any) => {
       localStorage.setItem('token', response.token);
     }),
@@ -25,7 +24,8 @@ login(email: string, senha: string): Observable<any> {
 
 
 
- 
+
+
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');

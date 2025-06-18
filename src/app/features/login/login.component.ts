@@ -6,6 +6,7 @@ import { AuthService } from './Auth/auth.service';
 import { TitleService } from '../../core/services/title.service';
 import { CadastroService } from '../../core/services/cadastro.service';
 import Swal from 'sweetalert2';
+import { get } from 'node:http';
 
 @Component({
   selector: 'app-login',
@@ -29,10 +30,12 @@ export class LoginComponent {
     private titleService: TitleService,
     private cadastroService: CadastroService,
   ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', Validators.required]
-    });
+   this.loginForm = this.fb.group({
+  login: ['', [Validators.required, this.emailOrPhoneValidator]],
+  senha: ['', Validators.required]
+});
+
+
 
     this.registerForm = this.fb.group({
       nome: ['', Validators.required],
@@ -40,6 +43,9 @@ export class LoginComponent {
       telefone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
       senha: ['', Validators.required]
     });
+
+
+
   }
 
   toggleSignUpMode(): void {
@@ -47,15 +53,16 @@ export class LoginComponent {
     this.errorMessage = '';
   }
 
-  emailOrPhoneValidator(control: AbstractControl) {
-    const value = control.value?.trim();
-    if (!value) return null;
+ emailOrPhoneValidator(control: AbstractControl) {
+  const value = control.value?.trim();
+  if (!value) return null;
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phonePattern = /^\d{9}$/;
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phonePattern = /^\d{9}$/;
 
-    return emailPattern.test(value) || phonePattern.test(value) ? null : { invalidInput: true };
-  }
+  return emailPattern.test(value) || phonePattern.test(value) ? null : { invalidInput: true };
+}
+
 
   get loginemail() { return this.loginForm.get('email'); }
   get loginsenha() { return this.loginForm.get('senha'); }
@@ -65,64 +72,82 @@ export class LoginComponent {
   get registerTelefone() { return this.registerForm.get('telefone'); }
   get registerPassword() { return this.registerForm.get('senha'); }
 
-  onEmailOrPhoneInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value;
 
-    if (/^\d*$/.test(value)) {
-      const onlyNumbers = value.replace(/\D/g, '').slice(0, 9);
-      this.loginemail?.setValue(onlyNumbers, { emitEvent: false });
-    } else {
-      this.loginemail?.setValue(value, { emitEvent: false });
-    }
+  get loginlogin() {
+  return this.loginForm.get('login');
+}
+
+onEmailOrPhoneInput(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  let value = input.value.trim();
+
+  // Se o valor começa com + ou é só números, trata como número
+  if (/^\+?\d+$/.test(value)) {
+    const onlyNumbers = value.replace(/\D/g, '').slice(-9); // últimos 9 dígitos
+   this.loginlogin?.setValue(onlyNumbers, { emitEvent: false });
+
+  } else {
+    // Se for email, deixa como está
+    this.loginemail?.setValue(value, { emitEvent: false });
   }
+}
+
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      this.errorMessage = 'Preencha todos os campos do login corretamente.';
-      return;
-    }
-
-    const emailLogin = this.loginForm.value.email;
-    const senhaLogin = this.loginForm.value.senha;
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.authService.login(emailLogin, senhaLogin).subscribe({
-      next: () => {
-        Swal.fire({
-          title: 'Entrando...',
-          didOpen: () => Swal.showLoading(),
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          timer: 1200
-        }).then(() => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Login bem-sucedido!',
-            showConfirmButton: false,
-            timer: 1500
-          }).then(() => {
-            this.router.navigate(['/inicio']);
-          });
-        });
-      },
-      error: (error) => {
-        this.isLoading = false;
-        if (error.status === 401) {
-          this.errorMessage = 'Credenciais inválidas. Verifique seu email e senha.';
-          console.log(error);
-        } else {
-          this.errorMessage = error.error?.message || 'Erro ao fazer login.';
-        }
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    this.errorMessage = 'Preencha todos os campos do login corretamente.';
+    return;
   }
+
+ const loginValue = this.loginForm.value.login.trim();
+const senhaLogin = this.loginForm.value.senha;
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const isEmail = emailPattern.test(loginValue);
+
+const credenciais: any = { senha: senhaLogin };
+
+if (isEmail) {
+  credenciais.email = loginValue;
+} else {
+  credenciais.telefone = '+244' + loginValue.replace(/\D/g, '').slice(-9);
+}
+
+this.authService.login(credenciais).subscribe({
+  next: () => {
+    Swal.fire({
+      title: 'Entrando...',
+      didOpen: () => Swal.showLoading(),
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      timer: 1200
+    }).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Login bem-sucedido!',
+        showConfirmButton: false,
+        timer: 1500
+      }).then(() => {
+        this.router.navigate(['/inicio']);
+      });
+    });
+  },
+  error: (error) => {
+    this.isLoading = false;
+    if (error.status === 401) {
+      this.errorMessage = 'Credenciais inválidas. Verifique seu email ou telefone e senha.';
+    } else {
+      this.errorMessage = error.error?.message || 'Erro ao fazer login.';
+    }
+  },
+  complete: () => {
+    this.isLoading = false;
+  }
+});
+
+}
+
 
 onRegister(): void {
   if (!this.signUpMode) return;
@@ -146,7 +171,8 @@ onRegister(): void {
   this.cadastroService.cadastrarUsuario(payload).subscribe({
     next: () => {
       // Após cadastro, realiza o login automaticamente
-      this.authService.login(payload.email, payload.senha).subscribe({
+   this.authService.login({ email: payload.email, senha: payload.senha }).subscribe({
+
         next: () => {
           Swal.fire({
             title: 'Entrando...',

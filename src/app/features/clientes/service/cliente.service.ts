@@ -35,7 +35,10 @@ export class ClienteService {
       telefone: cliente.telefone,
       endereco: cliente.endereco,
     };
-    return this.httpClient.patch<Cliente>(`${this.apiUrl}/${cliente.id}`, newCliente);
+    return this.httpClient.patch<Cliente>(
+      `${this.apiUrl}/${cliente.id}`,
+      newCliente
+    );
   }
 
   deleteCliente(cliente: Cliente): Observable<void> {

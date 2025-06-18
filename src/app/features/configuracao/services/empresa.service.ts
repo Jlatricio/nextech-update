@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Empresa } from '../interface/empresa';
+import { ArquivoUpload, Empresa } from '../interface/empresa';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class EmpresaService {
 
   //Mostra os dados da empresa
   empresadados(): Observable<Empresa>{
- return this.httpClient.get<Empresa>(`${this.apiUrl}/me`);
+  return this.httpClient.get<Empresa>(`${this.apiUrl}/me`);
   }
 
   //Atualiza os dados da empresa
@@ -23,14 +23,4 @@ export class EmpresaService {
     return this.httpClient.patch<Empresa>(this.apiUrl, dados);
   }
 
- uploadLogo(file: File): Observable<{ filename: string; path: string }> {
-    const formData = new FormData();
-    // O backend espera campo 'logo'
-    formData.append('logo', file, file.name);
-    // Ajuste URL: se apiUrl é '.../v1/companies'
-    return this.httpClient.post<{ filename: string; path: string }>(
-      `${this.apiUrl}/upload-logo`,
-      formData
-    );
-  }
 }

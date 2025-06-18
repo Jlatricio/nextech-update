@@ -129,7 +129,6 @@ mostrarOpcoes: boolean = false;
 
    this.DocumentoService.visualizarNotaCredito().subscribe({
   next: (notaCredito: DadosDocumento[]) => {
-  
     console.log('Nota de crédito:', notaCredito);
     this.DadosDocumentos = [...this.DadosDocumentos, ...notaCredito];
   },
@@ -332,6 +331,35 @@ this.DocumentoService.gerarCodigoReferencia(payload).subscribe({
 }
 
 
+acaoTornarFactura(id: number) {
+  // // Verifica se o ID é válido
+  // if (!id) return;
 
+  // // Chama o serviço para converter o documento em factura
+  // this.FaturaService.tornarFactura(id).subscribe({
+  //   next: (response) => {
+  //     // Exibe mensagem de sucesso ao usuário
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: 'Sucesso',
+  //       text: 'Documento convertido em factura com sucesso!'
+  //     });
+  //     // Atualiza a lista de documentos
+  //     this.carregarDocumentos();
+  //     // Fecha o modal de ações
+  //     this.modalInstance?.hide();
+  //   },
+  //   error: (error) => {
+  //     // Exibe mensagem de erro ao usuário
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Erro',
+  //       text: 'Não foi possível converter o documento em factura.'
+  //     });
+  //     // Loga o erro no console para depuração
+  //     console.error('Erro ao tornar factura:', error);
+  //   }
+  // });
+}
 
 }

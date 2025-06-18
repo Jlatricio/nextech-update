@@ -7,6 +7,9 @@ import { EmpresaService } from './services/empresa.service';
 import { finalize, Observable } from 'rxjs';
 import { Empresa } from './interface/empresa';
 import { provideNgxMask } from 'ngx-mask';
+import { UploadsService } from '../../core/services/uploads.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -28,10 +31,13 @@ export class ConfiguracaoComponent implements OnInit{
   fileTooLarge = false;
   readonly MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB em bytes
 
+logoSanitizado!: SafeUrl;
      constructor(
+      private sanitizer: DomSanitizer,
     private titleService: TitleService,
     private empresaService: EmpresaService,
     private formBuilder: FormBuilder,
+    private UploadsService: UploadsService
   ) {
     this.form = this.formBuilder.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
@@ -73,47 +79,52 @@ export class ConfiguracaoComponent implements OnInit{
   }
 
   fields = [
-  {
-    id: 'nomeEmpresa',
-    name: 'nome',
-    label: 'Nome da empresa',
-    placeholder: 'Ex: Nextech Lda',
-    type: 'text',
-    error: 'Nome obrigatório (mín. 3 caracteres)'
-  },
-  {
-    id: 'nif',
-    name: 'nif',
-    label: 'NIF',
-    placeholder: 'Ex: 999999999AA999',
-    type: 'text',
-    error: 'NIF deve ter 9 dígitos, 2 letras e 3 dígitos (Ex: 999999999AA999)'
-  },
-  {
-    id: 'endereco',
-    name: 'endereco',
-    label: 'Endereço',
-    placeholder: 'Ex: Rua Principal, 100',
-    type: 'text',
-    error: 'Endereço é obrigatório'
-  },
-  {
-    id: 'telefone',
-    name: 'telefone',
-    label: 'Nº de telefone da empresa',
-    placeholder: 'Ex: 923000000',
-    type: 'tel',
-    error: 'Telefone deve ter 9 dígitos'
-  },
-  {
-    id: 'email',
-    name: 'email',
-    label: 'Email',
-    placeholder: 'Ex: exemplo@empresa.com',
-    type: 'email',
-    error: 'Email é obrigatório e deve ser válido'
-  }
-];
+    {
+      id: 'nomeEmpresa',
+      name: 'nome',
+      label: 'Nome da empresa',
+      placeholder: 'Ex: Nextech Lda',
+      type: 'text',
+      error: 'Nome obrigatório (mín. 3 caracteres)'
+    },
+    {
+      id: 'nif',
+      name: 'nif',
+      label: 'NIF',
+      placeholder: 'Ex: 999999999AA999',
+      type: 'text',
+      error: 'NIF deve ter 9 dígitos, 2 letras e 3 dígitos (Ex: 999999999AA999)'
+    },
+    {
+      id: 'endereco',
+      name: 'endereco',
+      label: 'Endereço',
+      placeholder: 'Ex: Rua Principal, 100',
+      type: 'text',
+      error: 'Endereço é obrigatório'
+    },
+    {
+      id: 'telefone',
+      name: 'telefone',
+      label: 'Nº de telefone da empresa',
+      placeholder: 'Ex: 923000000',
+      type: 'tel',
+      error: 'Telefone deve ter 9 dígitos',
+      // Adiciona um formatter para exibir o prefixo +244 se não estiver presente
+      formatter: (value: string) => {
+        if (!value) return '';
+        return value.startsWith('+244') ? value : `+244${value}`;
+      }
+    },
+    {
+      id: 'email',
+      name: 'email',
+      label: 'Email',
+      placeholder: 'Ex: exemplo@empresa.com',
+      type: 'email',
+      error: 'Email é obrigatório e deve ser válido'
+    }
+  ];
 
 isInvalid(controlName: string): boolean {
   const control = this.form.get(controlName);
@@ -125,9 +136,17 @@ isInvalid(controlName: string): boolean {
 dados(): void {
   this.empresaService.empresadados().subscribe({
     next: (res) => {
+
       if (res) {
+          if (res.telefone?.startsWith('+244')) {
+          res.telefone = res.telefone.replace('+244', '');
+        }
         this.empresa = res;
         this.form.patchValue(this.empresa);
+
+        if (this.empresa.logoURL) {
+          this.logoSanitizado = this.sanitizer.bypassSecurityTrustUrl(this.empresa.logoURL);
+        }
       }
     },
     error: (err) => {
@@ -137,78 +156,131 @@ dados(): void {
 }
 
 
- salvarEmpresa(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    // Se o arquivo for obrigatório, descomente:
-    // if (!this.selectedFile) {
-    //   this.fileError = 'Selecione uma imagem de logo.';
-    //   return;
-    // }
-
-    if (this.selectedFile) {
-      this.uploadLogoEAtualizarEmpresa();
-    } else {
-
-      this.atualizarEmpresaSemLogo();
-    }
+salvarEmpresa(): void {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
 
-  private atualizarEmpresaSemLogo(): void {
-    const empresa: Empresa = { ...this.form.value };
+  const formData = this.form.value;
 
-    if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
-      empresa.telefone = `+244${empresa.telefone}`;
-    }
+  const dadosInalterados =
+    JSON.stringify({
+      ...this.empresa,
+      telefone: this.empresa?.telefone?.replace('+244', '')
+    }) === JSON.stringify(formData);
 
-    this.empresaService.atualizadados(empresa).subscribe({
-      next: res => {
-        console.log('Empresa salva com sucesso (sem logo):', res);
-        this.dados();
-      },
-      error: err => {
-        console.error('Erro ao salvar empresa (sem logo):', err);
-      }
+  if (!this.selectedFile && dadosInalterados) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Nada para salvar',
+      text: 'Nenhuma alteração foi detectada.',
     });
+    return;
   }
+
+  if (this.selectedFile) {
+    this.uploadLogoEAtualizarEmpresa();
+  } else {
+    this.atualizarEmpresaSemLogo();
+  }
+}
+
+
+atualizarEmpresaSemLogo(): void {
+  const formData = this.form.value;
+  const camposParaComparar: (keyof Empresa)[] = [
+    'nome', 'email', 'telefone', 'nif', 'endereco', 
+  ];
+
+  let houveAlteracao = false;
+
+  for (const campo of camposParaComparar) {
+    let valorForm = formData[campo];
+    let valorOriginal = this.empresa[campo];
+
+    // Tratar telefone: remove +244 antes de comparar
+    if (campo === 'telefone') {
+      valorForm = valorForm?.replace('+244', '');
+      valorOriginal = valorOriginal?.replace('+244', '');
+    }
+
+    if (valorForm !== valorOriginal) {
+      houveAlteracao = true;
+      break;
+    }
+  }
+
+  if (!houveAlteracao) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Nenhuma alteração detectada',
+      text: 'Os dados informados são iguais aos já salvos.',
+    });
+    return;
+  }
+
+  // Se houver alteração, monta o objeto atualizado
+  const empresaAtualizada: Empresa = {
+    ...this.empresa,
+    ...formData,
+    telefone: formData.telefone.startsWith('+244')
+      ? formData.telefone
+      : `+244${formData.telefone}`
+  };
+
+  this.empresaService.atualizadados(empresaAtualizada).subscribe({
+    next: (res) => {
+      Swal.fire('Sucesso', 'Empresa atualizada com sucesso!', 'success');
+      this.dados(); // Atualiza os dados na tela
+    },
+    error: (err) => {
+      console.error('Erro ao salvar empresa (sem logo):', err);
+      Swal.fire('Erro', 'Erro ao salvar os dados da empresa.', 'error');
+    }
+  });
+}
+
+
+
 
 private uploadLogoEAtualizarEmpresa(): void {
   if (!this.selectedFile) {
     return;
   }
-  this.empresaService.uploadLogo(this.selectedFile).pipe(
+
+  this.UploadsService.uploadLogo(this.selectedFile).pipe(
     finalize(() => {
-      // opcional: limpeza de estado de upload
+      // Limpeza de estado ou loading se necessário
+      // this.isUploading = false;
     })
   ).subscribe({
     next: (response) => {
-      // response tem { filename: string; path: string; }
-      // Use apenas path ou filename. Exemplo:
-      const logoPath = response.path; // '/files/uuid.ext'
-      // Se quiser URL completa, combine com base:
-      // const logoUrlCompleta = `${environment.apiBaseUrl}${logoPath}`;
-      const empresa: Empresa = { ...this.form.value };
-      if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
-        empresa.telefone = `+244${empresa.telefone}`;
-      }
-      // Atribua a propriedade logoURL conforme sua model:
-      empresa.logoURL = logoPath;
-      // Se quiser URL completa: empresa.logoURL = logoUrlCompleta;
-      this.empresaService.atualizadados(empresa).subscribe({
-        next: res => {
-          console.log('Empresa salva com logo com sucesso:', res);
-          this.dados();
-          this.selectedFile = null;
-          this.previewUrl = null;
-        },
-        error: err => {
-          console.error('Erro ao salvar empresa após upload de logo:', err);
-        }
-      });
+  const logoPath = response.url || response.savedFile?.url;
+
+  const empresa: Empresa = { ...this.form.value };
+
+  if (empresa.telefone && !empresa.telefone.startsWith('+244')) {
+    empresa.telefone = `+244${empresa.telefone}`;
+  }
+
+  empresa.logoURL = logoPath;
+
+  this.empresaService.atualizadados(empresa).subscribe({
+
+    next: res => {
+   console.log('Empresa recebida:', this.empresa);
+console.log('Logo:', this.empresa.logoURL);
+      console.log('Empresa salva com logo com sucesso:', res);
+      this.dados();
+      this.selectedFile = null;
+      this.previewUrl = null;
     },
+    error: err => {
+      console.error('Erro ao salvar empresa após upload de logo:', err);
+    }
+  });
+},
     error: err => {
       console.error('Erro ao fazer upload da logo:', err);
       this.fileError = 'Falha no upload da imagem. Tente novamente.';
@@ -220,9 +292,12 @@ private uploadLogoEAtualizarEmpresa(): void {
 
 
 
+
 ngOnInit(): void {
   this.titleService.setTitle('Configurações');
-  this.dados(); // Carrega os dados da empresa ao iniciar o componente
+  this.dados();
+
+
 }
 
 
