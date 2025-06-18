@@ -1,15 +1,50 @@
 {
-  "name": "nextech-frontend-main",
+  "name": "nextech",
   "version": "0.0.0",
+  "description": "Nextech - Sistema com Angular + Electron",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
-    "dev": "vite",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:Nextech-frontend-main": "node dist/nextech-frontend-main/server/server.mjs"
+    "electron": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "build:electron": "ng build --output-path=dist && electron-builder",
+    "make:win": "ng build && electron-builder --win --x64",
+    "dev:electron": "concurrently -k \"ng serve\" \"wait-on http://localhost:4200 && electron .\""
   },
+  "build": {
+    "appId": "com.nextech.app",
+    "productName": "Nextech",
+    "files": [
+      "dist/",
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ]
+  },
+  "author": "Juvenal Caterca",
   "private": true,
   "dependencies": {
     "@angular/animations": "^19.2.11",
@@ -33,6 +68,7 @@
     "chart.js": "^4.4.9",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
+    "electron-updater": "^6.6.2",
     "express": "^4.21.2",
     "html2canvas": "^1.4.1",
     "json": "^11.0.0",
@@ -62,6 +98,9 @@
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
+    "concurrently": "^9.1.2",
+    "electron": "^36.5.0",
+    "electron-builder": "^26.0.12",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -69,19 +108,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.7.2",
-    "vite": "^6.3.5"
-  },
-  "description": "This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/A-Machado28/Nextech-frontend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/A-Machado28/Nextech-frontend/issues"
-  },
-  "homepage": "https://github.com/A-Machado28/Nextech-frontend#readme"
+    "vite": "^6.3.5",
+    "wait-on": "^8.0.3"
+  }
 }
