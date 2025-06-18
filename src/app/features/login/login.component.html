@@ -8,15 +8,16 @@
   </div>
   <p class="welcome-text">Bem-vindo! Por favor, faça login para acessar o sistema.</p>
 
-  <!-- Campo Email ou Telefone -->
-  <div class="input-field" [ngClass]="{'has-error': loginemail?.invalid && (loginemail?.dirty || loginemail?.touched)}">
-    <i class="fas fa-user"></i>
-    <input type="text" formControlName="email" placeholder="Email" (input)="onEmailOrPhoneInput($event)" />
-  </div>
-  <div *ngIf="loginemail?.invalid && (loginemail?.dirty || loginemail?.touched)" class="error">
-    <small *ngIf="loginemail?.errors?.['required']">Campo obrigatório.</small>
-    <small *ngIf="loginemail?.errors?.['invalidInput']">Insira um email válido ou um telefone com 9 dígitos.</small>
-  </div>
+<!-- Campo Email ou Telefone -->
+<div class="input-field" [ngClass]="{'has-error': loginlogin?.invalid && (loginlogin?.dirty || loginlogin?.touched)}">
+  <i class="fas fa-user"></i>
+  <input type="text" formControlName="login" placeholder="Insira seu email ou telefone" (input)="onEmailOrPhoneInput($event)" />
+</div>
+<div *ngIf="loginlogin?.invalid && (loginlogin?.dirty || loginlogin?.touched)" class="error">
+  <small *ngIf="loginlogin?.errors?.['required']">Campo obrigatório.</small>
+  <small *ngIf="loginlogin?.errors?.['invalidInput']">Insira um email válido ou um telefone com 9 dígitos.</small>
+</div>
+
 
   <!-- Campo Senha -->
   <div class="input-field" [ngClass]="{'has-error': loginsenha?.invalid && (loginsenha?.dirty || loginsenha?.touched)}">
