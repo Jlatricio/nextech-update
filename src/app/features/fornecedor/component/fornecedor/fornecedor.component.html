@@ -1,70 +1,52 @@
-  <!-- Header -->
-  <div class="artigos-header text-center my-4">
-    <div class="icon-circle mx-auto">
-      <i class="bi bi-truck"></i>
-    </div>
-    <h3 class="mt-3"> Fornecedores </h3>
-    <button
-      type="button"
-      class="btn-hover-gradient"
-      data-bs-toggle="modal"
-       data-bs-target="#exampleModal"
-    >
-      Criar Fornecedor
-      <i class="bi bi-plus-lg ms-2"></i>
-    </button>
+<!-- Header -->
+<div class="artigos-header text-center my-4">
+  <div class="icon-circle mx-auto">
+    <i class="bi bi-truck"></i>
   </div>
+  <h3 class="mt-3"> Fornecedores </h3>
+  <button type="button" class="btn-hover-gradient" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Criar Fornecedor
+    <i class="bi bi-plus-lg ms-2"></i>
+  </button>
+</div>
 
 
 
 <!-- tabela de Fornecedor -->
 <main class="table" id="customers_table">
   <div class="filtros-container">
-      <div class="search-group">
-        <i class="bi bi-search search-icon"></i>
-        <input
-  type="text"
-  class="search-input"
-  placeholder="Pesquisar..."
+    <div class="search-group">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" class="search-input" placeholder="Pesquisar..." />
 
-/>
+      <i class="bi bi-x-lg clear-icon"></i>
+    </div>
 
-        <i
+    <div class="filtros-selects">
+      <div class="filtro-item">
+        <div class="dropdown filtro-item" dropdown>
+          <label>Tipo</label>
+          <button dropdownToggle type="button"
+            class="btn btn-light d-flex justify-content-between w-100 align-items-center">
 
+            <i class="bi bi-chevron-down ms-auto"></i>
+          </button>
 
-          class="bi bi-x-lg clear-icon"
+          <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
+            <li>
+              <a class="dropdown-item">Todos</a>
+            </li>
+            <li>
+              <a class="dropdown-item">
 
-        ></i>
-      </div>
-
-      <div class="filtros-selects">
-        <div class="filtro-item">
-          <div class="dropdown filtro-item" dropdown>
-            <label>Tipo</label>
-           <button
-  dropdownToggle
-  type="button"
-  class="btn btn-light d-flex justify-content-between w-100 align-items-center"
->
-
-  <i class="bi bi-chevron-down ms-auto"></i>
-</button>
-
-            <ul *dropdownMenu class="dropdown-menu w-100 shadow border-0">
-              <li>
-                <a class="dropdown-item">Todos</a>
-              </li>
-              <li >
-                <a class="dropdown-item">
-
-                </a>
-              </li>
-            </ul>
-          </div>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-
     </div>
+
+  </div>
 
   <section class="table__body">
     <table>
@@ -81,7 +63,6 @@
       </thead>
       <tbody>
         <tr *ngFor="let fornecedor of fornecedor$ | async">
-          <td>{{ fornecedor.id}}</td>
           <td>{{ fornecedor.nome }}</td>
           <td>{{ fornecedor.nif}}</td>
           <td>{{ fornecedor.telefone }}</td>
@@ -90,13 +71,12 @@
           <td>
             <div class="bnt-action">
               <!-- Botão de editar -->
-              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                (click)="populateForm(fornecedor)">
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                data-bs-target="#exampleModal" (click)="populateForm(fornecedor)">
                 <i class="bi bi-pencil"></i> Editar
               </button>
               <!-- Botão de eliminar -->
-              <button type="button" class="btn btn-outline-danger"
-                (click)="deleteFornecedor(fornecedor)">
+              <button type="button" class="btn btn-outline-danger" (click)="deleteFornecedor(fornecedor)">
                 <i class="bi bi-trash"></i> Eliminar
               </button>
             </div>
@@ -114,19 +94,20 @@
     <div class="modal-content">
 
       <div class="modal-body">
-        <form [formGroup]="form" novalidate >
+        <form [formGroup]="form" novalidate>
 
           <div class="modal-header">
             <h1 class="modal-title fs-5">{{ editando ? 'Editar Fornecedor' : 'Criar Fornecedor' }}</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
               (click)="cancelarEdicao()"></button>
-            </div>
-            <!-- input nome -->
+          </div>
+          <!-- input nome -->
           <div class="mb-3">
             <label for="nome" class="form-label">Nome do Fornecedor</label>
-            <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required/>
+            <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
             <!-- validar o nome -->
-            <div class="text-danger" *ngIf="form.get('nome')?.invalid && (form.get('nome')?.touched || form.get('nome')?.dirty)">
+            <div class="text-danger"
+              *ngIf="form.get('nome')?.invalid && (form.get('nome')?.touched || form.get('nome')?.dirty)">
               Nome é obrigatório.
             </div>
 
@@ -134,8 +115,9 @@
 
           <div class="mb-3">
             <label for="nome" class="form-label">NIF</label>
-            <input type="text" id="nif" name="nif" class="form-control" formControlName="nif" required/>
-            <div class="text-danger" *ngIf="form.get('nif')?.invalid && (form.get('nif')?.touched || form.get('nif')?.dirty)">
+            <input type="text" id="nif" name="nif" class="form-control" formControlName="nif" required />
+            <div class="text-danger"
+              *ngIf="form.get('nif')?.invalid && (form.get('nif')?.touched || form.get('nif')?.dirty)">
               NIF é obrigatório.
             </div>
 
@@ -149,26 +131,30 @@
                 <img src="https://flagcdn.com/w20/ao.png" alt="Angola" width="20" height="15" />
                 &nbsp;+244
               </span>
-              <input type="text" class="form-control" formControlName="telefone" mask="000 000 000" placeholder="Ex: 923 456 789"
-                maxlength="9" />
+              <input type="text" class="form-control" formControlName="telefone" mask="000 000 000"
+                placeholder="Ex: 923 456 789" maxlength="9" />
             </div>
-            <small class="text-danger" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone é
+            <small class="text-danger"
+              *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched">Telefone é
               obrigatório.</small>
-            <small class="text-danger" *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9 caracteres.</small>
-            </div>
+            <small class="text-danger" *ngIf="form.get('telefone')?.errors?.['minlength']">Telefone deve ter 9
+              caracteres.</small>
+          </div>
 
-            <div class="mb-3">
-              <label for="endereco" class="form-label">Endereço</label>
-              <input id="endereco" class="form-control" type="text" formControlName="endereco" required />
-              <small class="text-danger" *ngIf="form.controls['endereco'].invalid && form.controls['endereco'].touched">Endereço
-                é obrigatório.
-              </small>
+          <div class="mb-3">
+            <label for="endereco" class="form-label">Endereço</label>
+            <input id="endereco" class="form-control" type="text" formControlName="endereco" required />
+            <small class="text-danger"
+              *ngIf="form.controls['endereco'].invalid && form.controls['endereco'].touched">Endereço
+              é obrigatório.
+            </small>
           </div>
 
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" id="email" name="email" class="form-control" formControlName='email' required />
-            <div class="text-danger" *ngIf="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty)">
+            <div class="text-danger"
+              *ngIf="form.get('email')?.invalid && (form.get('email')?.touched || form.get('email')?.dirty)">
               <span *ngIf="form.get('email')?.errors?.['required']">Email é obrigatório.</span>
               <span *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido.</span>
             </div>

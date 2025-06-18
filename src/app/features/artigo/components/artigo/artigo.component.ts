@@ -213,7 +213,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
   }
 
     // Chama abrirModal para criar:
-  abrirCriarArtigo(): void {
+    abrirCriarArtigo(): void {
     this.modalModo = 'criar';
     this.artigoSelecionado = null;
     this.artigoSelecionadoId = null;
@@ -301,7 +301,7 @@ export class ArtigoComponent implements OnInit, AfterViewInit {
     setTimeout(() => this.abrirModal('exampleModal'), 0);
   }
 
- atualizarArtigo(): void {
+    atualizarArtigo(): void {
     if (this.form.invalid) {
       Swal.fire('Atenção', 'Preencha todos os campos obrigatórios.', 'warning');
       return;

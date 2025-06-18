@@ -94,7 +94,8 @@
         <h1 class="modal-title fs-5">
           {{ modalModo === 'criar' ? 'Criar Despesa' : 'Atualizar Despesa' }}
         </h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        <button #closeModalButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
@@ -105,17 +106,22 @@
             <label for="nome" class="form-label">Nome do despesa <span class="text-danger">*</span></label>
             <input type="text" id="nome" name="nome" class="form-control" formControlName="nome" required />
           </div>
+          <small *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched" class="text-danger">
+            Nome é obrigatório
+          </small>
 
-   <select formControlName="fornecedorId" class="form-select">
-  <option [ngValue]="null">Selecione o fornecedor</option>
-  <option *ngFor="let fornecedor of fornecedores" [ngValue]="fornecedor.id">
-    {{ fornecedor.nome }}
-  </option>
-</select>
-
-<small *ngIf="form.get('fornecedorId')?.invalid && form.get('fornecedorId')?.touched" class="text-danger">
-  Fornecedor é obrigatório
-</small>
+          <div class="mb-3">
+            <label for="">Fornecedor</label>
+            <select formControlName="fornecedorId" class="form-select">
+              <option [ngValue]="null">Selecione o fornecedor</option>
+              <option *ngFor="let fornecedor of fornecedores" [ngValue]="fornecedor.id">
+                {{ fornecedor.nome }}
+              </option>
+            </select>
+            <small *ngIf="form.get('fornecedorId')?.invalid && form.get('fornecedorId')?.touched" class="text-danger">
+              Fornecedor é obrigatório
+            </small>
+          </div>
 
 
           <div class="mb-3">
