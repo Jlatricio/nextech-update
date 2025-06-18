@@ -66,6 +66,20 @@ export class DespesasComponent implements OnInit {
     });
   }
 
+  filtroFornecedorId: number | null = null;
+
+  get despesasFiltradas(): Despesa[] {
+    if (!this.filtroFornecedorId) {
+      return this.despesa;
+    }
+    return this.despesa.filter(
+      (d) => d.fornecedor?.id === this.filtroFornecedorId
+    );
+  }
+
+  onFiltroFornecedorChange(fornecedorId: number | null) {
+    this.filtroFornecedorId = fornecedorId;
+  }
   ngOnInit(): void {
     this.titleService.setTitle('despesa');
     this.carregarDespesa();
@@ -94,7 +108,7 @@ export class DespesasComponent implements OnInit {
   despesaSelecionado: any = null;
   abrirCriarModal() {
     this.modalModo = 'criar';
-    this.despesaSelecionado = {}; // ou zere o form como preferir
+    this.despesaSelecionado = {}; 
   }
 
   salvarDespesa(): void {
