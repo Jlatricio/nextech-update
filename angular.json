@@ -47,6 +47,9 @@
         ],
         "outputHashing": "all",
         "optimization": {
+           "fonts": {
+      "inline": false
+    },
           "scripts": true,
           "styles": {
             "minify": true,
