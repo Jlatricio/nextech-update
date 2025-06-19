@@ -1,5 +1,3 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
 # Compiled output
 /dist
 /tmp
@@ -7,11 +5,18 @@
 /bazel-out
 /nextech-clean/
 /nextech-clean2/
+*.exe
+*.zip
+*.yml
+
+# Build stats ou artefatos manuais
 /how --stat
+
 # Node
 /node_modules
-npm-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # IDEs and editors
 .idea/
@@ -28,11 +33,15 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
+.history/
 
-# Miscellaneous
+# Angular & Electron cache
 /.angular/cache
 .sass-cache/
+.electron-builder.cache/
+.electron/
+
+# Logs & coverage
 /connect.lock
 /coverage
 /libpeerconnection.log

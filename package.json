@@ -6,30 +6,31 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "start:prod": "npm run build && electron .",
+    "dev:electron": "concurrently -k \"ng serve\" \"wait-on http://localhost:4200 && electron .\"",
+"build": "ng build --output-path=dist/Nextech-frontend-main --base-href ./",
+    "build:ssr": "ng build && ng run Nextech-frontend-main:server:production",
+    "serve:ssr": "node dist/server/main.js",
     "electron": "electron .",
     "postinstall": "electron-builder install-app-deps",
-    "build:electron": "ng build --output-path=dist && electron-builder",
-    "make:win": "ng build && electron-builder --win --x64",
-    "dev:electron": "concurrently -k \"ng serve\" \"wait-on http://localhost:4200 && electron .\""
+    "build:electron": "npm run build && electron-builder",
+    "make:win": "npm run build && electron-builder --win --x64"
   },
   "build": {
     "appId": "com.nextech.app",
     "productName": "Nextech",
     "files": [
-      "dist/",
-      "main.js",
-      "preload.js",
-      "package.json"
+     "dist/nextech-frontend-main/browser/",
+  "main.js",
+  "preload.js",
+  "package.json"
     ],
     "directories": {
       "buildResources": "build"
     },
     "win": {
       "target": "nsis",
-      "icon": "build/icon.ico"
+      "icon": "assets/favicon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -58,6 +59,7 @@
     "@angular/platform-server": "^19.2.11",
     "@angular/router": "^19.2.11",
     "@angular/ssr": "^19.2.5",
+    "@nguniversal/express-engine": "^7.0.2",
     "@ngx-loading-bar/core": "^7.0.0",
     "@ngx-loading-bar/http-client": "^7.0.0",
     "@popperjs/core": "^2.11.8",
