@@ -23,7 +23,7 @@
       "polyfills": ["zone.js"],
       "tsConfig": "tsconfig.app.json",
       "inlineStyleLanguage": "scss",
-      "assets": ["src/assets", "src/public"],
+      "assets": ["src/assets", "src/public", "src/manifest.webmanifest"],
       "styles": [
         "node_modules/bootstrap/dist/css/bootstrap.min.css",
         "node_modules/bootstrap-icons/font/bootstrap-icons.css",
