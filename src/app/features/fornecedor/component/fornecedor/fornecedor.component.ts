@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { ToastrService } from 'ngx-toastr';
+
 
 import { Observable } from 'rxjs/internal/Observable';
 
@@ -33,7 +33,6 @@ export class FornecedoresComponent {
   constructor(
     private formBuilder: FormBuilder,
     private fornecedorService: FornecedorService,
-    private toastr: ToastrService
   ) {
     this.form = this.formBuilder.group({
       id: [''],
@@ -67,7 +66,7 @@ export class FornecedoresComponent {
 
     if (this.editando && this.fornecedorEditandoId !== null) {
       this.fornecedorService
-        .updateFornecedor(this.fornecedorEditandoId, this.form.value)
+        .updateFornecedor(this.form.value) 
         .subscribe({
           next: () => {
             Swal.fire({
@@ -81,9 +80,24 @@ export class FornecedoresComponent {
             this.fornecedor$ = this.fornecedorService.getFornecedores();
             this.fecharModal();
           },
-          error: (error) => {
-            console.error('Erro ao atualizar fornecedor:', error);
-          },
+          error: (error: any) => {
+                       let msg = 'Erro ao atualizar fornecedor.';
+                      if (
+                        error?.status === 400 ||
+                        error?.status === 'No changes detected to update.'
+                      ) {
+                        msg = 'nenhuma informação foi alterada.';
+                      } else if (error?.status === 0) {
+                        msg = 'Não foi possível conectar ao servidor.';
+                      }
+                       Swal.fire({
+                         icon: 'error',
+                         title: 'Verifique o formulário',
+                         text: msg,
+                         timer: 2000,
+                         showConfirmButton: false,
+                      });
+                    },
           complete: () => {
             this.loading = false;
           }
@@ -155,7 +169,7 @@ export class FornecedoresComponent {
 
   updateFornecedor(fornecedor: Fornecedor) {
     this.fornecedorService
-      .updateFornecedor(fornecedor.id, fornecedor)
+      .updateFornecedor(fornecedor) // <-- Pass only one argument
       .subscribe(
         (response) => {
           // Exibir mensagem de sucesso

@@ -27,19 +27,15 @@ export class FornecedorService {
       .pipe(tap((fornecedores) => console.log('Fornecedores:', fornecedores)));
   }
 
-  updateFornecedor(id: number, fornecedor: Partial<Fornecedor>): Observable<Fornecedor> {
+  updateFornecedor(fornecedor: Fornecedor): Observable<Fornecedor> {
     const updatedFornecedor = {
       ...(fornecedor.nome !== undefined && { nome: fornecedor.nome }),
       ...(fornecedor.email !== undefined && { email: fornecedor.email }),
       ...(fornecedor.telefone !== undefined && { telefone: fornecedor.telefone }),
       ...(fornecedor.endereco !== undefined && { endereco: fornecedor.endereco }),
     };
-    return this.http
-      .patch<Fornecedor>(`${this.apiUrl}/${id}`, updatedFornecedor)
-      .pipe(
-        tap((updatedFornecedor) =>
-          console.log('Fornecedor atualizado:', updatedFornecedor)
-        )
+    return this.http.patch<Fornecedor>(`${this.apiUrl}/${fornecedor.id}`, updatedFornecedor)
+      .pipe( tap((updatedFornecedor) => console.log('Fornecedor atualizado:', updatedFornecedor))
       );
   }
 
