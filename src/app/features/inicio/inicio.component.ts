@@ -89,7 +89,6 @@ ngOnInit(): void {
   this.titleService.setTitle('Dashboard');
 this.DocumentoService.listarDocumentos().subscribe({
   next: (documentos: DadosDocumento[]) => {
-    console.log('Documentos recebidos:', documentos);
     const documentosFiltrados = documentos.filter(doc =>
       !(doc.tipo === 'FACTURA' && doc.anulado === true)
     );
