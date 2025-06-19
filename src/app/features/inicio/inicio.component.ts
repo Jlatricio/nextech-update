@@ -87,18 +87,24 @@ export class InicioComponent {
 
 ngOnInit(): void {
   this.titleService.setTitle('Dashboard');
-  this.DocumentoService.listarDocumentos().subscribe({
-    next: (documentos: DadosDocumento[]) => {
-      this.documentosOriginais = documentos;
-      this.DadosDocumentos = documentos;
-      this.atualizarEstatisticas(documentos);
-      this.inicializarFiltros(documentos);
-      this.atualizarTotalPages();
-    },
-    error: (err) => {
-      console.error('Erro ao listar documentos:', err);
-    }
-  });
+this.DocumentoService.listarDocumentos().subscribe({
+  next: (documentos: DadosDocumento[]) => {
+    console.log('Documentos recebidos:', documentos);
+    const documentosFiltrados = documentos.filter(doc =>
+      !(doc.tipo === 'FACTURA' && doc.anulado === true)
+    );
+
+    this.documentosOriginais = documentosFiltrados;
+    this.DadosDocumentos = documentosFiltrados;
+    this.atualizarEstatisticas(documentosFiltrados);
+    this.inicializarFiltros(documentosFiltrados);
+    this.atualizarTotalPages();
+  },
+  error: (err) => {
+    console.error('Erro ao listar documentos:', err);
+  }
+});
+
 }
 
 
@@ -141,7 +147,7 @@ ngOnInit(): void {
   atualizarEstatisticas(documentos: DadosDocumento[], contexto: 'geral' | 'filtrado' = 'geral'): void {
     const facturas = documentos.filter(doc => doc.tipo === 'FACTURA');
     const facturasRecibo = documentos.filter(doc => doc.tipo === 'FACTURA_RECIBO');
-    const reembolso = documentos.filter(doc => doc.anulado === true);
+    const reembolso = documentos.filter(doc => doc.tipo === "NOTA_CREDITO" && doc.motivo === 'ANULAÇÃO');
 
     const facturasValidas = facturas.filter(doc => !doc.anulado);
     const totalFacturado = facturasValidas.reduce((soma, doc) => soma + (doc.total || 0), 0);

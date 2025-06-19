@@ -173,7 +173,7 @@ export class ClienteComponent implements OnInit {
 
   // Aqui implementamos onSubmit, que faltava
   onSubmit(): void {
-    if (this.form.invalid) {
+   if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
