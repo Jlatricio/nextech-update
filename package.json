@@ -8,7 +8,7 @@
     "start": "ng serve",
     "start:prod": "npm run build && electron .",
     "dev:electron": "concurrently -k \"ng serve\" \"wait-on http://localhost:4200 && electron .\"",
-"build": "ng build --output-path=dist/Nextech-frontend-main --base-href ./",
+"build": "ng build --output-path=dist/nextech-frontend-main --base-href ./",
     "build:ssr": "ng build && ng run Nextech-frontend-main:server:production",
     "serve:ssr": "node dist/server/main.js",
     "electron": "electron .",
