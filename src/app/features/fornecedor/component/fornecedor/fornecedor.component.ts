@@ -91,7 +91,7 @@ export class FornecedoresComponent {
                         msg = 'Não foi possível conectar ao servidor.';
                       }
                        Swal.fire({
-                         icon: 'error',
+                         icon: 'error', 
                          title: 'Verifique o formulário',
                          text: msg,
                          timer: 2000,
