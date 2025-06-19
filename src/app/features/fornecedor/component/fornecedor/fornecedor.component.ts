@@ -91,12 +91,12 @@ export class FornecedoresComponent {
                         msg = 'Não foi possível conectar ao servidor.';
                       }
                        Swal.fire({
-                         icon: 'error', 
-                         title: 'Verifique o formulário',
+                         icon: 'warning',
+                         title: 'Atenção!',
                          text: msg,
                          timer: 2000,
                          showConfirmButton: false,
-                      });
+                       });
                     },
           complete: () => {
             this.loading = false;
