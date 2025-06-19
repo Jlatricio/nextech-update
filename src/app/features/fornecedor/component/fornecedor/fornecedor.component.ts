@@ -55,7 +55,7 @@ export class FornecedoresComponent {
     if (this.form.invalid) {
       // Exibir mensagem de alerta se o formulário for inválido
       Swal.fire({
-        icon: 'success',
+        icon: 'warning',
         title: 'Atenção!',
         text: 'Preencha todos os campos obrigatórios.',
         timer: 2000,
