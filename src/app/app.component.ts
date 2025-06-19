@@ -8,6 +8,7 @@ import { StartupComponentComponent } from "./shared/startup-component/startup-co
 import { TopLoadingBarComponent } from './shared/top-loading-bar/top-loading-bar/top-loading-bar.component';
 import { NetworkService } from './core/services/network.service';
 import Swal from 'sweetalert2';
+import { SwUpdate } from '@angular/service-worker';
 
 declare global {
   interface Window {
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit {
   mostrarLayout = true;
 
   constructor(private router: Router,
+    private swUpdate: SwUpdate,
     private networkService: NetworkService
 
   ) {
@@ -46,6 +48,15 @@ export class AppComponent implements OnInit {
         const rotaAtual = event.url;
         this.mostrarLayout = rotaAtual !== '/login';
       });
+
+        if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates.subscribe(event => {
+        if (event.type === 'VERSION_READY') {
+     
+          this.swUpdate.activateUpdate().then(() => document.location.reload());
+        }
+      });
+    }
   }
 
 

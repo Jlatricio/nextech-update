@@ -8,7 +8,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, isDevMode } from '@angular/core';
 
 
 import Swal from 'sweetalert2';
@@ -16,6 +16,7 @@ import { registerLocaleData } from '@angular/common';
 import pt from '@angular/common/locales/pt';
 import { provideLoadingBar } from '@ngx-loading-bar/core';
 import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
+import { provideServiceWorker } from '@angular/service-worker';
 
 
 registerLocaleData(pt);
@@ -72,6 +73,9 @@ export const appConfig: ApplicationConfig = {
           );
         }
       ])
-    )
+    ), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          })
   ]
 };
