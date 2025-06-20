@@ -3,7 +3,7 @@ name: Build and Release Electron App
 on:
   push:
     tags:
-      - '0.0.*' # Ex: 0.0.1
+      - 'v0.0.*' # Ex: v0.0.1
 
 jobs:
   release:

@@ -41,9 +41,9 @@
     },
     "publish": [
       {
-         "provider": "github",
-    "owner": "A-Machado28",
-    "repo": "Nextech_Frontend"
+        "provider": "github",
+        "owner": "A-Machado28",
+        "repo": "Nextech_Frontend"
       }
     ]
   },
