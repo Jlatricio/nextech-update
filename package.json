@@ -1,6 +1,6 @@
 {
   "name": "nextech",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Nextech - Sistema com Angular + Electron",
   "main": "main.js",
   "scripts": {
@@ -41,7 +41,9 @@
     },
     "publish": [
       {
-        "provider": "github"
+         "provider": "github",
+    "owner": "A-Machado28",
+    "repo": "Nextech_Frontend"
       }
     ]
   },
