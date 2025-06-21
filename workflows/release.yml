@@ -1,0 +1,40 @@
+name: Build and Release Electron App
+
+on:
+  push:
+    tags:
+      - 'v0.0.*' # Ex: v0.0.1
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular + SSR
+        run: npm run build:ssr
+
+      - name: Build Electron installer
+        run: npm run make:win
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.exe
+            dist/*.zip
+            dist/*.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
